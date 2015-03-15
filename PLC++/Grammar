@@ -12,13 +12,15 @@ line_terminator = lf | cr | cr lf;
 digit =	['0' .. '9'];
 letter = ['a' .. 'z'] | ['A' .. 'Z'];
 
+letter_or_digit = (letter | digit);
+
 Tokens
 white_space = (sp | ht | ff | line_terminator)+;
 
 integer = (digit)+;
 decimal = (digit)+ '.' (digit)+;
 
-identifier = letter;// (letter | digit)*;
+identifier = letter;// letter_or_digit*;
 
 l_par = '(';
 r_par = ')';
@@ -33,18 +35,20 @@ float = 'float';
 double = 'double';
 port = 'port';
 
+assignment_operator = '=';
+
 plus_operator = '+';
 minus_operator = '-';
 mult_operator = '*';
 div_operator = '/';
 mod_operator = '%';
-assignment_operator = '=';
+
 equal_operator = '==';
 not_equal_operator = '!=';
-
 and_operator = '&&';
 or_operator = '||';
 
+// Keywords
 if_keyword = 'if';
 else_keyword = 'else';
 
@@ -68,10 +72,8 @@ statements =
   {single} statement;
 
 statement = 
-  {declaration} declaration_statement semi;
-
-variable_identifier = 
-  {identifier} identifier;
+  {declaration} declaration_statement semi |
+  {assignment} assignment_statement semi;
 
 type = 
   {byte} byte | 
@@ -81,9 +83,16 @@ type =
   {float} float | 
   {double} double | 
   {port} port;
+  
+variable_identifier = 
+  {identifier} identifier;
 
 declaration_statement =
-  {equalment_declaration} type variable_identifier assignment_operator expr;
+  {declaration} type variable_identifier |
+  {declaration_assignment} type assignment_statement;
+  
+assignment_statement = 
+  {assignment} variable_identifier assignment_operator expr;
 
 expr = 
   {logic_expr} logic_expr;

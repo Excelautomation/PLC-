@@ -9,10 +9,19 @@ public class Printer extends DepthFirstAdapter {
     Stack<Boolean> stack = new Stack<Boolean>();
 
     @Override
-    public void outAEqualmentDeclarationDeclarationStatement(AEqualmentDeclarationDeclarationStatement node) {
-        super.outAEqualmentDeclarationDeclarationStatement(node);
+    public void outADeclarationStatement(ADeclarationStatement node) {
+        super.outADeclarationStatement(node);
 
         System.out.println("Output: " + stack.pop());
+        System.out.println("");
+    }
+
+    @Override
+    public void outAAssignmentStatement(AAssignmentStatement node) {
+        super.outAAssignmentStatement(node);
+
+        System.out.println("Output: " + stack.pop());
+        System.out.println("");
     }
 
     @Override
