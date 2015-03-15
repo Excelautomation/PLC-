@@ -57,7 +57,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
         // Remember short circuit
         boolean arg1 = booleanStack.pop(), arg2 = booleanStack.pop();
-        booleanStack.push(arg1 && arg2);
+        booleanStack.push(arg2 && arg1);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
         // Remember short circuit
         boolean arg1 = booleanStack.pop(), arg2 = booleanStack.pop();
-        booleanStack.push(arg1 || arg2);
+        booleanStack.push(arg2 || arg1);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
         System.out.println("Equal");
 
         boolean arg1 = booleanStack.pop(), arg2 = booleanStack.pop();
-        booleanStack.push(arg1 == arg2);
+        booleanStack.push(arg2 == arg1);
     }
 
     @Override
@@ -88,13 +88,14 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
         System.out.println("Not equal");
 
         boolean arg1 = booleanStack.pop(), arg2 = booleanStack.pop();
-        booleanStack.push(arg1 != arg2);
+        booleanStack.push(arg2 != arg1);
     }
 
     @Override
     public void outAIntegerNumber(AIntegerNumber node) {
         super.outAIntegerNumber(node);
 
+        System.out.println(node.getInteger().getText());
         numberStack.push(Integer.parseInt(node.getInteger().getText()));
     }
 
@@ -102,8 +103,97 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     public void outANegnumberValue(ANegnumberValue node) {
         super.outANegnumberValue(node);
 
+        System.out.println("-");
         numberStack.push(numberStack.pop() * -1);
     }
 
+    @Override
+    public void outACompareGreaterLogicCompare(ACompareGreaterLogicCompare node) {
+        super.outACompareGreaterLogicCompare(node);
 
+        System.out.println("Greater than");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        booleanStack.push(arg2 > arg1);
+    }
+
+    @Override
+    public void outACompareGreaterOrEqualLogicCompare(ACompareGreaterOrEqualLogicCompare node) {
+        super.outACompareGreaterOrEqualLogicCompare(node);
+
+        System.out.println("Greater than or equal");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        booleanStack.push(arg2 >= arg1);
+    }
+
+    @Override
+    public void outACompareLessLogicCompare(ACompareLessLogicCompare node) {
+        super.outACompareLessLogicCompare(node);
+
+        System.out.println("Less than");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        booleanStack.push(arg2 < arg1);
+    }
+
+    @Override
+    public void outACompareLessOrEqualLogicCompare(ACompareLessOrEqualLogicCompare node) {
+        super.outACompareLessOrEqualLogicCompare(node);
+
+        System.out.println("Less than or equal");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        booleanStack.push(arg2 <= arg1);
+    }
+
+    @Override
+    public void outAAddValueExpr(AAddValueExpr node) {
+        super.outAAddValueExpr(node);
+
+        System.out.println("Add");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        numberStack.push(arg2 + arg1);
+    }
+
+    @Override
+    public void outASubValueExpr(ASubValueExpr node) {
+        super.outASubValueExpr(node);
+
+        System.out.println("Sub");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        numberStack.push(arg2 - arg1);
+    }
+
+    @Override
+    public void outAMultiValueFactor(AMultiValueFactor node) {
+        super.outAMultiValueFactor(node);
+
+        System.out.println("Multi");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        numberStack.push(arg2 * arg1);
+    }
+
+    @Override
+    public void outADivValueFactor(ADivValueFactor node) {
+        super.outADivValueFactor(node);
+
+        System.out.println("Div");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        numberStack.push(arg2 / arg1);
+    }
+
+    @Override
+    public void outAModValueFactor(AModValueFactor node) {
+        super.outAModValueFactor(node);
+
+        System.out.println("Mod");
+
+        int arg1 = numberStack.pop(), arg2 = numberStack.pop();
+        numberStack.push(arg2 % arg1);
+    }
 }
