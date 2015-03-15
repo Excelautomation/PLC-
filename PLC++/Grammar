@@ -105,45 +105,73 @@ expr =
   {identifier} variable_identifier;
 
 logic_expr = 
-  {compare_and} logic_expr and_operator logic_term |
-  {compare_or} logic_expr or_operator logic_term |
+  {compare_and} logic_expr_identifier and_operator logic_term_identifier |
+  {compare_or} logic_expr_identifier or_operator logic_term_identifier |
   {term} logic_term;
+  
+logic_expr_identifier =
+  {expr} logic_expr |
+  {variable} variable_identifier;
 
 logic_term = 
-  {compare_equal} logic_value equal_operator logic_term | 
-  {compare_not_equal} logic_value not_equal_operator logic_term | 
+  {compare_equal} logic_term_identifier equal_operator logic_value_identifier | 
+  {compare_not_equal} logic_term_identifier not_equal_operator logic_value_identifier | 
   {value} logic_value;
+  
+logic_term_identifier =
+  {term} logic_term |
+  {variable} variable_identifier;
 
 logic_value = 
   {true} true_keyword | 
-  {false} false_keyword | 
-//  {identifier} variable_identifier | Ambigius
+  {false} false_keyword |
   {expr} l_par logic_expr r_par |
   {compare} logic_compare;
+
+// (varname) is not allowed because it could cause ambiguity
+logic_value_identifier =
+  {value} logic_value |
+  {variable} variable_identifier;
   
 logic_compare = 
-  {compare_greater} logic_value_term greater_than_operator value_term |
-  {compare_less} logic_value_term less_than_operator value_term |
-  {compare_greater_or_equal} logic_value_term greater_than_or_equal_operator value_term |
-  {compare_less_or_equal} logic_value_term less_than_or_equal_operator value_term;
+  {compare_greater} logic_value_term greater_than_operator logic_value_term2 |
+  {compare_less} logic_value_term less_than_operator logic_value_term2 |
+  {compare_greater_or_equal} logic_value_term greater_than_or_equal_operator logic_value_term2 |
+  {compare_less_or_equal} logic_value_term less_than_or_equal_operator logic_value_term2;
   
-logic_value_term = {logic_value_term} value_term;
+logic_value_term = 
+  {logic_value_term} value_term |
+  {variable} variable_identifier;
+logic_value_term2 = 
+  {logic_value_term} value_term |
+  {variable} variable_identifier;
   
 value_expr =
-  {add} value_expr plus_operator value_factor |
-  {sub} value_expr minus_operator value_factor |
+  {add} value_expr_identifier plus_operator value_factor_identifier |
+  {sub} value_expr_identifier minus_operator value_factor_identifier |
   {factor} value_factor;
   
+value_expr_identifier =
+  {expr} value_expr |
+  {variable} variable_identifier;
+  
 value_factor =
-  {multi} value_factor mult_operator value_term |
-  {div} value_factor div_operator value_term |
-  {mod} value_factor mod_operator value_term |
+  {multi} value_factor_identifier mult_operator value_term_identifier |
+  {div} value_factor_identifier div_operator value_term_identifier |
+  {mod} value_factor_identifier mod_operator value_term_identifier |
   {term} value_term;
+  
+value_factor_identifier =
+  {factor} value_factor |
+  {variable} variable_identifier;
 
 value_term =
   {expr} l_par value_expr r_par |
-  {value} value; //| Ambigius
-//  {identifier} variable_identifier;
+  {value} value;
+  
+value_term_identifier =
+  {term} value_term |
+  {variable} variable_identifier;
   
 value =
   {number} number |
