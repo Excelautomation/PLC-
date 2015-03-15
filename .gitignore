@@ -8,8 +8,14 @@
 *.war
 *.ear
 
+# IntelliJ output #
+PLC++/out/
+
 # SableCC #
 sablecc-*/
+
+# SableCC Generated #
+PLC++/src/dk/aau/sw402F15/parser
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
