@@ -24,17 +24,17 @@ hs_err_pid*
 *.iml
 
 # User-specific stuff:
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/dictionaries
+PLC++/.idea/workspace.xml
+PLC++/.idea/tasks.xml
+PLC++/.idea/dictionaries
 
 # Sensitive or high-churn files:
-.idea/dataSources.ids
-.idea/dataSources.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
+PLC++/.idea/dataSources.ids
+PLC++/.idea/dataSources.xml
+PLC++/.idea/sqlDataSources.xml
+PLC++/.idea/dynamic.xml
+PLC++/.idea/uiDesigner.xml
 
 # Gradle:
-.idea/gradle.xml
-.idea/libraries
+PLC++/.idea/gradle.xml
+PLC++/.idea/libraries
