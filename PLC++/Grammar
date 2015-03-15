@@ -48,6 +48,11 @@ not_equal_operator = '!=';
 and_operator = '&&';
 or_operator = '||';
 
+greater_than_operator = '>';
+less_than_operator = '<';
+greater_than_or_equal_operator = '>=';
+less_than_or_equal_operator = '<=';
+
 // Keywords
 if_keyword = 'if';
 else_keyword = 'else';
@@ -95,7 +100,9 @@ assignment_statement =
   {assignment} variable_identifier assignment_operator expr;
 
 expr = 
-  {logic_expr} logic_expr;
+  {logic_expr} logic_expr |
+  {value_expr} value_expr |
+  {identifier} variable_identifier;
 
 logic_expr = 
   {compare_and} logic_expr and_operator logic_term |
@@ -110,5 +117,38 @@ logic_term =
 logic_value = 
   {true} true_keyword | 
   {false} false_keyword | 
-  {identifier} variable_identifier | 
-  {expr} l_par logic_expr r_par;
+//  {identifier} variable_identifier | Ambigius
+  {expr} l_par logic_expr r_par |
+  {compare} logic_compare;
+  
+logic_compare = 
+  {compare_greater} logic_value_term greater_than_operator value_term |
+  {compare_less} logic_value_term less_than_operator value_term |
+  {compare_greater_or_equal} logic_value_term greater_than_or_equal_operator value_term |
+  {compare_less_or_equal} logic_value_term less_than_or_equal_operator value_term;
+  
+logic_value_term = {logic_value_term} value_term;
+  
+value_expr =
+  {add} value_expr plus_operator value_factor |
+  {sub} value_expr minus_operator value_factor |
+  {factor} value_factor;
+  
+value_factor =
+  {multi} value_factor mult_operator value_term |
+  {div} value_factor div_operator value_term |
+  {mod} value_factor mod_operator value_term |
+  {term} value_term;
+
+value_term =
+  {expr} l_par value_expr r_par |
+  {value} value; //| Ambigius
+//  {identifier} variable_identifier;
+  
+value =
+  {number} number |
+  {negnumber} minus_operator number;
+  
+number =
+  {integer} integer |
+  {decimal} decimal;

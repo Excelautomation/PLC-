@@ -1,6 +1,5 @@
 package dk.aau.sw402F15;
 
-import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
 import dk.aau.sw402F15.parser.node.Start;
@@ -15,6 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
 	    String code =
+                                "int a = 1;" +
                                 "bool a = true && false;" +
                                 "bool b = false || true;" +
                                 "bool c = false;" +
@@ -30,7 +30,7 @@ public class Main {
             Start tree = parser.parse();
 
             // Print tree
-            tree.apply(new Printer());
+            tree.apply(new ExpressionEvaluator());
 
         } catch (ParserException e) {
             e.printStackTrace();
