@@ -49,6 +49,7 @@ long_keyword = 'long';
 float_keyword = 'float';
 double_keyword = 'double';
 port_keyword = 'port';
+void_keyword = 'void';
 
 if_keyword = 'if';
 else_keyword = 'else';
@@ -97,7 +98,8 @@ functions =
   function functions?;
 
 function =
-  type identifier l_par parameters? r_par scope;
+  {with_return} type identifier l_par parameters? r_par scope |
+  {no_return} void_keyword identifier l_par parameters? r_par scope;
   
 // Parameters
 parameters =
