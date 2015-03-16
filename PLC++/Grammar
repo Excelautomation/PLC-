@@ -72,8 +72,20 @@ white_space;
 
 Productions
 
-program = 
-  statements;
+program =
+  {functions} functions |
+  {statements} statements;
+
+functions =
+  {multi} function functions |
+  {single} function;
+
+function =
+  type identifier l_par parameters? r_par l_brc statements r_brc;
+  
+parameters =
+  declaration_statement parameters;
+  
 
 statements = 
   {multi} statement statements |
