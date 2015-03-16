@@ -57,6 +57,7 @@ long_keyword = 'long';
 float_keyword = 'float';
 double_keyword = 'double';
 port_keyword = 'port';
+timer_keyword = 'timer';
 void_keyword = 'void';
 
 if_keyword = 'if';
@@ -73,6 +74,7 @@ integer_literal = (digit)+;
 decimal_literal = (digit)+ '.' (digit)+;
 
 // Identifier
+port_identifier = ('I' | 'Q' | 'M') '#';
 identifier = letter letter_or_digit*;
 
 // White space
@@ -95,6 +97,7 @@ type =
   {long} long_keyword | 
   {float} float_keyword | 
   {double} double_keyword | 
+  {timer} timer_keyword |
   {port} port_keyword;
   
 // Scope
@@ -219,6 +222,7 @@ expr_value =
   {false} false_keyword |
   {value} value |
   {identifier} identifier |
+  {port} port_identifier decimal_literal |
   {expr} l_par expr r_par;
   
 value =

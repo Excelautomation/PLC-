@@ -25,7 +25,7 @@ public class Main {
                                 "bool f = true != false;" +
                                 "bool g = true != true;" +
                                 "if (true) { bool b = true; }" +
-                                "if (false) { bool b = false; b(); bool a = b; } else { bool c; }" +
+                                "if (false) { bool b = false; b(); bool a = I#0.0; } else { bool c; bool d = d; }" +
                                 "if (false) { bool c = false; } else if (false) { bool c = true; } else {}" +
                                 "void b() { bool b = false; b(); }" +
                                 "bool b(int c, int j) { bool b = false; }" +
