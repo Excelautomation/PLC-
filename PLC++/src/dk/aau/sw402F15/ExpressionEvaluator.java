@@ -26,14 +26,6 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAAssignmentStatement(AAssignmentStatement node) {
-        super.outAAssignmentStatement(node);
-
-        System.out.println("Output: " + booleanStack.pop());
-        System.out.println("");
-    }
-
-    @Override
     public void outATrueLogicValue(ATrueLogicValue node) {
         super.outATrueLogicValue(node);
 
@@ -91,12 +83,14 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
         booleanStack.push(arg2 != arg1);
     }
 
-    @Override
-    public void outAIntegerNumber(AIntegerNumber node) {
-        super.outAIntegerNumber(node);
 
-        System.out.println(node.getInteger().getText());
-        numberStack.push(Integer.parseInt(node.getInteger().getText()));
+    @Override
+    public void caseAIntegerNumber(AIntegerNumber node) {
+        super.caseAIntegerNumber(node);
+
+        System.out.println(node.getIntegerLiteral().getText());
+
+        numberStack.push(Integer.parseInt(node.getIntegerLiteral().getText()));
     }
 
     @Override

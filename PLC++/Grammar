@@ -15,26 +15,13 @@ letter = ['a' .. 'z'] | ['A' .. 'Z'];
 letter_or_digit = (letter | digit);
 
 Tokens
-white_space = (sp | ht | ff | line_terminator)+;
-
-integer = (digit)+;
-decimal = (digit)+ '.' (digit)+;
-
-identifier = letter;// letter_or_digit*;
-
 l_par = '(';
 r_par = ')';
 l_brc = '{';
 r_brc = '}';
+semi = ';';
 
-byte = 'byte';
-bool = 'bool';
-int = 'int';
-long = 'long';
-float = 'float';
-double = 'double';
-port = 'port';
-
+// Operators
 assignment_operator = '=';
 
 plus_operator = '+';
@@ -54,6 +41,14 @@ greater_than_or_equal_operator = '>=';
 less_than_or_equal_operator = '<=';
 
 // Keywords
+byte_keyword = 'byte';
+bool_keyword = 'bool';
+int_keyword = 'int';
+long_keyword = 'long';
+float_keyword = 'float';
+double_keyword = 'double';
+port_keyword = 'port';
+
 if_keyword = 'if';
 else_keyword = 'else';
 
@@ -62,7 +57,15 @@ for_keyword = 'for';
 true_keyword = 'true';
 false_keyword = 'false';
 
-semi = ';';
+// Literal
+integer_literal = (digit)+;
+decimal_literal = (digit)+ '.' (digit)+;
+
+// Identifier
+identifier = letter letter_or_digit*;
+
+// White space
+white_space = (sp | ht | ff | line_terminator)+;
 
 Ignored Tokens
 white_space;
@@ -81,13 +84,13 @@ statement =
   {assignment} assignment_statement semi;
 
 type = 
-  {byte} byte | 
-  {bool} bool | 
-  {int} int | 
-  {long} long | 
-  {float} float | 
-  {double} double | 
-  {port} port;
+  {byte} byte_keyword | 
+  {bool} bool_keyword | 
+  {int} int_keyword | 
+  {long} long_keyword | 
+  {float} float_keyword | 
+  {double} double_keyword | 
+  {port} port_keyword;
   
 variable_identifier = 
   {identifier} identifier;
@@ -178,5 +181,5 @@ value =
   {negnumber} minus_operator number;
   
 number =
-  {integer} integer |
-  {decimal} decimal;
+  {integer} integer_literal |
+  {decimal} decimal_literal;
