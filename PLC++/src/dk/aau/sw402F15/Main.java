@@ -23,7 +23,12 @@ public class Main {
                                 "bool d = false == false;" +
                                 "bool e = true == false;" +
                                 "bool f = true != false;" +
-                                "bool g = true != true;";
+                                "bool g = true != true;" +
+                                "if (true) { bool b = true; }" +
+                                "if (false) { bool b = false; } else { bool c = false; }" +
+                                "if (false) { bool c = false; } else if (false) { bool c = true; } else {}" +
+                                "bool b() { bool b = false; }"+
+                                "bool b(int c, int j) { bool b = false; }";
 
         System.out.println(code);
 

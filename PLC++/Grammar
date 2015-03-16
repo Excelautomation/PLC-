@@ -20,6 +20,7 @@ r_par = ')';
 l_brc = '{';
 r_brc = '}';
 semi = ';';
+comma = ',';
 
 // Operators
 assignment_operator = '=';
@@ -53,6 +54,7 @@ if_keyword = 'if';
 else_keyword = 'else';
 
 for_keyword = 'for';
+while_keyword = 'while';
 
 true_keyword = 'true';
 false_keyword = 'false';
@@ -73,28 +75,10 @@ white_space;
 Productions
 
 program =
-  {functions} functions |
-  {statements} statements;
+  {statement} statement program? |
+  {function} function program?;
 
-functions =
-  {multi} function functions |
-  {single} function;
-
-function =
-  type identifier l_par parameters? r_par l_brc statements r_brc;
-  
-parameters =
-  declaration_statement parameters;
-  
-
-statements = 
-  {multi} statement statements |
-  {single} statement;
-
-statement = 
-  {declaration} declaration_statement semi |
-  {assignment} assignment_statement semi;
-
+// Types
 type = 
   {byte} byte_keyword | 
   {bool} bool_keyword | 
@@ -104,22 +88,84 @@ type =
   {double} double_keyword | 
   {port} port_keyword;
   
-variable_identifier = 
-  {identifier} identifier;
-
-declaration_statement =
-  {declaration} type variable_identifier |
-  {declaration_assignment} type assignment_statement;
+// Scope
+scope = 
+  l_brc statements? r_brc;
   
-assignment_statement = 
-  {assignment} variable_identifier assignment_operator expr;
+// Function
+functions =
+  function functions?;
 
+function =
+  type identifier l_par parameters? r_par scope;
+  
+// Parameters
+parameters =
+  parameter additional_parameter?;
+
+additional_parameter = 
+  comma parameter;
+  
+parameter = 
+  type identifier;
+  
+// Statements
+statements = 
+  statement statements?;
+
+statement = 
+  {declaration} declaration_statement semi |
+  {assignment} assignment_statement semi |
+  {conditional} conditional_statement;
+
+// Declaration
+declaration_statement =
+  {declaration} type identifier |
+  {declaration_assignment} type assignment_statement;
+
+// Assignment  
+assignment_statement = 
+  {assignment} identifier assignment_operator expr;
+  
+// Conditional statement
+conditional_statement =
+  {if} if_statement;
+
+if_statement =
+  {if} if_keyword l_par expr r_par scope |
+  {if_else} if_keyword l_par expr r_par scope else_statement;
+
+else_statement = 
+  {else} else_keyword scope |
+  {else_if} else_keyword if_statement;
+
+// Iterative statement
+iterative_statement =
+  {while} while_statement |
+  {for} for_statement;
+  
+while_statement = 
+  {while} while_keyword l_par expr r_par scope;
+
+for_statement =
+  {for} for_keyword l_par for_initializer for_condition for_iterator r_par scope;
+  
+for_initializer =
+  {assignment} assignment_statement semi |
+  {declaration} declaration_statement semi;
+
+for_condition =
+  {expr} expr semi;
+  
+for_iterator =
+  {iterator} assignment_statement;
+  
 // Expression
 expr = 
   {compare_and} expr and_operator expr2 |
   {compare_or} expr or_operator expr2 |
   {term} expr2 |
-  {identifier} variable_identifier;
+  {identifier} identifier;
 
 expr2 =
   {compare_equal} expr2 equal_operator expr3 | 
