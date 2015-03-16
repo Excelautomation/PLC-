@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
 	    String code =
-                                "bool aaa = 5 > 7;" +
+                                "bool aaa = 5 + 3 > 7;" +
                                 "a = 10;" +
                                 "int a = 1 + 5 - 6 * 7;" +
                                 "bool a = true && false;" +
