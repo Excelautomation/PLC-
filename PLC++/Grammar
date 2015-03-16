@@ -15,26 +15,13 @@ letter = ['a' .. 'z'] | ['A' .. 'Z'];
 letter_or_digit = (letter | digit);
 
 Tokens
-white_space = (sp | ht | ff | line_terminator)+;
-
-integer = (digit)+;
-decimal = (digit)+ '.' (digit)+;
-
-identifier = letter;// letter_or_digit*;
-
 l_par = '(';
 r_par = ')';
 l_brc = '{';
 r_brc = '}';
+semi = ';';
 
-byte = 'byte';
-bool = 'bool';
-int = 'int';
-long = 'long';
-float = 'float';
-double = 'double';
-port = 'port';
-
+// Operators
 assignment_operator = '=';
 
 plus_operator = '+';
@@ -54,6 +41,14 @@ greater_than_or_equal_operator = '>=';
 less_than_or_equal_operator = '<=';
 
 // Keywords
+byte_keyword = 'byte';
+bool_keyword = 'bool';
+int_keyword = 'int';
+long_keyword = 'long';
+float_keyword = 'float';
+double_keyword = 'double';
+port_keyword = 'port';
+
 if_keyword = 'if';
 else_keyword = 'else';
 
@@ -62,7 +57,15 @@ for_keyword = 'for';
 true_keyword = 'true';
 false_keyword = 'false';
 
-semi = ';';
+// Literal
+integer_literal = (digit)+;
+decimal_literal = (digit)+ '.' (digit)+;
+
+// Identifier
+identifier = letter letter_or_digit*;
+
+// White space
+white_space = (sp | ht | ff | line_terminator)+;
 
 Ignored Tokens
 white_space;
@@ -93,13 +96,13 @@ statement =
   {assignment} assignment_statement semi;
 
 type = 
-  {byte} byte | 
-  {bool} bool | 
-  {int} int | 
-  {long} long | 
-  {float} float | 
-  {double} double | 
-  {port} port;
+  {byte} byte_keyword | 
+  {bool} bool_keyword | 
+  {int} int_keyword | 
+  {long} long_keyword | 
+  {float} float_keyword | 
+  {double} double_keyword | 
+  {port} port_keyword;
   
 variable_identifier = 
   {identifier} identifier;
@@ -111,84 +114,46 @@ declaration_statement =
 assignment_statement = 
   {assignment} variable_identifier assignment_operator expr;
 
+// Expression
 expr = 
-  {logic_expr} logic_expr |
-  {value_expr} value_expr |
+  {compare_and} expr and_operator expr2 |
+  {compare_or} expr or_operator expr2 |
+  {term} expr2 |
   {identifier} variable_identifier;
 
-logic_expr = 
-  {compare_and} logic_expr_identifier and_operator logic_term_identifier |
-  {compare_or} logic_expr_identifier or_operator logic_term_identifier |
-  {term} logic_term;
-  
-logic_expr_identifier =
-  {expr} logic_expr |
-  {variable} variable_identifier;
+expr2 =
+  {compare_equal} expr2 equal_operator expr3 | 
+  {compare_not_equal} expr2 not_equal_operator expr3 | 
+  {term} expr3;
 
-logic_term = 
-  {compare_equal} logic_term_identifier equal_operator logic_value_identifier | 
-  {compare_not_equal} logic_term_identifier not_equal_operator logic_value_identifier | 
-  {value} logic_value;
-  
-logic_term_identifier =
-  {term} logic_term |
-  {variable} variable_identifier;
+expr3 =
+  {compare_greater} expr3 greater_than_operator expr4 |
+  {compare_less} expr3 less_than_operator expr4 |
+  {compare_greater_or_equal} expr3 greater_than_or_equal_operator expr4 |
+  {compare_less_or_equal} expr3 less_than_or_equal_operator expr4 |
+  {term} expr4;
 
-logic_value = 
+expr4 =
+  {add} expr4 plus_operator expr5 |
+  {sub} expr4 minus_operator expr5 |
+  {term} expr5;
+
+expr5 =
+  {multi} expr5 mult_operator expr_value |
+  {div} expr5 div_operator expr_value |
+  {mod} expr5 mod_operator expr_value |
+  {term} expr_value;
+
+expr_value = 
   {true} true_keyword | 
   {false} false_keyword |
-  {expr} l_par logic_expr r_par |
-  {compare} logic_compare;
-
-// (varname) is not allowed because it could cause ambiguity
-logic_value_identifier =
-  {value} logic_value |
-  {variable} variable_identifier;
-  
-logic_compare = 
-  {compare_greater} logic_value_term greater_than_operator logic_value_term2 |
-  {compare_less} logic_value_term less_than_operator logic_value_term2 |
-  {compare_greater_or_equal} logic_value_term greater_than_or_equal_operator logic_value_term2 |
-  {compare_less_or_equal} logic_value_term less_than_or_equal_operator logic_value_term2;
-  
-logic_value_term = 
-  {logic_value_term} value_term |
-  {variable} variable_identifier;
-logic_value_term2 = 
-  {logic_value_term} value_term |
-  {variable} variable_identifier;
-  
-value_expr =
-  {add} value_expr_identifier plus_operator value_factor_identifier |
-  {sub} value_expr_identifier minus_operator value_factor_identifier |
-  {factor} value_factor;
-  
-value_expr_identifier =
-  {expr} value_expr |
-  {variable} variable_identifier;
-  
-value_factor =
-  {multi} value_factor_identifier mult_operator value_term_identifier |
-  {div} value_factor_identifier div_operator value_term_identifier |
-  {mod} value_factor_identifier mod_operator value_term_identifier |
-  {term} value_term;
-  
-value_factor_identifier =
-  {factor} value_factor |
-  {variable} variable_identifier;
-
-value_term =
-  {expr} l_par value_expr r_par |
-  {value} value;
-  
-value_term_identifier =
-  {term} value_term |
-  {variable} variable_identifier;
+  {value} value |
+  {expr} l_par expr r_par;
   
 value =
   {number} number |
   {negnumber} minus_operator number;
   
 number =
-  {integer} integer |
-  {decimal} decimal;
+  {integer} integer_literal |
+  {decimal} decimal_literal;
