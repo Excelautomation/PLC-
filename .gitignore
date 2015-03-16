@@ -23,18 +23,5 @@ hs_err_pid*
 # IntelliJ files #
 *.iml
 
-# User-specific stuff:
-PLC++/.idea/workspace.xml
-PLC++/.idea/tasks.xml
-PLC++/.idea/dictionaries
-
-# Sensitive or high-churn files:
-PLC++/.idea/dataSources.ids
-PLC++/.idea/dataSources.xml
-PLC++/.idea/sqlDataSources.xml
-PLC++/.idea/dynamic.xml
-PLC++/.idea/uiDesigner.xml
-
-# Gradle:
-PLC++/.idea/gradle.xml
-PLC++/.idea/libraries
+# Idea #
+PLC++/.idea/
