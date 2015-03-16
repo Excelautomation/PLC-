@@ -23,10 +23,18 @@ semi = ';';
 comma = ',';
 
 // Operators
+add_assignment_operator = '+=';
+sub_assignment_operator = '-=';
+mult_assignment_operator = '*=';
+div_assignment_operator = '/=';
+mod_assignment_operator = '%=';
 assignment_operator = '=';
 
-plus_operator = '+';
-minus_operator = '-';
+increment_operator = '++';
+decrement_operator = '--';
+
+add_operator = '+';
+sub_operator = '-';
 mult_operator = '*';
 div_operator = '/';
 mod_operator = '%';
@@ -77,7 +85,7 @@ Productions
 
 program =
   {statement} statement program? |
-  {function} function program?;
+  {function} function_declaration program?;
 
 // Types
 type = 
@@ -93,13 +101,17 @@ type =
 scope = 
   l_brc statements? r_brc;
   
-// Function
+// Function declaration
 functions =
-  function functions?;
+  function_declaration functions?;
 
-function =
+function_declaration =
   {with_return} type identifier l_par parameters? r_par scope |
   {no_return} void_keyword identifier l_par parameters? r_par scope;
+
+// Function call
+function_call =
+  identifier l_par parameters? r_par semi;
   
 // Parameters
 parameters =
@@ -113,21 +125,32 @@ parameter =
   
 // Statements
 statements = 
-  statement statements?;
+  {statement} statement statements? |
+  {function} function_call statements?;  
 
 statement = 
   {declaration} declaration_statement semi |
   {assignment} assignment_statement semi |
-  {conditional} conditional_statement;
+  {conditional} conditional_statement |
+  {scope} scope;
 
 // Declaration
 declaration_statement =
   {declaration} type identifier |
-  {declaration_assignment} type assignment_statement;
+  {declaration_assignment} type identifier assignment_operator expr;
 
 // Assignment  
 assignment_statement = 
-  {assignment} identifier assignment_operator expr;
+  {assignment} identifier assignment_operator expr |
+  {increment_prefix} increment_operator identifier |
+  {increment_suffix} identifier increment_operator |
+  {decrement_prefix} decrement_operator identifier |
+  {decrement_suffix} identifier decrement_operator |
+  {add} identifier add_assignment_operator expr |
+  {sub} identifier sub_assignment_operator expr |
+  {mult} identifier mult_assignment_operator expr |
+  {div} identifier div_assignment_operator expr |
+  {mod} identifier mod_assignment_operator expr;
   
 // Conditional statement
 conditional_statement =
@@ -166,8 +189,7 @@ for_iterator =
 expr = 
   {compare_and} expr and_operator expr2 |
   {compare_or} expr or_operator expr2 |
-  {term} expr2 |
-  {identifier} identifier;
+  {term} expr2;
 
 expr2 =
   {compare_equal} expr2 equal_operator expr3 | 
@@ -182,8 +204,8 @@ expr3 =
   {term} expr4;
 
 expr4 =
-  {add} expr4 plus_operator expr5 |
-  {sub} expr4 minus_operator expr5 |
+  {add} expr4 add_operator expr5 |
+  {sub} expr4 sub_operator expr5 |
   {term} expr5;
 
 expr5 =
@@ -196,11 +218,12 @@ expr_value =
   {true} true_keyword | 
   {false} false_keyword |
   {value} value |
+  {identifier} identifier |
   {expr} l_par expr r_par;
   
 value =
   {number} number |
-  {negnumber} minus_operator number;
+  {negnumber} sub_operator number;
   
 number =
   {integer} integer_literal |
