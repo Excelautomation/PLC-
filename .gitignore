@@ -21,7 +21,7 @@ PLC++/src/dk/aau/sw402F15/parser
 hs_err_pid*
 
 # IntelliJ files #
-*.iml
+#*.iml
 
 # User-specific stuff:
 PLC++/.idea/workspace.xml
