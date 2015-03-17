@@ -28,7 +28,7 @@ public class Main {
                                 "if (false) { bool b = false; b(); bool a = I#0.0; } else { bool c; bool d = d; }\n" +
                                 "if (false) { bool c = false; int i = i(); } else if (false) { bool c = true; } else {}\n" +
                                 "void b() { bool b = false; b(); }\n" +
-                                "bool b(int c, int j) { bool b = false; }\n" +
+                                "bool b(int c, int j) { bool b = false; port p = AQ#0.1; }\n" +
                                 "b++; ++i; --i; ++i;\n" +
                                 "a+=3; b-=2; c*=4; d/=1;\n" +
                                 "b(); void b() { } void c() { } port a = I#i; port p = Q#I#1;\n" +

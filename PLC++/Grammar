@@ -77,7 +77,7 @@ integer_literal = (digit)+;
 decimal_literal = (digit)+ '.' (digit)+;
 
 // Identifier
-port_identifier = ('I' | 'Q' | 'M') '#';
+port_identifier = ('I' | 'Q' | 'M' | 'AI' | 'AQ') '#';
 identifier = letter_or_specials letter_or_digit_or_specials*;
 
 // White space
