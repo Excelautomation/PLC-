@@ -137,6 +137,7 @@ statement =
   {declaration} declaration_statement semi |
   {assignment} assignment_statement semi |
   {conditional} conditional_statement |
+  {iterative} iterative_statement |
   {scope} scope |
   {unary_assignment} unary_assignment semi |
   {semi} semi |
