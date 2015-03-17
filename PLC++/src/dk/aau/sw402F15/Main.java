@@ -14,23 +14,24 @@ public class Main {
 
     public static void main(String[] args) {
 	    String code =
-                                "bool aaa = 5 + 3 > 7;" +
-                                "a = 10;" +
-                                "int a = 1 + 5 - 6 * 7;" +
-                                "bool a = true && false;" +
-                                "bool b = false || true;" +
-                                "bool c = false;" +
-                                "bool d = false == false;" +
-                                "bool e = true == false;" +
-                                "bool f = true != false;" +
-                                "bool g = true != true;" +
-                                "if (true) { bool b = true; }" +
-                                "if (false) { bool b = false; b(); bool a = I#0.0; } else { bool c; bool d = d; }" +
-                                "if (false) { bool c = false; } else if (false) { bool c = true; } else {}" +
-                                "void b() { bool b = false; b(); }" +
-                                "bool b(int c, int j) { bool b = false; }" +
-                                "b++; ++i; --i; ++i;" +
-                                "a+=3; b-=2; c*=4; d/=1;";
+                                "bool aaa = 5 + 3 > 7;\n" +
+                                "a = 10;\n" +
+                                "int a = 1 + 5 - 6 * 7;\n" +
+                                "bool a = true && false;\n" +
+                                "bool b = false || true;\n" +
+                                "bool c = false;\n" +
+                                "bool d = false == false;\n" +
+                                "bool e = true == false;\n" +
+                                "bool f = true != false;\n" +
+                                "bool g = true != true;\n" +
+                                "if (true) { bool b = true; }\n" +
+                                "if (false) { bool b = false; b(); bool a = I#0.0; } else { bool c; bool d = d; }\n" +
+                                "if (false) { bool c = false; } else if (false) { bool c = true; } else {}\n" +
+                                "void b() { bool b = false; b(); }\n" +
+                                "bool b(int c, int j) { bool b = false; }\n" +
+                                "b++; ++i; --i; ++i;\n" +
+                                "a+=3; b-=2; c*=4; d/=1;\n" +
+                                "b(); void b() { } void c() { }\n";
 
         System.out.println(code);
 

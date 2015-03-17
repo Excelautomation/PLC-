@@ -235,24 +235,24 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outATrueExprValue(ATrueExprValue node) {
-        super.outATrueExprValue(node);
+    public void outATrueValue(ATrueValue node) {
+        super.outATrueValue(node);
 
         System.out.println("True");
         stack.push(true);
     }
 
     @Override
-    public void outAFalseExprValue(AFalseExprValue node) {
-        super.outAFalseExprValue(node);
+    public void outAFalseValue(AFalseValue node) {
+        super.outAFalseValue(node);
 
         System.out.println("False");
         stack.push(false);
     }
 
     @Override
-    public void outADecimalNumber(ADecimalNumber node) {
-        super.outADecimalNumber(node);
+    public void outADecimalValue(ADecimalValue node) {
+        super.outADecimalValue(node);
 
         System.out.println(node.getDecimalLiteral().getText());
 
@@ -260,8 +260,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAIntegerNumber(AIntegerNumber node) {
-        super.outAIntegerNumber(node);
+    public void outAIntegerValue(AIntegerValue node) {
+        super.outAIntegerValue(node);
 
         System.out.println(node.getIntegerLiteral().getText());
 
@@ -269,8 +269,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outANegnumberValue(ANegnumberValue node) {
-        super.outANegnumberValue(node);
+    public void outANegativeValue(ANegativeValue node) {
+        super.outANegativeValue(node);
 
         System.out.println("-");
 

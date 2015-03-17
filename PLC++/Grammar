@@ -128,14 +128,16 @@ parameter =
   
 // Statements
 statements = 
-  {statement} statement statements? |
-  {function} function_call statements?;  
+  statement statements?;
 
 statement = 
   {declaration} declaration_statement semi |
   {assignment} assignment_statement semi |
   {conditional} conditional_statement |
-  {scope} scope;
+  {scope} scope |
+  {unary_assignment} unary_assignment semi |
+  {semi} semi |
+  {function} function_call;
 
 // Declaration
 declaration_statement =
@@ -144,7 +146,9 @@ declaration_statement =
 
 // Assignment  
 assignment_statement = 
-  {assignment} identifier assignment_operator expr |
+  {assignment} identifier assignment_operator expr;
+  
+unary_assignment =
   {increment_prefix} increment_operator identifier |
   {increment_suffix} identifier increment_operator |
   {decrement_prefix} decrement_operator identifier |
@@ -218,17 +222,17 @@ expr5 =
   {term} expr_value;
 
 expr_value = 
+  //{unary} unary_assignment |
+  {value} value |
+  {expr} l_par expr r_par;
+
+value =
+//  {unary} unary_assignment |
+  {integer} integer_literal |
+  {decimal} decimal_literal |
   {true} true_keyword | 
   {false} false_keyword |
-  {value} value |
+  {function} function_call |
   {identifier} identifier |
-  {port} port_identifier decimal_literal |
-  {expr} l_par expr r_par;
-  
-value =
-  {number} number |
-  {negnumber} sub_operator number;
-  
-number =
-  {integer} integer_literal |
-  {decimal} decimal_literal;
+  {negative} sub_operator identifier |
+  {port} port_identifier decimal_literal;
