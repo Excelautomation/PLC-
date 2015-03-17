@@ -54,7 +54,7 @@ greater_than_or_equal_operator = '>=';
 less_than_or_equal_operator = '<=';
 
 // Keywords
-byte_keyword = 'byte';
+char_keyword = 'char';
 bool_keyword = 'bool';
 int_keyword = 'int';
 long_keyword = 'long';
@@ -96,7 +96,7 @@ program =
 
 // Types
 type = 
-  {byte} byte_keyword | 
+  {char} char_keyword | 
   {bool} bool_keyword | 
   {int} int_keyword | 
   {long} long_keyword | 
