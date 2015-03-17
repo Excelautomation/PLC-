@@ -117,7 +117,7 @@ function_declaration =
 
 // Function call
 function_call =
-  identifier l_par parameters? r_par semi;
+  identifier l_par parameters? r_par;
   
 // Parameters
 parameters =
@@ -141,7 +141,7 @@ statement =
   {scope} scope |
   {unary_assignment} unary_assignment semi |
   {semi} semi |
-  {function} function_call;
+  {function} function_call semi;
 
 // Declaration
 declaration_statement =
