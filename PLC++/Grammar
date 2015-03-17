@@ -36,16 +36,17 @@ assignment_operator = '=';
 increment_operator = '++';
 decrement_operator = '--';
 
+equal_operator = '==';
+not_equal_operator = '!=';
+and_operator = '&&';
+or_operator = '||';
+
 add_operator = '+';
 sub_operator = '-';
 mult_operator = '*';
 div_operator = '/';
 mod_operator = '%';
-
-equal_operator = '==';
-not_equal_operator = '!=';
-and_operator = '&&';
-or_operator = '||';
+negate_operator = '!';
 
 greater_than_operator = '>';
 less_than_operator = '<';
@@ -62,6 +63,7 @@ double_keyword = 'double';
 port_keyword = 'port';
 timer_keyword = 'timer';
 void_keyword = 'void';
+return_keyword = 'return';
 
 if_keyword = 'if';
 else_keyword = 'else';
@@ -106,14 +108,20 @@ type =
 // Scope
 scope = 
   l_brc statements? r_brc;
+
+scope_with_return =
+  l_brc statements_with_return? r_brc;
   
+scope_with_void_return =
+  l_brc statements_with_void_return? r_brc;
+
 // Function declaration
 functions =
   function_declaration functions?;
 
 function_declaration =
-  {with_return} type identifier l_par parameters? r_par scope |
-  {no_return} void_keyword identifier l_par parameters? r_par scope;
+  {function} type identifier l_par parameters? r_par scope_with_return |
+  {void_function} void_keyword identifier l_par parameters? r_par scope_with_void_return;
 
 // Function call
 function_call =
@@ -132,6 +140,12 @@ parameter =
 // Statements
 statements = 
   statement statements?;
+  
+statements_with_return =
+  statement_with_return statements_with_return?;
+  
+statements_with_void_return =
+  statement_with_void_return statements_with_void_return?;
 
 statement = 
   {declaration} declaration_statement semi |
@@ -142,6 +156,21 @@ statement =
   {unary_assignment} unary_assignment semi |
   {semi} semi |
   {function} function_call semi;
+  
+statement_with_return =
+  {statement} statement |
+  {return} return_statement;
+  
+statement_with_void_return =
+  {statement} statement |
+  {return} void_return_statement;
+
+// Return statement
+return_statement =
+  return_keyword expr semi;
+  
+void_return_statement =
+  return_keyword semi;
 
 // Declaration
 declaration_statement =
