@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
 	    String code =
                                 "bool aaa = 5 + 3 > 7;\n" +
-                                "a = 10;\n" +
+                                "a = 10; int i(){}\n" +
                                 "int a = 1 + 5 - 6 * 7;\n" +
                                 "bool a = true && false;\n" +
                                 "bool b = false || true;\n" +
@@ -32,8 +32,9 @@ public class Main {
                                 "b++; ++i; --i; ++i;\n" +
                                 "a+=3; b-=2; c*=4; d/=1;\n" +
                                 "b(); void b() { } void c() { } port a = I#i; port p = Q#I#1;\n" +
-                                "int b = z++; int c = ++z; z += 3; int z = 3;" +
-                                "if (i > 0) { } else if (i < 0) { } else { }";// +
+                                "int b = z++; int c = ++z; z += 3; int z = 3;\n" +
+                                "if (i > 0) { } else if (i < 0) { } else { }\n" +
+                                "int j = i(10);";// +
                                 //"bool b = !true; bool b = !(true) && !true;";
 
         System.out.println(code);

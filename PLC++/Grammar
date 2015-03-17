@@ -114,22 +114,31 @@ functions =
   function_declaration functions?;
 
 function_declaration =
-  {function} type identifier l_par parameters? r_par scope |
-  {void_function} void_keyword identifier l_par parameters? r_par scope;
+  {function} type identifier l_par formal_parameters? r_par scope |
+  {void_function} void_keyword identifier l_par formal_parameters? r_par scope;
 
 // Function call
 function_call =
-  identifier l_par parameters? r_par;
+  identifier l_par actual_parameters? r_par;
   
 // Parameters
-parameters =
-  parameter additional_parameter?;
-
-additional_parameter = 
-  comma parameter;
+formal_parameters =
+  formal_parameter additional_formal_parameter?;
   
-parameter = 
+actual_parameters = 
+  actual_parameter additional_actual_parameter?;
+  
+formal_parameter = 
   type identifier;
+  
+additional_formal_parameter = 
+  comma formal_parameter;
+  
+actual_parameter =
+  expr;
+  
+additional_actual_parameter =
+  comma actual_parameter;
   
 // Statements
 statements = 
