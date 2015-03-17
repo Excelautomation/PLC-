@@ -235,4 +235,4 @@ value =
   {function} function_call |
   {identifier} identifier |
   {negative} sub_operator identifier |
-  {port} port_identifier decimal_literal;
+  {port} port_identifier value;
