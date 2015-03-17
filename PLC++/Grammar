@@ -11,8 +11,11 @@ line_terminator = lf | cr | cr lf;
 
 digit =	['0' .. '9'];
 letter = ['a' .. 'z'] | ['A' .. 'Z'];
+specials = '_';
 
 letter_or_digit = (letter | digit);
+letter_or_specials = (letter | specials);
+letter_or_digit_or_specials = (letter_or_digit | specials);
 
 Tokens
 l_par = '(';
@@ -75,7 +78,7 @@ decimal_literal = (digit)+ '.' (digit)+;
 
 // Identifier
 port_identifier = ('I' | 'Q' | 'M') '#';
-identifier = letter letter_or_digit*;
+identifier = letter_or_specials letter_or_digit_or_specials*;
 
 // White space
 white_space = (sp | ht | ff | line_terminator)+;
