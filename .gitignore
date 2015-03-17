@@ -4,12 +4,11 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
 # IntelliJ output #
-PLC++/out/
+**/out/*
 
 # SableCC #
 sablecc-*/
