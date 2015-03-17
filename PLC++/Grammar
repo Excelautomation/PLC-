@@ -132,13 +132,13 @@ formal_parameter =
   type identifier;
   
 additional_formal_parameter = 
-  comma formal_parameter;
+  comma formal_parameters;
   
 actual_parameter =
   expr;
   
 additional_actual_parameter =
-  comma actual_parameter;
+  comma actual_parameters;
   
 // Statements
 statements = 
