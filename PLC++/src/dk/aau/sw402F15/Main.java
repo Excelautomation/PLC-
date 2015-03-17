@@ -34,7 +34,8 @@ public class Main {
                                 "b(); void b() { } void c() { } port a = I#i; port p = Q#I#1;\n" +
                                 "int b = z++; int c = ++z; z += 3; int z = 3;\n" +
                                 "if (i > 0) { } else if (i < 0) { } else { }\n" +
-                                "int j = i(10);";// +
+                                "int j = i(10);" +
+                                "for (int i = 0; i < 10; i++) {} for (i = 0; i > 0; i+=3) {}";// +
                                 //"bool b = !true; bool b = !(true) && !true;";
 
         System.out.println(code);

@@ -208,7 +208,8 @@ for_condition =
   {expr} expr semi;
   
 for_iterator =
-  {iterator} assignment_statement;
+  {iterator} assignment_statement |
+  {unary_assign} unary_assignment;
   
 // Expression
 expr = 
