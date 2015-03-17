@@ -238,6 +238,7 @@ expr5 =
   {multi} expr5 mult_operator expr_value |
   {div} expr5 div_operator expr_value |
   {mod} expr5 mod_operator expr_value |
+  {negated} negate_operator expr_value |
   {term} expr_value;
 
 expr_value =

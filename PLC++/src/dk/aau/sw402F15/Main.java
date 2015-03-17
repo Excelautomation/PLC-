@@ -35,8 +35,8 @@ public class Main {
                                 "int b = z++; int c = ++z; z += 3; int z = 3;\n" +
                                 "if (i > 0) { } else if (i < 0) { } else { }\n" +
                                 "int j = i(10);" +
-                                "for (int i = 0; i < 10; i++) {} for (i = 0; i > 0; i+=3) {}";// +
-                                //"bool b = !true; bool b = !(true) && !true;";
+                                "for (int i = 0; i < 10; i++) {} for (i = 0; i > 0; i+=3) {}" +
+                                "bool b = !true; bool b = !(true) && !true;";
 
         System.out.println(code);
 
