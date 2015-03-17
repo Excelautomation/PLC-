@@ -252,7 +252,7 @@ value =
   {false} false_keyword |
   {function} function_call |
   {identifier} identifier |
-  {negative} sub_operator identifier |
+  {negative} sub_operator value |
   {port} port_identifier value;
   
 unary_expression = 
