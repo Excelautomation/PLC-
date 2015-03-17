@@ -153,15 +153,12 @@ assignment_statement =
   {assignment} identifier assignment_operator expr;
   
 unary_assignment =
-  {increment_prefix} increment_operator identifier |
-  {increment_suffix} identifier increment_operator |
-  {decrement_prefix} decrement_operator identifier |
-  {decrement_suffix} identifier decrement_operator |
   {add} identifier add_assignment_operator expr |
   {sub} identifier sub_assignment_operator expr |
   {mult} identifier mult_assignment_operator expr |
   {div} identifier div_assignment_operator expr |
-  {mod} identifier mod_assignment_operator expr;
+  {mod} identifier mod_assignment_operator expr |
+  {unary} unary_expression;
   
 // Conditional statement
 conditional_statement =
@@ -225,13 +222,12 @@ expr5 =
   {mod} expr5 mod_operator expr_value |
   {term} expr_value;
 
-expr_value = 
-  //{unary} unary_assignment |
+expr_value =
   {value} value |
   {expr} l_par expr r_par;
 
 value =
-//  {unary} unary_assignment |
+  {unary} unary_expression |
   {integer} integer_literal |
   {decimal} decimal_literal |
   {true} true_keyword | 
@@ -240,3 +236,9 @@ value =
   {identifier} identifier |
   {negative} sub_operator identifier |
   {port} port_identifier value;
+  
+unary_expression = 
+  {increment_prefix} increment_operator identifier |
+  {increment_suffix} identifier increment_operator |
+  {decrement_prefix} decrement_operator identifier |
+  {decrement_suffix} identifier decrement_operator;

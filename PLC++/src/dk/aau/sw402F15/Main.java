@@ -31,7 +31,8 @@ public class Main {
                                 "bool b(int c, int j) { bool b = false; }\n" +
                                 "b++; ++i; --i; ++i;\n" +
                                 "a+=3; b-=2; c*=4; d/=1;\n" +
-                                "b(); void b() { } void c() { } port a = I#i; port p = Q#I#1;\n";
+                                "b(); void b() { } void c() { } port a = I#i; port p = Q#I#1;\n" +
+                                "int b = z++; int c = ++z; z += 3; int z = 3;";
 
         System.out.println(code);
 
