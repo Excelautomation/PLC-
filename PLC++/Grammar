@@ -24,6 +24,7 @@ l_brc = '{';
 r_brc = '}';
 semi = ';';
 comma = ',';
+dot = '.';
 
 // Operators
 add_assignment_operator = '+=';
@@ -64,6 +65,7 @@ port_keyword = 'port';
 timer_keyword = 'timer';
 void_keyword = 'void';
 return_keyword = 'return';
+struct_keyword = 'struct';
 
 if_keyword = 'if';
 else_keyword = 'else';
@@ -92,7 +94,8 @@ Productions
 
 program =
   {statement} statement program? |
-  {function} function_declaration program?;
+  {function} function_declaration program? |
+  {struct} struct program?;
 
 // Types
 type = 
@@ -103,19 +106,27 @@ type =
   {float} float_keyword | 
   {double} double_keyword | 
   {timer} timer_keyword |
-  {port} port_keyword;
+  {port} port_keyword |
+  {identifier} identifier;
   
 // Scope
 scope = 
   l_brc statements? r_brc;
+
+// Struct
+struct =
+  struct_keyword identifier l_brc struct_body? r_brc;
+
+struct_body =
+  declaration_statement semi struct_body?;
 
 // Function declaration
 functions =
   function_declaration functions?;
 
 function_declaration =
-  {function} type identifier l_par formal_parameters? r_par scope |
-  {void_function} void_keyword identifier l_par formal_parameters? r_par scope;
+  {function} type identifier l_par formal_parameters? r_par additional_identifier? scope |
+  {void_function} void_keyword identifier l_par formal_parameters? r_par additional_identifier? scope;
 
 // Function call
 function_call =
@@ -165,9 +176,9 @@ declaration_statement =
   {declaration} type identifier |
   {declaration_assignment} type identifier assignment_operator expr;
 
-// Assignment  
+// Assignment
 assignment_statement = 
-  {assignment} identifier assignment_operator expr;
+  {assignment} identifier additional_identifier? assignment_operator expr;
   
 unary_assignment =
   {add} identifier add_assignment_operator expr |
@@ -210,7 +221,11 @@ for_condition =
 for_iterator =
   {iterator} assignment_statement |
   {unary_assign} unary_assignment;
-  
+
+// Additional identifier
+additional_identifier =
+  dot identifier additional_identifier?;
+
 // Expression
 expr = 
   {compare_and} expr and_operator expr2 |
@@ -252,7 +267,7 @@ value =
   {true} true_keyword | 
   {false} false_keyword |
   {function} function_call |
-  {identifier} identifier |
+  {identifier} identifier additional_identifier? |
   {negative} sub_operator value |
   {port} port_identifier value;
   
