@@ -39,7 +39,8 @@ public class Main {
                                 "bool b = !true; bool b = !(true) && !true;\n" +
                                 "struct a { } struct b { int i = 0; int j = 0; int c = 0; }\n" +
                                 "a.a.a.a = a.a.a.a;\n" +
-                                "int i = a.aa; a = a; a a = b;";
+                                "int i = a.aa; a = a; a a = b;\n" +
+                                "int i = a().a.a.a;";
 
         System.out.println(code);
 

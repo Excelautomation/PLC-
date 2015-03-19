@@ -266,7 +266,7 @@ value =
   {decimal} decimal_literal |
   {true} true_keyword | 
   {false} false_keyword |
-  {function} function_call |
+  {function} function_call additional_identifier? |
   {identifier} identifier additional_identifier? |
   {negative} sub_operator value |
   {port} port_identifier value;
