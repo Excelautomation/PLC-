@@ -1,5 +1,6 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
 import dk.aau.sw402F15.parser.node.Start;
@@ -44,6 +45,8 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
+        code = "int i = 0; int k = 0; { int j = 0; } { int j = 0; }";
+
         System.out.println(code);
 
         try {
@@ -51,6 +54,7 @@ public class Main {
             Start tree = parser.parse();
 
             // Print tree
+            tree.apply(new TypeChecker());
             tree.apply(new ExpressionEvaluator());
 
         } catch (ParserException e) {
