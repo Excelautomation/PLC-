@@ -126,8 +126,8 @@ functions =
   function_declaration functions?;
 
 function_declaration =
-  {function} type identifier l_par formal_parameters? r_par additional_identifier? scope |
-  {void_function} void_keyword identifier l_par formal_parameters? r_par additional_identifier? scope;
+  {function} type identifier l_par formal_parameters? r_par scope |
+  {void_function} void_keyword identifier l_par formal_parameters? r_par scope;
 
 // Function call
 function_call =
