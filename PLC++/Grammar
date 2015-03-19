@@ -118,7 +118,8 @@ struct =
   struct_keyword identifier l_brc struct_body? r_brc;
 
 struct_body =
-  declaration_statement semi struct_body?;
+  {declaration} declaration_statement semi struct_body? |
+  {function} function_declaration struct_body?;
 
 // Function declaration
 functions =
@@ -163,7 +164,7 @@ statement =
   {scope} scope |
   {unary_assignment} unary_assignment semi |
   {semi} semi |
-  {function} function_call semi |
+  {function} function_call additional_identifier? semi |
   {return} return_statement semi;
 
 // Return statement
@@ -224,7 +225,8 @@ for_iterator =
 
 // Additional identifier
 additional_identifier =
-  dot identifier additional_identifier?;
+  {identifier} dot identifier additional_identifier? |
+  {function} dot function_call additional_identifier?;
 
 // Expression
 expr = 

@@ -40,7 +40,9 @@ public class Main {
                                 "struct a { } struct b { int i = 0; int j = 0; int c = 0; }\n" +
                                 "a.a.a.a = a.a.a.a;\n" +
                                 "int i = a.aa; a = a; a a = b;\n" +
-                                "int i = a().a.a.a;";
+                                "int i = a().a.a().a;\n" +
+                                "a().a().b().a.a.b();\n" +
+                                "struct b { void b() { return; } int a() { return 1; } } ";
 
         System.out.println(code);
 
