@@ -1,5 +1,7 @@
 package dk.aau.sw402F15.TypeChecker;
 
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -15,10 +17,9 @@ public class TypeChecker extends DepthFirstAdapter {
     @Override
     public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
         super.outADeclarationAssignmentDeclarationStatement(node);
-        // bool b = true;
 
         if (stack.pop() != stack.pop()) {
-            throw new RuntimeException();
+            throw new RuntimeException(); // Needs a better exception
         }
     }
 
@@ -85,13 +86,82 @@ public class TypeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareOrExpr(ACompareOrExpr node) {
-        super.outACompareOrExpr(node);
+    public void outACompareGreaterExpr3(ACompareGreaterExpr3 node) {
+        super.outACompareGreaterExpr3(node);
+        checkComparison();
+    }
 
+    @Override
+    public void outACompareLessExpr3(ACompareLessExpr3 node) {
+        super.outACompareLessExpr3(node);
+        checkComparison();
+    }
+
+    @Override
+    public void outACompareLessOrEqualExpr3(ACompareLessOrEqualExpr3 node) {
+        super.outACompareLessOrEqualExpr3(node);
+        checkComparison();
+    }
+
+    @Override
+    public void outACompareGreaterOrEqualExpr3(ACompareGreaterOrEqualExpr3 node) {
+        super.outACompareGreaterOrEqualExpr3(node);
+        checkComparison();
+    }
+
+    @Override
+    public void outAAddExpr4(AAddExpr4 node) {
+        super.outAAddExpr4(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outASubExpr4(ASubExpr4 node) {
+        super.outASubExpr4(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outAMultiExpr5(AMultiExpr5 node) {
+        super.outAMultiExpr5(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outADivExpr5(ADivExpr5 node) {
+        super.outADivExpr5(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outAModExpr5(AModExpr5 node) {
+        super.outAModExpr5(node);
+        checkExpression();
+    }
+
+    private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1 != SymbolType.Boolean || arg2 != SymbolType.Boolean) {
-            throw new RuntimeException();
+        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int || arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal) {
+            stack.push(SymbolType.Boolean);
+        }
+        else {
+            throw new IllegalComparison();
+        }
+
+    }
+
+    private void checkExpression(){
+        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
+
+        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int){
+            stack.push(SymbolType.Int);
+        }
+        else if (arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal){
+            stack.push(SymbolType.Decimal);
+        }
+        else{
+            throw new IllegalExpression();
         }
     }
 }

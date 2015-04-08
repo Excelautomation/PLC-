@@ -45,7 +45,7 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int lulz = 6;";
+        code = "int i = 0;";
 
         System.out.println(code);
 
