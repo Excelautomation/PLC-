@@ -84,42 +84,42 @@ public class TypeCheckerTests {
         checkCode("bool b = 1 <= 2;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntDecimalComparisonGreater(){
         checkCode("bool b = 1 > 1.1;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntDecimalComparisonGreaterOrEqual(){
         checkCode("bool b = 1 >= 1.1;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntDecimalComparisonLess(){
         checkCode("bool b = 1 < 1.1;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntDecimalComparisonLessOrEqual(){
         checkCode("bool b = 1 <= 1.1;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntBoolComparisonGreater(){
         checkCode("bool b = 1 > true;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntBoolComparisonGreaterOrEqual(){
         checkCode("bool b = 1 >= true;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntBoolComparisonLess(){
         checkCode("bool b = 1 < true;");
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = IllegalComparison.class)
     public void checkIntBoolComparisonLessOrEqual(){
         checkCode("bool b = 1 <= true;");
     }

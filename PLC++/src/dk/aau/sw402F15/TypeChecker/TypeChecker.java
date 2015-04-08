@@ -155,7 +155,7 @@ public class TypeChecker extends DepthFirstAdapter {
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int || arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal) {
+        if ((arg1 == SymbolType.Int && arg2 == SymbolType.Int) || (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal)) {
             stack.push(SymbolType.Boolean);
         }
         else {
