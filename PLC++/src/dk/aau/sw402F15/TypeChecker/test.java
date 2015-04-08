@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.TypeChecker;
 
+import dk.aau.sw402F15.TypeChecker.Exceptions.illegalAssignment;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -18,7 +19,7 @@ public class test extends DepthFirstAdapter {
         // bool b = true;
 
         if (stack.pop() != stack.pop()) {
-            throw new RuntimeException();
+            throw new illegalAssignment();
         }
     }
 
