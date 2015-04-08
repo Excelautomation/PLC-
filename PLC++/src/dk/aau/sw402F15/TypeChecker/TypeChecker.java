@@ -15,13 +15,13 @@ import java.util.Stack;
  */
 public class TypeChecker extends DepthFirstAdapter {
     private Stack<SymbolType> stack = new Stack<SymbolType>();
-    private Scope rootScope;
+    /*private Scope rootScope;
 
 
     public TypeChecker(Scope rootScope) {
 
         this.rootScope = rootScope;
-    }
+    }*/
 
     @Override
     public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
