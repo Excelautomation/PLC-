@@ -45,7 +45,7 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int i = 0; int k = 0; { int j = 0; } { int j = 0; }";
+        code = "bool b = true;";
 
         System.out.println(code);
 
@@ -54,6 +54,7 @@ public class Main {
             Start tree = parser.parse();
 
             // Print tree
+            tree.apply(new PrettyPrinter());
             tree.apply(new TypeChecker());
             tree.apply(new ExpressionEvaluator());
 

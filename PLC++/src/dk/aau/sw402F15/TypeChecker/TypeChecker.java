@@ -1,136 +1,180 @@
 package dk.aau.sw402F15.TypeChecker;
 
-import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
-import dk.aau.sw402F15.TypeChecker.Symboltable.*;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 
-import java.util.ArrayList;
+import java.util.Stack;
 
 /**
- * Created by sahb on 19/03/15.
+ * Created by Mikkel on 08-04-2015.
  */
 public class TypeChecker extends DepthFirstAdapter {
-    private Scope rootScope = new Scope(null);
-    private Scope currentScope;
-
-    public TypeChecker() {
-        currentScope = rootScope;
-    }
-
-    @Override
-    public void inAScope(AScope node) {
-        super.inAScope(node);
-
-        currentScope = currentScope.addSubScope();
-    }
-
-    @Override
-    public void outAScope(AScope node) {
-        super.outAScope(node);
-
-        currentScope = currentScope.getParentScope();
-    }
-
-    @Override
-    public void outAStruct(AStruct node) {
-        super.outAStruct(node);
-
-        currentScope.addSymbol(new SymbolStruct(node.getIdentifier().getText(), node, currentScope));
-    }
-
-    @Override
-    public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
-        super.outAFunctionFunctionDeclaration(node);
-
-        // TODO: Should be updated
-        ArrayList<SymbolType> formalParameters = new ArrayList<SymbolType>();
-        SymbolType returnType = SymbolType.Function;
-
-        currentScope.addSymbol(new SymbolFunction(returnType, formalParameters, node.getIdentifier().getText() , node, currentScope));
-    }
-
-    @Override
-    public void outAVoidFunctionFunctionDeclaration(AVoidFunctionFunctionDeclaration node) {
-        super.outAVoidFunctionFunctionDeclaration(node);
-
-        currentScope.addSymbol(new Symbol(SymbolType.Method, node.getIdentifier().getText(), node, currentScope));
-    }
-
-    @Override
-    public void outADeclarationDeclarationStatement(ADeclarationDeclarationStatement node) {
-        super.outADeclarationDeclarationStatement(node);
-
-        // TODO: Update symbol type
-        SymbolType type = SymbolType.Boolean;
-
-
-        currentScope.addSymbol(new Symbol(type, node.getIdentifier().getText(), node, currentScope));
-    }
+    Stack<SymbolType> stack = new Stack<SymbolType>();
 
     @Override
     public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
         super.outADeclarationAssignmentDeclarationStatement(node);
 
-        SymbolType type = getTypeFromNode(node.getType());
+        if (stack.pop() != stack.pop()) {
+            throw new IllegalAssignment(); // Needs a better exception
+        }
+    }
 
-        // TODO: Update
-        //currentScope.addSymbol(node.getIdentifier().getText(), type);
+    @Override
+    public void outAIntegerValue(AIntegerValue node) {
+        super.outAIntegerValue(node);
+        stack.push(SymbolType.Int);
+    }
 
-        // Check assignment
+    @Override
+    public void outADecimalValue(ADecimalValue node) {
+        super.outADecimalValue(node);
+        stack.push(SymbolType.Decimal);
+    }
+
+    @Override
+    public void outATrueValue(ATrueValue node) {
+        super.outATrueValue(node);
+        stack.push(SymbolType.Boolean);
+    }
+
+    @Override
+    public void outAFalseValue(AFalseValue node) {
+        super.outAFalseValue(node);
+        stack.push(SymbolType.Boolean);
+    }
+
+    @Override
+    public void outAIntType(AIntType node) {
+        super.outAIntType(node);
+        stack.push(SymbolType.Int);
+    }
+
+    @Override
+    public void outALongType(ALongType node) {
+        super.outALongType(node);
+        stack.push(SymbolType.Int);
+    }
+
+    @Override
+    public void outADoubleType(ADoubleType node) {
+        super.outADoubleType(node);
+        stack.push(SymbolType.Decimal);
+    }
+
+    @Override
+    public void outAFloatType(AFloatType node) {
+        super.outAFloatType(node);
+        stack.push(SymbolType.Decimal);
+    }
+
+    @Override
+    public void outACharType(ACharType node) {
+        super.outACharType(node);
+        stack.push(SymbolType.Char);
+    }
+
+    @Override
+    public void outABoolType(ABoolType node) {
+        super.outABoolType(node);
+        stack.push(SymbolType.Boolean);
+
 
     }
 
     @Override
-    public void outAAssignmentAssignmentStatement(AAssignmentAssignmentStatement node) {
-        super.outAAssignmentAssignmentStatement(node);
+    public void outACompareGreaterExpr3(ACompareGreaterExpr3 node) {
+        super.outACompareGreaterExpr3(node);
+        checkComparison();
+    }
 
-        // TODO:
-        /*SymbolType type = currentScope.getTypeOrThrow(node.getIdentifier().getText());
+    @Override
+    public void outACompareLessExpr3(ACompareLessExpr3 node) {
+        super.outACompareLessExpr3(node);
+        checkComparison();
+    }
 
-        // Check additional identifer
-        if (type == SymbolType.Struct) {
-            if (node.getAdditionalIdentifier() == null) {
-                // Check assignment is struct
+    @Override
+    public void outACompareLessOrEqualExpr3(ACompareLessOrEqualExpr3 node) {
+        super.outACompareLessOrEqualExpr3(node);
+        checkComparison();
+    }
 
-            } else {
-                // Check additionalIdentifier
+    @Override
+    public void outACompareGreaterOrEqualExpr3(ACompareGreaterOrEqualExpr3 node) {
+        super.outACompareGreaterOrEqualExpr3(node);
+        checkComparison();
+    }
 
-            }
-        } else if (node.getAdditionalIdentifier() != null) {
-            throw new RuntimeException();
-        }*/
+    @Override
+    public void outACompareEqualExpr2(ACompareEqualExpr2 node) {
+        super.outACompareEqualExpr2(node);
+        checkComparison();
+    }
 
-        // Check assignment
+    @Override
+    public void outACompareNotEqualExpr2(ACompareNotEqualExpr2 node) {
+        super.outACompareNotEqualExpr2(node);
+        checkComparison();
+    }
+
+    @Override
+    public void outAAddExpr4(AAddExpr4 node) {
+        super.outAAddExpr4(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outASubExpr4(ASubExpr4 node) {
+        super.outASubExpr4(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outAMultiExpr5(AMultiExpr5 node) {
+        super.outAMultiExpr5(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outADivExpr5(ADivExpr5 node) {
+        super.outADivExpr5(node);
+        checkExpression();
+    }
+
+    @Override
+    public void outAModExpr5(AModExpr5 node) {
+        super.outAModExpr5(node);
+        checkExpression();
+    }
+
+    private void checkComparison() {
+        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
+
+        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int || arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal) {
+            stack.push(SymbolType.Boolean);
+        }
+        else {
+            throw new IllegalComparison();
+        }
 
     }
 
-    // TODO: Remove function
-    private SymbolType getTypeFromNode(PType type) {
-        if (type.getClass() == ABoolType.class) {
-            return SymbolType.Boolean;
-        } else if (type.getClass() == AIntType.class) {
-            return SymbolType.Numeric;
-        } else if (type.getClass() == ADoubleType.class) {
-            return SymbolType.Numeric;
-        } else if (type.getClass() == AFloatType.class) {
-            return SymbolType.Numeric;
-        } else if (type.getClass() == ALongType.class) {
-            return SymbolType.Numeric;
-        } else if (type.getClass() == ATimerType.class) {
-            return SymbolType.Timer;
-        } else if (type.getClass() == APortType.class) {
-            return SymbolType.Port;
-        } else if (type.getClass() == AIdentifierType.class) {
-            // Find type from structs
-            AIdentifierType identifier = (AIdentifierType)type;
-           // SymbolType t = currentScope.getType(identifier.getIdentifier().getText());
-           // if (t == SymbolType.Struct)
-             //   return t;
+    private void checkExpression(){
+        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-            throw new SymbolNotFoundException();
+        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int){
+            stack.push(SymbolType.Int);
         }
-
-        throw new SymbolNotFoundException();
+        else if (arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal){
+            stack.push(SymbolType.Decimal);
+        }
+        else{
+            throw new IllegalExpression();
+        }
     }
 }
