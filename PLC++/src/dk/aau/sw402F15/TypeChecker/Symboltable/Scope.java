@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.TypeChecker;
+package dk.aau.sw402F15.TypeChecker.Symboltable;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolAlreadyExists;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
@@ -19,13 +19,12 @@ public class Scope {
         this.parentScope = parentScope;
     }
 
-    public void addSymbol(String name, Type type) {
-        if (getSymbol(name) != null) {
+    public void addSymbol(Symbol symbol) {
+        if (getSymbol(symbol.getName()) != null) {
             throw new SymbolAlreadyExists();
         }
 
-        Symbol symbol = new Symbol(name, this, type);
-        symbols.put(name, symbol);
+        symbols.put(symbol.getName(), symbol);
     }
 
     public Scope addSubScope() {
@@ -34,28 +33,7 @@ public class Scope {
         return scope;
     }
 
-    public Type getType(String name) {
-        Symbol symbol = getSymbol(name);
-        if (symbol != null)
-            return symbol.type;
-
-        return null;
-    }
-
-    public Type getTypeOrThrow(String name) {
-        Type type = getType(name);
-
-        if (type != null)
-            return type;
-
-        throw new SymbolNotFoundException();
-    }
-
-    public Scope getParentScope() {
-        return parentScope;
-    }
-
-    private Symbol getSymbol(String name) {
+    public Symbol getSymbol(String name) {
         Symbol symbol = symbols.get(name);
         if (symbol != null)
             return symbol;
@@ -67,15 +45,16 @@ public class Scope {
         return null;
     }
 
-    private class Symbol {
-        private String name;
-        private Scope scope;
-        private Type type;
+    public Symbol getSymbolOrThrow(String name) {
+        Symbol symbol = getSymbol(name);
 
-        public Symbol(String name, Scope scope, Type type) {
-            this.name = name;
-            this.scope = scope;
-            this.type = type;
-        }
+        if (symbol == null)
+            throw new SymbolNotFoundException();
+
+        return symbol;
+    }
+
+    public Scope getParentScope() {
+        return parentScope;
     }
 }

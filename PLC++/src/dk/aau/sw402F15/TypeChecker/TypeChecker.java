@@ -1,8 +1,11 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
+import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
+
+import java.util.ArrayList;
 
 /**
  * Created by sahb on 19/03/15.
@@ -33,37 +36,46 @@ public class TypeChecker extends DepthFirstAdapter {
     public void outAStruct(AStruct node) {
         super.outAStruct(node);
 
-        currentScope.addSymbol(node.getIdentifier().getText(), Type.Struct);
+        currentScope.addSymbol(new SymbolStruct(node.getIdentifier().getText(), node, currentScope));
     }
 
     @Override
     public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
         super.outAFunctionFunctionDeclaration(node);
 
-        currentScope.addSymbol(node.getIdentifier().getText(), Type.Function);
+        // TODO: Should be updated
+        ArrayList<SymbolType> formalParameters = new ArrayList<SymbolType>();
+        SymbolType returnType = SymbolType.Function;
+
+        currentScope.addSymbol(new SymbolFunction(returnType, formalParameters, node.getIdentifier().getText() , node, currentScope));
     }
 
     @Override
     public void outAVoidFunctionFunctionDeclaration(AVoidFunctionFunctionDeclaration node) {
         super.outAVoidFunctionFunctionDeclaration(node);
 
-        currentScope.addSymbol(node.getIdentifier().getText(), Type.Method);
+        currentScope.addSymbol(new Symbol(SymbolType.Method, node.getIdentifier().getText(), node, currentScope));
     }
 
     @Override
     public void outADeclarationDeclarationStatement(ADeclarationDeclarationStatement node) {
         super.outADeclarationDeclarationStatement(node);
 
-        currentScope.addSymbol(node.getIdentifier().getText(), getTypeFromNode(node.getType()));
+        // TODO: Update symbol type
+        SymbolType type = SymbolType.Boolean;
+
+
+        currentScope.addSymbol(new Symbol(type, node.getIdentifier().getText(), node, currentScope));
     }
 
     @Override
     public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
         super.outADeclarationAssignmentDeclarationStatement(node);
 
-        Type type = getTypeFromNode(node.getType());
+        SymbolType type = getTypeFromNode(node.getType());
 
-        currentScope.addSymbol(node.getIdentifier().getText(), type);
+        // TODO: Update
+        //currentScope.addSymbol(node.getIdentifier().getText(), type);
 
         // Check assignment
 
@@ -73,10 +85,11 @@ public class TypeChecker extends DepthFirstAdapter {
     public void outAAssignmentAssignmentStatement(AAssignmentAssignmentStatement node) {
         super.outAAssignmentAssignmentStatement(node);
 
-        Type type = currentScope.getTypeOrThrow(node.getIdentifier().getText());
+        // TODO:
+        /*SymbolType type = currentScope.getTypeOrThrow(node.getIdentifier().getText());
 
         // Check additional identifer
-        if (type == Type.Struct) {
+        if (type == SymbolType.Struct) {
             if (node.getAdditionalIdentifier() == null) {
                 // Check assignment is struct
 
@@ -86,34 +99,34 @@ public class TypeChecker extends DepthFirstAdapter {
             }
         } else if (node.getAdditionalIdentifier() != null) {
             throw new RuntimeException();
-        }
+        }*/
 
         // Check assignment
 
     }
 
-    private Type getTypeFromNode(PType type) {
+    // TODO: Remove function
+    private SymbolType getTypeFromNode(PType type) {
         if (type.getClass() == ABoolType.class) {
-            return Type.Boolean;
+            return SymbolType.Boolean;
         } else if (type.getClass() == AIntType.class) {
-            return Type.Numeric;
+            return SymbolType.Numeric;
         } else if (type.getClass() == ADoubleType.class) {
-            return Type.Numeric;
+            return SymbolType.Numeric;
         } else if (type.getClass() == AFloatType.class) {
-            return Type.Numeric;
+            return SymbolType.Numeric;
         } else if (type.getClass() == ALongType.class) {
-            return Type.Numeric;
+            return SymbolType.Numeric;
         } else if (type.getClass() == ATimerType.class) {
-            return Type.Timer;
+            return SymbolType.Timer;
         } else if (type.getClass() == APortType.class) {
-            return Type.Port;
+            return SymbolType.Port;
         } else if (type.getClass() == AIdentifierType.class) {
             // Find type from structs
             AIdentifierType identifier = (AIdentifierType)type;
-
-            Type t = currentScope.getType(identifier.getIdentifier().getText());
-            if (t == Type.Struct)
-                return t;
+           // SymbolType t = currentScope.getType(identifier.getIdentifier().getText());
+           // if (t == SymbolType.Struct)
+             //   return t;
 
             throw new SymbolNotFoundException();
         }
