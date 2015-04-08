@@ -1,11 +1,13 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 
 import java.util.Stack;
 
 public class ExpressionEvaluator extends DepthFirstAdapter {
+
     Stack<Object> stack = new Stack<Object>();
 
     @Override
