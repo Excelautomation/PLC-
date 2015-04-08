@@ -10,6 +10,8 @@ import java.util.ArrayList;
 /**
  * Created by sahb on 19/03/15.
  */
+
+
 public class TypeChecker extends DepthFirstAdapter {
     private Scope rootScope = new Scope(null);
     private Scope currentScope;
@@ -110,13 +112,13 @@ public class TypeChecker extends DepthFirstAdapter {
         if (type.getClass() == ABoolType.class) {
             return SymbolType.Boolean;
         } else if (type.getClass() == AIntType.class) {
-            return SymbolType.Numeric;
+            return SymbolType.Int;
         } else if (type.getClass() == ADoubleType.class) {
-            return SymbolType.Numeric;
+            return SymbolType.Decimal;
         } else if (type.getClass() == AFloatType.class) {
-            return SymbolType.Numeric;
+            return SymbolType.Decimal;
         } else if (type.getClass() == ALongType.class) {
-            return SymbolType.Numeric;
+            return SymbolType.Int;
         } else if (type.getClass() == ATimerType.class) {
             return SymbolType.Timer;
         } else if (type.getClass() == APortType.class) {
