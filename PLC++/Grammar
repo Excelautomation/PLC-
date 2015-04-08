@@ -271,7 +271,7 @@ value =
   {function} function_call additional_identifier? |
   {identifier} identifier additional_identifier? |
   {negative} sub_operator value |
-  {port} port_identifier expr;
+  {port} port_identifier value;
   
 unary_expression = 
   {increment_prefix} increment_operator identifier |
