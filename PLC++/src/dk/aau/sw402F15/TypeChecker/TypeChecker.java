@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.TypeChecker;
 
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
@@ -19,7 +20,7 @@ public class TypeChecker extends DepthFirstAdapter {
         super.outADeclarationAssignmentDeclarationStatement(node);
 
         if (stack.pop() != stack.pop()) {
-            throw new RuntimeException(); // Needs a better exception
+            throw new IllegalAssignment(); // Needs a better exception
         }
     }
 
@@ -106,6 +107,18 @@ public class TypeChecker extends DepthFirstAdapter {
     @Override
     public void outACompareGreaterOrEqualExpr3(ACompareGreaterOrEqualExpr3 node) {
         super.outACompareGreaterOrEqualExpr3(node);
+        checkComparison();
+    }
+
+    @Override
+    public void outACompareEqualExpr2(ACompareEqualExpr2 node) {
+        super.outACompareEqualExpr2(node);
+        checkComparison();
+    }
+
+    @Override
+    public void outACompareNotEqualExpr2(ACompareNotEqualExpr2 node) {
+        super.outACompareNotEqualExpr2(node);
         checkComparison();
     }
 
