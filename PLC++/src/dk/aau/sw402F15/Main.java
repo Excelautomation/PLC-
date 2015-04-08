@@ -54,6 +54,7 @@ public class Main {
             Start tree = parser.parse();
 
             // Print tree
+            tree.apply(new PrettyPrinter());
             tree.apply(new TypeChecker());
             tree.apply(new ExpressionEvaluator());
 
