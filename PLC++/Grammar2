@@ -121,7 +121,7 @@ type_specifier {-> type_specifier} =
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
   | {port} port_keyword																									{-> New type_specifier.port()}
-  | {identifier} identifier																								{-> New type_specifier.identifier()}
+  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier()}
 ;
 
 // Declaration in root scope
@@ -266,9 +266,6 @@ expr9 {-> expr} =
 	{increment} identifier increment_operator																			{-> New expr.increment(identifier)}
   |	{decrement} identifier decrement_operator																			{-> New expr.decrement(identifier)}
   
-  // Parenthesis
-//  | {par} l_par expr r_par																								{-> expr.expr}
-  
 	// Function call
   | {function_call} identifier l_par actual_parameter? r_par															{-> New expr.function_call(identifier, [actual_parameter.expr])}
   
@@ -277,6 +274,9 @@ expr9 {-> expr} =
   
 	// Dot
   | {member} [left]:expr9 dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
+  
+	// Parenthesis
+  | {par} l_par expr r_par																								{-> expr.expr}
   
   | {factor} [expr]:expr_value																							{-> expr.expr}
 ;
