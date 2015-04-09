@@ -154,9 +154,17 @@ declaration {-> declaration} =
 // Statements
 statement {-> statement} =
 	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
-  |	{expr} expr																											{-> New statement.expr(expr.expr)}
+  |	{expr} expr	semi																									{-> New statement.expr(expr.expr)}
   
+  // Conditional
   | {if} if_statement																									{-> if_statement.statement}
+  
+  // Iteration
+  | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
+  
+  // Return
+  | {return} return_keyword semi																						{-> New statement.return()}
+  | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
 ;
 
 // If
@@ -215,9 +223,16 @@ statement =
   | {expr} 						expr
   | {compound}					statement*
   
-  // If
-  | {if}						[condition]:expr				[statement]:statement*
+  // Conditional
+  | {if}						[condition]:expr				[statements]:statement*
   | {if_else}					[condition]:expr				[statements]:statement*		[else]:statement*
+  
+  // Iteration
+  | {while}						[condition]:expr				[statements]:statement*
+  
+  // Return
+  | {return}
+  | {return_expr}				expr
 ;
 
 expr =
