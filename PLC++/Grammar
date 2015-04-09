@@ -259,28 +259,28 @@ expr5 {-> expr} =
     {multi}                     [left]:expr5      mult_operator                  [right]:expr_value                     {-> New expr.multi(left.expr, right.expr)}
   | {div}                       [left]:expr5      div_operator                   [right]:expr_value                     {-> New expr.div(left.expr, right.expr)}
   | {mod}                       [left]:expr5      mod_operator                   [right]:expr_value                     {-> New expr.mod(left.expr, right.expr)}
-  | {negated}                   negate_operator                                  [right]:expr_value                     {-> New expr.negated(right.expr)}
+  | {negated}                   negate_operator                                  [right]:expr_value                     {-> New expr.negate_bool(right.expr)}
   | {term}                      expr_value                                                                              {-> expr_value.expr}
 ;
 
 expr_value {-> expr} =
-    {value}                     value                                                                                   {-> New expr.value(value)}
+    {value}                     value                                                                                   {-> value.expr}
   | {expr}                      l_par expr r_par                                                                        {-> expr}
 ;
 
 value {-> expr} =
-    {unary}                     unary_expression                                                                        {-> New expr.unary_expression(unary)}
-  | {integer}                   integer_literal                                                                         {-> New expr.integer_literal(integer)}
-  | {decimal}                   decimal_literal                                                                         {-> New expr.decimal_literal(decimal)}
-  | {true}                      true_keyword                                                                            {-> New expr.true_keyword(true)}
-  | {false}                     false_keyword                                                                           {-> New expr.false_keyword(false)}
-  | {function}                  [name]:function_call additional_identifier?                                             {-> New expr.function(name)}
-  | {identifier}                [name]:identifier additional_identifier?                                                {-> New expr.identifier(name)}
-  | {negative}                  sub_operator value
-  | {port}                      port_identifier expr
+//    {unary}                     unary_expression                                                                        {-> New expr.unary_expression(unary)}
+  {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
+  | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
+  | {true}                      true_keyword                                                                            {-> New expr.true()}
+  | {false}                     false_keyword                                                                           {-> New expr.false()}
+//  | {function}                  [name]:function_call additional_identifier?                                             {-> New expr.function(name)}
+//  | {identifier}                [name]:identifier additional_identifier?                                                {-> New expr.identifier(name)}
+  | {negative}                  sub_operator [right]:value                                                              {-> New expr.negate_number(right.expr)}
+//  | {port}                      port_identifier expr
 ;
   
-unary_expression {-> expr} =
+unary_expression =//{-> expr} =
     {increment_prefix}          [name]:increment_operator identifier
   | {increment_suffix}          [name]:identifier increment_operator
   | {decrement_prefix}          [name]:decrement_operator identifier
@@ -303,6 +303,10 @@ expr =
   | {multi}                     [left]:expr               [right]:expr
   | {div}                       [left]:expr               [right]:expr
   | {mod}                       [left]:expr               [right]:expr
-  | {negated}                                             [right]:expr
-  | {value}                     value
+  | {negate_bool}                                         [right]:expr
+  | {negate_number}                                       [right]:expr
+  | {integer}                                             [right]:integer_literal
+  | {decimal}                                             [right]:decimal_literal
+  | {true}
+  | {false}
 ;
