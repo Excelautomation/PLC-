@@ -289,13 +289,9 @@ unary_expression =//{-> expr} =
 
 Abstract Syntax Tree
 
-unit_of_work =
-    program*
-;
-
-program =
-    statement
-  | struct
+declaration =
+    {struct}                    [name]:identifier
+  | {function}                  [name]:identifier
 ;
 
 
