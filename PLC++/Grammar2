@@ -103,6 +103,11 @@ program {-> program} =
 	root_declaration*																									{-> New program([root_declaration])}
 ;
 
+// Scope
+scope {-> statement} = 
+    l_brc statement* r_brc																								{-> New statement.compound([statement.statement])}	
+;
+
 // Types
 type_specifier {-> type_specifier} = 
     {char} char_keyword																									{-> New type_specifier.char()}
@@ -142,9 +147,22 @@ declaration {-> declaration} =
 
 // Statements
 statement {-> statement} =
-	declaration																											{-> New statement.declaration(declaration.declaration)}
+	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
+  |	{expr} expr																											{-> New statement.expr(expr.expr)}
 ;
 
+// If
+if_statement {-> statement} =
+    {if} if_keyword l_par [condition]:expr r_par scope*																	{-> New statement.if(condition.expr, [scope.statement])}
+  | {if_else} if_keyword l_par [condition]:expr r_par scope else_statement												{-> New statement.if_else(condition.expr, [scope.statement], [else_statement.statement])}
+;
+
+else_statement {-> statement} = 
+    {else} else_keyword scope																							{-> scope.statement}
+  | {else_if} else_keyword if_statement																					{-> if_statement.statement}
+;
+
+// Expression
 expr {-> expr} =
   {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
   | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
@@ -184,7 +202,13 @@ type_specifier =
 ;
 
 statement =
-	{declaration} declaration
+	{declaration} 				declaration
+  | {expr} 						expr
+  | {compound}					statement*
+  
+  // If
+  | {if}						[condition]:expr				[statement]:statement*
+  | {if_else}					[condition]:expr				[statements]:statement*		[else]:statement*
 ;
 
 expr =
