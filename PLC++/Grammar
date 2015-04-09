@@ -95,7 +95,8 @@ Productions
 program =
     {statement} statement program?
   | {function} function_declaration program?
-  | {struct} struct program?;
+  | {struct} struct program?
+;
 
 // Types
 type = 
@@ -107,54 +108,68 @@ type =
   | {double} double_keyword
   | {timer} timer_keyword
   | {port} port_keyword
-  | {identifier} identifier;
+  | {identifier} identifier
+;
   
 // Scope
 scope = 
-    l_brc statements? r_brc;
+    l_brc statements? r_brc
+;
 
 // Struct
 struct =
-    struct_keyword identifier l_brc struct_body? r_brc;
+    struct_keyword identifier l_brc struct_body? r_brc
+;
 
 struct_body =
     {declaration} declaration_statement semi struct_body?
-  | {function} function_declaration struct_body?;
+  | {function} function_declaration struct_body?
+;
 
 // Function declaration
 functions =
-    function_declaration functions?;
+    function_declaration functions?
+;
 
 function_declaration =
     {function} type identifier l_par formal_parameters? r_par scope
-  | {void_function} void_keyword identifier l_par formal_parameters? r_par scope;
+  | {void_function} void_keyword identifier l_par formal_parameters? r_par scope
+;
 
 // Function call
 function_call =
-    identifier l_par actual_parameters? r_par;
+    identifier l_par actual_parameters? r_par
+;
   
 // Parameters
 formal_parameters =
-    formal_parameter additional_formal_parameter?;
+    formal_parameter additional_formal_parameter?
+;
   
 actual_parameters = 
-    actual_parameter additional_actual_parameter?;
+    actual_parameter additional_actual_parameter?
+;
   
 formal_parameter = 
-    type identifier;
+    type identifier
+;
   
 additional_formal_parameter = 
-    comma formal_parameters;
+    comma formal_parameters
+;
   
 actual_parameter =
-    expr;
+    expr
+;
   
 additional_actual_parameter =
-    comma actual_parameters;
+    comma actual_parameters
+;
   
 // Statements
 statements = 
-    statement statements?;
+    statement statements?
+;
 
 statement = 
     {declaration} declaration_statement semi
@@ -165,21 +180,25 @@ statement =
   | {unary_assignment} unary_assignment semi
   | {semi} semi
   | {function} function_call additional_identifier? semi
-  | {return} return_statement semi;
+  | {return} return_statement semi
+;
 
 // Return statement
 return_statement =
     {normal_return} return_keyword expr
-  | {void_return} return_keyword;
+  | {void_return} return_keyword
+;
 
 // Declaration
 declaration_statement =
     {declaration} type identifier
-  | {declaration_assignment} type identifier assignment_operator expr;
+  | {declaration_assignment} type identifier assignment_operator expr
+;
 
 // Assignment
 assignment_statement = 
-    {assignment} identifier additional_identifier? assignment_operator expr;
+    {assignment} identifier additional_identifier? assignment_operator expr
+;
   
 unary_assignment =
     {add} identifier add_assignment_operator expr
@@ -187,46 +206,57 @@ unary_assignment =
   | {mult} identifier mult_assignment_operator expr
   | {div} identifier div_assignment_operator expr
   | {mod} identifier mod_assignment_operator expr
-  | {unary} unary_expression;
+  | {unary} unary_expression
+;
   
 // Conditional statement
 conditional_statement =
-    {if} if_statement;
+    {if} if_statement
+;
 
 if_statement =
-    {if} if_keyword l_par expr r_par scope
-  | {if_else} if_keyword l_par expr r_par scope else_statement;
+    {if} [if]:if_keyword l_par expr r_par scope
+  | {if_else} [if]:if_keyword l_par expr r_par scope else_statement
+;
 
 else_statement = 
     {else} else_keyword scope
-  | {else_if} else_keyword if_statement;
+  | {else_if} else_keyword if_statement
+;
 
 // Iterative statement
 iterative_statement =
     {while} while_statement
-  | {for} for_statement;
+  | {for} for_statement
+;
   
 while_statement = 
-    {while} while_keyword l_par expr r_par scope;
+    {while} while_keyword l_par expr r_par scope
+;
 
 for_statement =
-    {for} for_keyword l_par for_initializer for_condition for_iterator r_par scope;
+    {for} for_keyword l_par for_initializer for_condition for_iterator r_par scope
+;
   
 for_initializer =
     {assignment} assignment_statement semi
-  | {declaration} declaration_statement semi;
+  | {declaration} declaration_statement semi
+;
 
 for_condition =
-    {expr} expr semi;
+    {expr} expr semi
+;
   
 for_iterator =
     {iterator} assignment_statement
-  | {unary_assign} unary_assignment;
+  | {unary_assign} unary_assignment
+;
 
 // Additional identifier
 additional_identifier =
     {identifier} dot identifier additional_identifier?
-  | {function} dot function_call additional_identifier?;
+  | {function} dot function_call additional_identifier?
+;
 
 // Expression
 expr {-> expr} =
@@ -270,7 +300,7 @@ expr_value {-> expr} =
 
 value {-> expr} =
 //    {unary}                     unary_expression                                                                        {-> New expr.unary_expression(unary)}
-  {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
+  {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
   | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
   | {true}                      true_keyword                                                                            {-> New expr.true()}
   | {false}                     false_keyword                                                                           {-> New expr.false()}
@@ -293,8 +323,6 @@ declaration =
     {struct}                    [name]:identifier
   | {function}                  [name]:identifier
 ;
-
-
 
 function =
     {call}                      [name]:identifier         [args]:expr*
