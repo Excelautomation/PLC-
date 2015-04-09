@@ -124,7 +124,8 @@ root_declaration {-> root_declaration} =
 
 // Function definition
 function_definition {-> root_declaration} =
-	type_specifier identifier l_par formal_parameter r_par l_brc statement* r_brc										{-> New root_declaration.function(type_specifier, identifier, [formal_parameter.declaration], [statement])}
+	{function} type_specifier identifier l_par formal_parameter r_par l_brc statement* r_brc							{-> New root_declaration.function(type_specifier, identifier, [formal_parameter.declaration], [statement])}
+  | {method} void_keyword identifier l_par formal_parameter r_par l_brc statement* r_brc								{-> New root_declaration.function(New type_specifier.void(), identifier, [formal_parameter.declaration], [statement])}
 ;
 
 // Formal parameters
