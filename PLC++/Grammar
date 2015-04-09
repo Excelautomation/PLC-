@@ -289,6 +289,21 @@ unary_expression =//{-> expr} =
 
 Abstract Syntax Tree
 
+unit_of_work =
+    program*
+;
+
+program =
+    statement
+  | struct
+;
+
+
+
+function =
+    {call}                      [name]:identifier         [args]:expr*
+;
+
 expr =
     {compare_and}               [left]:expr               [right]:expr
   | {compare_or}                [left]:expr               [right]:expr
@@ -309,4 +324,5 @@ expr =
   | {decimal}                                             [right]:decimal_literal
   | {true}
   | {false}
+//  | {function}                  [left]:function           [right]:additional_identifier?
 ;
