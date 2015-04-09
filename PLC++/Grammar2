@@ -1,0 +1,194 @@
+Package dk.aau.sw402F15.parser;
+
+Helpers
+ht  = 0x0009;
+lf  = 0x000a;
+ff  = 0x000c;
+cr  = 0x000d;
+sp  = ' ';
+
+line_terminator = lf | cr | cr lf;
+
+all = [0 .. 255];
+
+digit =	['0' .. '9'];
+letter = ['a' .. 'z'] | ['A' .. 'Z'];
+specials = '_';
+
+letter_or_digit = (letter | digit);
+letter_or_specials = (letter | specials);
+letter_or_digit_or_specials = (letter_or_digit | specials);
+
+not_line_terminator = [all - [cr + lf]];
+
+Tokens
+comments = ('//' not_line_terminator* line_terminator);
+
+l_par = '(';
+r_par = ')';
+l_brc = '{';
+r_brc = '}';
+semi = ';';
+comma = ',';
+dot = '.';
+
+// Operators
+add_assignment_operator = '+=';
+sub_assignment_operator = '-=';
+mult_assignment_operator = '*=';
+div_assignment_operator = '/=';
+mod_assignment_operator = '%=';
+assignment_operator = '=';
+
+increment_operator = '++';
+decrement_operator = '--';
+
+equal_operator = '==';
+not_equal_operator = '!=';
+and_operator = '&&';
+or_operator = '||';
+
+add_operator = '+';
+sub_operator = '-';
+mult_operator = '*';
+div_operator = '/';
+mod_operator = '%';
+negate_operator = '!';
+
+greater_than_operator = '>';
+less_than_operator = '<';
+greater_than_or_equal_operator = '>=';
+less_than_or_equal_operator = '<=';
+
+// Keywords
+char_keyword = 'char';
+bool_keyword = 'bool';
+int_keyword = 'int';
+long_keyword = 'long';
+float_keyword = 'float';
+double_keyword = 'double';
+port_keyword = 'port';
+timer_keyword = 'timer';
+void_keyword = 'void';
+return_keyword = 'return';
+struct_keyword = 'struct';
+
+if_keyword = 'if';
+else_keyword = 'else';
+
+for_keyword = 'for';
+while_keyword = 'while';
+
+true_keyword = 'true';
+false_keyword = 'false';
+
+// Literal
+integer_literal = (digit)+;
+decimal_literal = (digit)+ '.' (digit)+;
+
+// Identifier
+port_identifier = ('I' | 'Q' | 'M' | 'AI' | 'AQ') '#';
+identifier = letter_or_specials letter_or_digit_or_specials*;
+
+// White space
+white_space = (sp | ht | ff | line_terminator)+;
+
+Ignored Tokens
+	comments,
+	white_space;
+
+Productions
+
+program {-> program} =
+	root_declaration*																									{-> New program([root_declaration])}
+;
+
+// Types
+type_specifier {-> type_specifier} = 
+    {char} char_keyword																									{-> New type_specifier.char()}
+  | {bool} bool_keyword																									{-> New type_specifier.bool()}
+  | {int} int_keyword																									{-> New type_specifier.int()}
+  | {long} long_keyword																									{-> New type_specifier.long()}
+  | {float} float_keyword																								{-> New type_specifier.float()}
+  | {double} double_keyword																								{-> New type_specifier.double()}
+  | {timer} timer_keyword																								{-> New type_specifier.timer()}
+  | {port} port_keyword																									{-> New type_specifier.port()}
+  | {identifier} identifier																								{-> New type_specifier.identifier()}
+;
+
+// Declaration in root scope
+root_declaration {-> root_declaration} =
+	{variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
+  |	{function} function_definition																						{-> function_definition.root_declaration}
+;
+
+// Function definition
+function_definition {-> root_declaration} =
+	type_specifier identifier l_par formal_parameter r_par l_brc statement* r_brc										{-> New root_declaration.function(type_specifier, identifier, [formal_parameter.declaration], [statement])}
+;
+
+// Formal parameters
+formal_parameter {-> declaration*} =
+	{single} type_specifier identifier																					{-> [New declaration.simple(type_specifier, identifier)]}
+  | {multiple} type_specifier identifier comma formal_parameter															{-> [New declaration.simple(type_specifier, identifier), formal_parameter.declaration]}
+;
+	
+// Declaration
+declaration {-> declaration} =
+	{simple} type_specifier identifier semi																				{-> New declaration.simple(type_specifier.type_specifier, identifier)}
+  | {assignment} type_specifier identifier expr semi																	{-> New declaration.assignment(type_specifier.type_specifier, identifier, expr)}
+;
+
+// Statements
+statement {-> statement} =
+	declaration																											{-> New statement.declaration(declaration.declaration)}
+;
+
+expr {-> expr} =
+  {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
+  | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
+  | {true}                      true_keyword                                                                            {-> New expr.true()}
+  | {false}                     false_keyword                                                                           {-> New expr.false()}
+;
+
+// Expression
+
+Abstract Syntax Tree
+
+program =
+	root_declaration*
+;
+
+root_declaration = 
+	{declaration} 				declaration 
+  |	{function} 					[return_type]:type_specifier	[name]:identifier			[params]:declaration*		[statements]:statement*
+;
+  
+declaration =
+	{simple}					[type]:type_specifier			[name]:identifier
+  |	{assignment}				[type]:type_specifier			[name]:identifier			[expr]:expr
+;
+	
+type_specifier =
+    {char}
+  | {bool}
+  | {int}
+  | {long}
+  | {float}
+  | {double}
+  | {timer}
+  | {port}
+  | {identifier}
+  | {void}
+;
+
+statement =
+	{declaration} declaration
+;
+
+expr =
+	{integer}                   integer_literal
+  | {decimal}                   decimal_literal
+  | {true}
+  | {false}
+;
