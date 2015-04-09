@@ -155,11 +155,13 @@ declaration {-> declaration} =
 statement {-> statement} =
 	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
   |	{expr} expr																											{-> New statement.expr(expr.expr)}
+  
+  | {if} if_statement																									{-> if_statement.statement}
 ;
 
 // If
 if_statement {-> statement} =
-    {if} if_keyword l_par [condition]:expr r_par scope*																	{-> New statement.if(condition.expr, [scope.statement])}
+    {if} if_keyword l_par [condition]:expr r_par scope																	{-> New statement.if(condition.expr, [scope.statement])}
   | {if_else} if_keyword l_par [condition]:expr r_par scope else_statement												{-> New statement.if_else(condition.expr, [scope.statement], [else_statement.statement])}
 ;
 
@@ -170,7 +172,7 @@ else_statement {-> statement} =
 
 // Expression
 expr {-> expr} =
-    {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
+    {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
   | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
   | {true}                      true_keyword                                                                            {-> New expr.true()}
   | {false}                     false_keyword                                                                           {-> New expr.false()}
