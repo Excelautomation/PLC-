@@ -2,6 +2,7 @@ package dk.aau.sw402F15.tests.typechecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
+import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
@@ -145,7 +146,7 @@ public class TypeCheckerTests {
         }
 
         // Apply typechecker
-        node.apply(new TypeChecker());
+        node.apply(new TypeChecker(new Scope(null, null)));
     }
 
     private Parser getParser(String code) {

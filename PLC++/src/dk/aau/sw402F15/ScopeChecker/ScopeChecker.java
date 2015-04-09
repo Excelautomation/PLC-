@@ -16,7 +16,7 @@ import java.util.Stack;
 public class ScopeChecker extends DepthFirstAdapter {
     private List<AFunctionCall> functions = new ArrayList<AFunctionCall>();
     private List<AIdentifierType> structs = new ArrayList<AIdentifierType>();
-    private Scope rootScope = new Scope(null);
+    private Scope rootScope = new Scope(null, null);
     private Scope currentScope;
 
     Stack<Object> stack = new Stack<Object>();
@@ -61,7 +61,7 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void caseAScope(AScope node)
     {
-        currentScope = currentScope.addSubScope();
+        currentScope = currentScope.addSubScope(node);
         // Import formal parameters if any
         if(node.parent() instanceof AVoidFunctionFunctionDeclaration)
         {
@@ -74,7 +74,7 @@ public class ScopeChecker extends DepthFirstAdapter {
 
         if(node.getStatements() != null)
         {
-            node.getStatements().apply(this);
+            super.caseAScope(node);
         }
         currentScope = currentScope.getParentScope();
     }

@@ -1,5 +1,6 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
@@ -55,7 +56,7 @@ public class Main {
 
             // Print tree
             tree.apply(new PrettyPrinter());
-            tree.apply(new TypeChecker());
+            tree.apply(new TypeChecker(new Scope(null, tree)));
             tree.apply(new ExpressionEvaluator());
 
         } catch (ParserException e) {

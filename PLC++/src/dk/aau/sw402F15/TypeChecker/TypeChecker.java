@@ -15,13 +15,27 @@ import java.util.Stack;
  */
 public class TypeChecker extends DepthFirstAdapter {
     private Stack<SymbolType> stack = new Stack<SymbolType>();
-    /*private Scope rootScope;
-
+    private final Scope rootScope;
+    private Scope currentScope;
 
     public TypeChecker(Scope rootScope) {
-
         this.rootScope = rootScope;
-    }*/
+        this.currentScope = rootScope;
+    }
+
+    @Override
+    public void inAScope(AScope node) {
+        super.inAScope(node);
+
+        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
+    }
+
+    @Override
+    public void outAScope(AScope node) {
+        super.outAScope(node);
+
+        currentScope = currentScope.getParentScope();
+    }
 
     @Override
     public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
@@ -30,6 +44,11 @@ public class TypeChecker extends DepthFirstAdapter {
         if (stack.pop() != stack.pop()) {
             throw new IllegalAssignment();
         }
+    }
+
+    @Override
+    public void caseTIdentifier(TIdentifier node) {
+        //stack.push(currentScope.getSymbol(node.getText()).getType());
     }
 
     @Override
