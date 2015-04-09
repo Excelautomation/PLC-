@@ -125,12 +125,13 @@ type_specifier {-> type_specifier} =
 root_declaration {-> root_declaration} =
 	{variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
   |	{function} function_definition																						{-> function_definition.root_declaration}
+  | {struct} struct_definition																							{-> struct_definition.root_declaration}
 ;
 
 // Function definition
 function_definition {-> root_declaration} =
-	{function} type_specifier identifier l_par formal_parameter r_par l_brc statement* r_brc							{-> New root_declaration.function(type_specifier, identifier, [formal_parameter.declaration], [statement])}
-  | {method} void_keyword identifier l_par formal_parameter r_par l_brc statement* r_brc								{-> New root_declaration.function(New type_specifier.void(), identifier, [formal_parameter.declaration], [statement])}
+	{function} type_specifier identifier l_par formal_parameter? r_par l_brc statement* r_brc							{-> New root_declaration.function(type_specifier, identifier, [formal_parameter.declaration], [statement])}
+  | {method} void_keyword identifier l_par formal_parameter? r_par l_brc statement* r_brc								{-> New root_declaration.function(New type_specifier.void(), identifier, [formal_parameter.declaration], [statement])}
 ;
 
 // Formal parameters
@@ -138,11 +139,16 @@ formal_parameter {-> declaration*} =
 	{single} type_specifier identifier																					{-> [New declaration.simple(type_specifier, identifier)]}
   | {multiple} type_specifier identifier comma formal_parameter															{-> [New declaration.simple(type_specifier, identifier), formal_parameter.declaration]}
 ;
+
+// Struct
+struct_definition {-> root_declaration} =
+	struct_keyword identifier l_brc program r_brc																		{-> New root_declaration.struct(identifier, program)}
+;
 	
 // Declaration
 declaration {-> declaration} =
 	{simple} type_specifier identifier semi																				{-> New declaration.simple(type_specifier.type_specifier, identifier)}
-  | {assignment} type_specifier identifier expr semi																	{-> New declaration.assignment(type_specifier.type_specifier, identifier, expr)}
+  | {assignment} type_specifier identifier assignment_operator expr semi												{-> New declaration.assignment(type_specifier.type_specifier, identifier, expr)}
 ;
 
 // Statements
@@ -164,7 +170,7 @@ else_statement {-> statement} =
 
 // Expression
 expr {-> expr} =
-  {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
+    {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
   | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
   | {true}                      true_keyword                                                                            {-> New expr.true()}
   | {false}                     false_keyword                                                                           {-> New expr.false()}
@@ -181,6 +187,7 @@ program =
 root_declaration = 
 	{declaration} 				declaration 
   |	{function} 					[return_type]:type_specifier	[name]:identifier			[params]:declaration*		[statements]:statement*
+  | {struct}					[name]:identifier				[program]:program
 ;
   
 declaration =
