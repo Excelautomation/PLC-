@@ -266,9 +266,6 @@ expr9 {-> expr} =
 	{increment} identifier increment_operator																			{-> New expr.increment(identifier)}
   |	{decrement} identifier decrement_operator																			{-> New expr.decrement(identifier)}
   
-	// Function call
-  | {function_call} identifier l_par actual_parameter? r_par															{-> New expr.function_call(identifier, [actual_parameter.expr])}
-  
 	// Array
   | {array_subscript} identifier l_bkt [expr]:expr9 r_bkt																{-> New expr.array(identifier, expr.expr)}
   
@@ -281,6 +278,11 @@ expr9 {-> expr} =
   | {factor} [expr]:expr_value																							{-> expr.expr}
 ;
 
+// Function call
+function_call {-> expr} =
+  	identifier l_par actual_parameter? r_par																			{-> New expr.function_call(identifier, [actual_parameter.expr])}
+;
+  
 // Actual parameters
 actual_parameter {-> expr*} =
 	{single} expr																										{-> [expr.expr]}
@@ -293,7 +295,12 @@ expr_value {-> expr} =
   | {true}                      true_keyword                                                                            {-> New expr.true()}
   | {false}                     false_keyword                                                                           {-> New expr.false()}
   | {identifier}				identifier																				{-> New expr.identifier(identifier)}
+  	
 //  | {port_identifier}			port_identifier expr																	}
+	
+	// Precedence changed from C to allow functions in structs
+	// Function call
+  | {function_call} function_call																						{-> function_call.expr}
 ;
 
 
