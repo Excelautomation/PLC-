@@ -28,6 +28,9 @@ l_par = '(';
 r_par = ')';
 l_brc = '{';
 r_brc = '}';
+l_bkt = '[';
+r_bkt = ']';
+
 semi = ';';
 comma = ',';
 dot = '.';
@@ -180,12 +183,119 @@ else_statement {-> statement} =
 ;
 
 // Expression
+// C operator precedence - precedence inverted
+// Precedence 14
 expr {-> expr} =
+	// Assignment
+	{assignment} identifier assignment_operator expr																	{-> New expr.assignment(identifier, expr.expr)}
+	
+	// Compound
+  |	{compound_add} identifier add_assignment_operator expr																{-> New expr.compound_add(identifier, expr.expr)}
+  | {compound_sub} identifier sub_assignment_operator expr																{-> New expr.compound_sub(identifier, expr.expr)}
+  | {compound_mult} identifier mult_assignment_operator expr															{-> New expr.compound_mult(identifier, expr.expr)}
+  | {compound_div} identifier div_assignment_operator expr																{-> New expr.compound_div(identifier, expr.expr)}
+  | {compound_mod} identifier mod_assignment_operator expr																{-> New expr.compound_mod(identifier, expr.expr)}
+  | {factor} [expr]:expr2																								{-> expr.expr}	
+;
+
+// Precedence 12
+expr2 {-> expr} =
+	{or} [left]:expr2 or_operator [right]:expr3																			{-> New expr.compare_or(left.expr, right.expr)}
+  | {factor} [expr]:expr3																								{-> expr.expr}
+;
+
+// Precedence 11
+expr3 {-> expr} =
+	{and} [left]:expr3 and_operator [right]:expr4																		{-> New expr.compare_and(left.expr, right.expr)}
+  | {factor} [expr]:expr4																								{-> expr.expr}
+;
+
+// Precedence 7
+expr4 {-> expr} =
+	{equal} [left]:expr4 equal_operator [right]:expr5																	{-> New expr.compare_equal(left.expr, right.expr)}
+  |	{not_equal} [left]:expr4 not_equal_operator [right]:expr5															{-> New expr.compare_not_equal(left.expr, right.expr)}
+  | {factor} [expr]:expr5																								{-> expr.expr}
+;
+
+// Precedence 6
+expr5 {-> expr} =
+	{less} [left]:expr5 less_than_operator [right]:expr6																{-> New expr.compare_less(left.expr, right.expr)}
+  |	{less_or_equal} [left]:expr5 less_than_or_equal_operator [right]:expr6												{-> New expr.compare_less_or_equal(left.expr, right.expr)}
+  |	{greater} [left]:expr5 greater_than_operator [right]:expr6															{-> New expr.compare_greater(left.expr, right.expr)}
+  |	{greater_or_equal} [left]:expr5 greater_than_or_equal_operator [right]:expr6										{-> New expr.compare_greater_or_equal(left.expr, right.expr)}
+  | {factor} [expr]:expr6																								{-> expr.expr}
+;
+
+// Precedence 4
+expr6 {-> expr} =
+	{add} [left]:expr6 add_operator [right]:expr7																		{-> New expr.add(left.expr, right.expr)}
+  |	{sub} [left]:expr6 sub_operator [right]:expr7																		{-> New expr.sub(left.expr, right.expr)}
+  | {factor} [expr]:expr7																								{-> expr.expr}
+;
+
+// Precedence 3
+expr7 {-> expr} =
+	{multi} [left]:expr7 mult_operator [right]:expr8																	{-> New expr.multi(left.expr, right.expr)}
+  |	{div} [left]:expr7 div_operator [right]:expr8																		{-> New expr.div(left.expr, right.expr)}
+  |	{mod} [left]:expr7 mod_operator [right]:expr8																		{-> New expr.mod(left.expr, right.expr)}
+  | {factor} [expr]:expr8																								{-> expr.expr}
+;
+
+// Precedence 2
+expr8 {-> expr} =
+	// Prefix increment / decrement
+	{increment} increment_operator identifier																			{-> New expr.increment(identifier)}
+  |	{decrement} decrement_operator identifier																			{-> New expr.decrement(identifier)}
+	
+	// Unary plus and minus
+  |	{unary_plus} add_operator [expr]:expr8																				{-> New expr.unary_plus(expr.expr)}
+  |	{unary_minus} sub_operator [expr]:expr8																				{-> New expr.unary_minus(expr.expr)}
+
+	// Negation
+  | {negate} negate_operator [expr]:expr8																				{-> New expr.negation(expr.expr)}
+  
+	// Type cast
+  | {cast} l_par [type]:type_specifier r_par [expr]:expr8																{-> New expr.type_cast(type.type_specifier, expr.expr)}
+  
+  | {factor} [expr]:expr9																								{-> expr.expr}
+;
+
+// Precedence 1
+expr9 {-> expr} =
+  	// Postfix increment / decrement
+	{increment} identifier increment_operator																			{-> New expr.increment(identifier)}
+  |	{decrement} identifier decrement_operator																			{-> New expr.decrement(identifier)}
+  
+  // Parenthesis
+//  | {par} l_par expr r_par																								{-> expr.expr}
+  
+	// Function call
+  | {function_call} identifier l_par actual_parameter? r_par															{-> New expr.function_call(identifier, [actual_parameter.expr])}
+  
+	// Array
+  | {array_subscript} identifier l_bkt [expr]:expr9 r_bkt																{-> New expr.array(identifier, expr.expr)}
+  
+	// Dot
+  | {member} [left]:expr9 dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
+  
+  | {factor} [expr]:expr_value																							{-> expr.expr}
+;
+
+// Actual parameters
+actual_parameter {-> expr*} =
+	{single} expr																										{-> [expr.expr]}
+  | {multiple} expr comma actual_parameter																				{-> [expr.expr, actual_parameter.expr]}
+;
+
+expr_value {-> expr} =
     {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
   | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
   | {true}                      true_keyword                                                                            {-> New expr.true()}
   | {false}                     false_keyword                                                                           {-> New expr.false()}
+  | {identifier}				identifier																				{-> New expr.identifier(identifier)}
+//  | {port_identifier}			port_identifier expr																	}
 ;
+
 
 // Expression
 
@@ -238,7 +348,44 @@ statement =
 ;
 
 expr =
-	{integer}                   integer_literal
+  | {identifier}				[name]:identifier
+
+  | {function_call}				[name]:identifier				[args]:expr*
+  | {array}						[name]:identifier				expr
+  | {member}					[left]:expr						[right]:expr
+
+  | {increment}					[name]:identifier
+  | {decrement}					[name]:identifier
+  | {unary_plus}				expr
+  | {unary_minus}				expr
+  | {negation}					expr
+  | {type_cast}					[target_type]:type_specifier	expr
+  
+  | {multi}						[left]:expr						[right]:expr
+  | {div}						[left]:expr						[right]:expr
+  | {mod}						[left]:expr						[right]:expr
+
+  | {add}						[left]:expr						[right]:expr
+  | {sub}						[left]:expr						[right]:expr
+
+  | {compare_less}				[left]:expr						[right]:expr
+  | {compare_less_or_equal}		[left]:expr						[right]:expr
+  | {compare_greater}			[left]:expr						[right]:expr
+  | {compare_greater_or_equal}	[left]:expr						[right]:expr
+
+  | {compare_equal}				[left]:expr						[right]:expr
+  | {compare_not_equal}			[left]:expr						[right]:expr
+  
+  | {compare_and}				[left]:expr						[right]:expr
+  | {compare_or}				[left]:expr						[right]:expr
+  | {assignment}				[name]:identifier				expr
+  | {compound_add}				[name]:identifier				expr
+  | {compound_sub}				[name]:identifier				expr
+  | {compound_mult}				[name]:identifier				expr
+  | {compound_div}				[name]:identifier				expr
+  | {compound_mod}				[name]:identifier				expr
+  
+  |	{integer}                   integer_literal
   | {decimal}                   decimal_literal
   | {true}
   | {false}
