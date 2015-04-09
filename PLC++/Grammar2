@@ -161,6 +161,7 @@ statement {-> statement} =
   
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
+  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par scope		{-> New statement.for(initilizer.expr, condition.expr, iterator.expr)} // TODO: for with declaration
   
   // Return
   | {return} return_keyword semi																						{-> New statement.return()}
@@ -229,6 +230,7 @@ statement =
   
   // Iteration
   | {while}						[condition]:expr				[statements]:statement*
+  | {for}						[initilizer]:expr?				[condition]:expr?			[iterator]:expr?
   
   // Return
   | {return}
