@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
+import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolStruct;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -23,6 +24,15 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     public ScopeChecker() {
         currentScope = rootScope;
+    }
+
+    @Override
+    public void caseAStruct(AStruct node){
+        currentScope = currentScope.addSubScope(node);
+        List<Symbol> list = currentScope.toList();
+        node.getStructBody().apply(this);
+        currentScope = currentScope.getParentScope();
+        currentScope.addSymbol(new SymbolStruct(node.getIdentifier().getText(), list, node, currentScope));
     }
 
     @Override

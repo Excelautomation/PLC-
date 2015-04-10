@@ -5,10 +5,7 @@ import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolAlreadyExists;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
 import dk.aau.sw402F15.parser.node.Node;
 
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public class Scope {
     private Dictionary<String, Symbol> symbols;
@@ -21,6 +18,17 @@ public class Scope {
         this.symbols = new Hashtable<String, Symbol>();
         this.scopes = new ArrayList<Scope>();
         this.parentScope = parentScope;
+    }
+
+    public List<Symbol> toList(){
+        Enumeration<Symbol> enumeration = symbols.elements();
+        List<Symbol> result = new ArrayList<Symbol>(symbols.size());
+        while(enumeration.hasMoreElements())
+        {
+            Symbol symbol = enumeration.nextElement();
+            result.add(symbol);
+        }
+        return result;
     }
 
     public void addSymbol(Symbol symbol) {
