@@ -2,25 +2,41 @@ package dk.aau.sw402F15.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
+import sun.org.mozilla.javascript.internal.ast.FunctionCall;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Created by Mads on 08/04/15.
  */
 
 public class ScopeChecker extends DepthFirstAdapter {
-    private List<AFunctionCall> functions = new ArrayList<AFunctionCall>();
-    private List<AIdentifierType> structs = new ArrayList<AIdentifierType>();
     private Scope rootScope = new Scope(null, null);
     private Scope currentScope;
-
-    Stack<Object> stack = new Stack<Object>();
+    private List<PType> typeList = new ArrayList<PType>();
+    private List<AIdentifierType> structs = new ArrayList<AIdentifierType>();
+    private List<AFunctionCall> functions = new ArrayList<AFunctionCall>();
 
     public ScopeChecker() {
         currentScope = rootScope;
+    }
+
+    @Override
+    public void inAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
+        super.outAFunctionFunctionDeclaration(node);
+
+        // Clear list for loading returntypes and input parameters.
+        typeList.clear();
+    }
+
+    @Override
+    public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
+        super.outAFunctionFunctionDeclaration(node);
+
+        // convert parameter nodes to symboltype.
+        // typeList.subList(1, typeList.size())
+        //currentScope.addSymbol(new SymbolFunction(typeList.get(0), , node.getIdentifier().getText(), currentScope);
     }
 
     @Override
@@ -45,24 +61,60 @@ public class ScopeChecker extends DepthFirstAdapter {
         }
     }
 
-    @Override
-    public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
-        super.outAFunctionFunctionDeclaration(node);
-
-        //currentScope.addSymbol(new SymbolFunction(node));
-    }
-
-    @Override
-    public void outAVoidFunctionFunctionDeclaration(AVoidFunctionFunctionDeclaration node) {
-        super.outAVoidFunctionFunctionDeclaration(node);
-
-    }
-
+    // Types
     @Override
     public void outABoolType(ABoolType node) {
         super.outABoolType(node);
-        stack.push(node);
-        // use list
+        typeList.add(node);
+    }
+
+    @Override
+    public void outACharType(ACharType node) {
+        super.outACharType(node);
+        typeList.add(node);
+    }
+
+    @Override
+    public void outAIntType(AIntType node) {
+        super.outAIntType(node);
+        typeList.add(node);
+    }
+
+    @Override
+    public void outALongType(ALongType node) {
+        super.outALongType(node);
+        typeList.add(node);
+    }
+
+    @Override
+    public void outAFloatType(AFloatType node) {
+        super.outAFloatType(node);
+        typeList.add(node);
+
+    }
+
+    @Override
+    public void outADoubleType(ADoubleType node) {
+        super.outADoubleType(node);
+        typeList.add(node);
+    }
+
+    @Override
+    public void outATimerType(ATimerType node) {
+        super.outATimerType(node);
+        typeList.add(node);
+    }
+
+    @Override
+    public void outAPortType(APortType node) {
+        super.outAPortType(node);
+        typeList.add(node);
+    }
+
+    @Override
+    public void outAIdentifierType(AIdentifierType node) {
+        super.outAIdentifierType(node);
+        typeList.add(node);
     }
 
     @Override
