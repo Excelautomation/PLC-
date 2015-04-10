@@ -84,45 +84,6 @@ public class TypeChecker extends DepthFirstAdapter {
         stack.push(SymbolType.Boolean);
     }
 
-    /*
-    @Override
-    public void outAIntType(AIntType node) {
-        super.outAIntType(node);
-        stack.push(SymbolType.Int);
-    }
-
-    @Override
-    public void outALongType(ALongType node) {
-        super.outALongType(node);
-        stack.push(SymbolType.Int);
-    }
-
-    @Override
-    public void outADoubleType(ADoubleType node) {
-        super.outADoubleType(node);
-        stack.push(SymbolType.Decimal);
-    }
-
-    @Override
-    public void outAFloatType(AFloatType node) {
-        super.outAFloatType(node);
-        stack.push(SymbolType.Decimal);
-    }
-
-    @Override
-    public void outACharType(ACharType node) {
-        super.outACharType(node);
-        stack.push(SymbolType.Char);
-    }
-
-    @Override
-    public void outABoolType(ABoolType node) {
-        super.outABoolType(node);
-        stack.push(SymbolType.Boolean);
-
-
-    }*/
-
     @Override
     public void outACompareGreaterExpr3(ACompareGreaterExpr3 node) {
         super.outACompareGreaterExpr3(node);

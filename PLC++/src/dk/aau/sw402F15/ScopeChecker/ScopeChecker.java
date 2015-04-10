@@ -1,8 +1,5 @@
 package dk.aau.sw402F15.ScopeChecker;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolStruct;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
+import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 
