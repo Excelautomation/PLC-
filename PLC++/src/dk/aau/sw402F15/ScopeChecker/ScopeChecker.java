@@ -7,6 +7,7 @@ import dk.aau.sw402F15.parser.node.ABoolType;
 import dk.aau.sw402F15.parser.node.AFunctionFunctionDeclaration;
 import dk.aau.sw402F15.parser.node.AVoidFunctionFunctionDeclaration;
 
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -16,14 +17,19 @@ import java.util.Stack;
 public class ScopeChecker extends DepthFirstAdapter {
     private Scope rootScope = new Scope(null);
     private Scope currentScope;
-
-    Stack<Object> stack = new Stack<Object>();
+    private List<Object> list;
 
     public ScopeChecker() {
         currentScope = rootScope;
     }
 
+    @Override
+    public void inAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
+        super.outAFunctionFunctionDeclaration(node);
+        list.clear();
 
+        //currentScope.addSymbol(new SymbolFunction(node));
+    }
 
     @Override
     public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
@@ -41,7 +47,8 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outABoolType(ABoolType node) {
         super.outABoolType(node);
-        stack.push(node);
+        list.add(node);
         // use list
     }
+
 }
