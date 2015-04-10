@@ -98,7 +98,11 @@ integer_literal = (digit)+;
 decimal_literal = (digit)+ '.' (digit)+;
 
 // Identifier
-port_identifier = ('I' | 'Q' | 'M' | 'AI' | 'AQ') '#';
+port_input_identifier = 'I#';
+port_output_identifier = 'O#';
+port_memory_identifier = 'M#';
+port_analog_input_identifier = 'AI#';
+port_analog_output_identifier = 'AO#';
 identifier = letter_or_specials letter_or_digit_or_specials*;
 
 // White space
@@ -314,16 +318,20 @@ actual_parameter {-> expr*} =
 ;
 
 expr_value {-> expr} =
-    {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
-  | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
-  | {true}                      true_keyword                                                                            {-> New expr.true()}
-  | {false}                     false_keyword                                                                           {-> New expr.false()}
-  | {identifier}				identifier																				{-> New expr.identifier(identifier)}
-  	
-//  | {port_identifier}			port_identifier expr																	}
+    {integer}                         integer_literal                                                                   {-> New expr.integer(integer_literal)}
+  | {decimal}                         decimal_literal                                                                   {-> New expr.decimal(decimal_literal)}
+  | {true}                            true_keyword                                                                      {-> New expr.true()}
+  | {false}                           false_keyword                                                                     {-> New expr.false()}
+  | {identifier}				      identifier																	    {-> New expr.identifier(identifier)}
+
+  | {port_input_identifier}		      port_input_identifier [expr]:expr_value											{-> New expr.port_input(expr.expr)}
+  | {port_output_identifier}	      port_output_identifier [expr]:expr_value											{-> New expr.port_output(expr.expr)}
+  | {port_memory_identifier}	      port_memory_identifier [expr]:expr_value											{-> New expr.port_memory(expr.expr)}
+  | {port_analog_input_identifier}	  port_analog_input_identifier [expr]:expr_value									{-> New expr.port_analog_input(expr.expr)}
+  | {port_analog_output_identifier}   port_analog_output_identifier [expr]:expr_value									{-> New expr.port_analog_output(expr.expr)}
 	
-	// Precedence changed from C to allow functions in structs
-	// Function call
+  // Precedence changed from C to allow functions in structs
+  // Function call
   | {function_call} function_call																						{-> function_call.expr}
 ;
 
@@ -427,4 +435,10 @@ expr =
   | {decimal}                   decimal_literal
   | {true}
   | {false}
+
+  | {port_input}                expr
+  | {port_output}               expr
+  | {port_memory}               expr
+  | {port_analog_input}         expr
+  | {port_analog_output}        expr
 ;
