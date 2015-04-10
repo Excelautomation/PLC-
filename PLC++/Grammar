@@ -9,6 +9,8 @@ sp  = ' ';
 
 line_terminator = lf | cr | cr lf;
 
+all = [0 .. 255];
+
 digit =	['0' .. '9'];
 letter = ['a' .. 'z'] | ['A' .. 'Z'];
 specials = '_';
@@ -17,11 +19,18 @@ letter_or_digit = (letter | digit);
 letter_or_specials = (letter | specials);
 letter_or_digit_or_specials = (letter_or_digit | specials);
 
+not_line_terminator = [all - [cr + lf]];
+
 Tokens
+comments = ('//' not_line_terminator* line_terminator);
+
 l_par = '(';
 r_par = ')';
 l_brc = '{';
 r_brc = '}';
+l_bkt = '[';
+r_bkt = ']';
+
 semi = ';';
 comma = ',';
 dot = '.';
@@ -42,6 +51,8 @@ not_equal_operator = '!=';
 and_operator = '&&';
 or_operator = '||';
 
+conditional_operator = '?';
+
 add_operator = '+';
 sub_operator = '-';
 mult_operator = '*';
@@ -55,17 +66,23 @@ greater_than_or_equal_operator = '>=';
 less_than_or_equal_operator = '<=';
 
 // Keywords
-char_keyword = 'char';
-bool_keyword = 'bool';
-int_keyword = 'int';
-long_keyword = 'long';
-float_keyword = 'float';
-double_keyword = 'double';
-port_keyword = 'port';
-timer_keyword = 'timer';
-void_keyword = 'void';
-return_keyword = 'return';
-struct_keyword = 'struct';
+char_keyword        = 'char';
+bool_keyword        = 'bool';
+int_keyword         = 'int';
+long_keyword        = 'long';
+double_keyword      = 'double';
+float_keyword       = 'float';
+default_keyword     = 'default';
+switch_keyword      = 'switch';
+case_keyword        = 'case';
+break_keyword       = 'break';
+continue_keyword    = 'continue';
+// enum_keyword     = 'enum';
+port_keyword        = 'port';
+timer_keyword       = 'timer';
+void_keyword        = 'void';
+return_keyword      = 'return';
+struct_keyword      = 'struct';
 
 if_keyword = 'if';
 else_keyword = 'else';
@@ -88,265 +105,326 @@ identifier = letter_or_specials letter_or_digit_or_specials*;
 white_space = (sp | ht | ff | line_terminator)+;
 
 Ignored Tokens
-white_space;
+	comments,
+	white_space;
 
 Productions
 
-program =
-    {statement} statement program?
-  | {function} function_declaration program?
-  | {struct} struct program?
+program {-> program} =
+	root_declaration*																									{-> New program([root_declaration])}
+;
+
+// Scope
+scope {-> statement} = 
+    l_brc statement* r_brc																								{-> New statement.scope([statement.statement])}
 ;
 
 // Types
-type = 
-    {char} char_keyword
-  | {bool} bool_keyword
-  | {int} int_keyword
-  | {long} long_keyword
-  | {float} float_keyword
-  | {double} double_keyword
-  | {timer} timer_keyword
-  | {port} port_keyword
-  | {identifier} identifier
+type_specifier {-> type_specifier} = 
+    {char} char_keyword																									{-> New type_specifier.char()}
+  | {bool} bool_keyword																									{-> New type_specifier.bool()}
+  | {int} int_keyword																									{-> New type_specifier.int()}
+  | {long} long_keyword																									{-> New type_specifier.long()}
+  | {float} float_keyword																								{-> New type_specifier.float()}
+  | {double} double_keyword																								{-> New type_specifier.double()}
+  | {timer} timer_keyword																								{-> New type_specifier.timer()}
+  | {port} port_keyword																									{-> New type_specifier.port()}
+  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier()}
 ;
-  
-// Scope
-scope = 
-    l_brc statements? r_brc
+
+// Declaration in root scope
+root_declaration {-> root_declaration} =
+	{variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
+  |	{function} function_definition																						{-> function_definition.root_declaration}
+  | {struct} struct_definition																							{-> struct_definition.root_declaration}
+;
+
+// Function definition
+function_definition {-> root_declaration} =
+	{function} type_specifier identifier l_par formal_parameter? r_par l_brc statement* r_brc							{-> New root_declaration.function(type_specifier, identifier, [formal_parameter.declaration], [statement])}
+  | {method} void_keyword identifier l_par formal_parameter? r_par l_brc statement* r_brc								{-> New root_declaration.function(New type_specifier.void(), identifier, [formal_parameter.declaration], [statement])}
+;
+
+// Formal parameters
+formal_parameter {-> declaration*} =
+	{single} type_specifier identifier																					{-> [New declaration.simple(type_specifier, identifier)]}
+  | {multiple} type_specifier identifier comma formal_parameter															{-> [New declaration.simple(type_specifier, identifier), formal_parameter.declaration]}
 ;
 
 // Struct
-struct =
-    struct_keyword identifier l_brc struct_body? r_brc
+struct_definition {-> root_declaration} =
+	struct_keyword identifier l_brc program r_brc																		{-> New root_declaration.struct(identifier, program)}
 ;
-
-struct_body =
-    {declaration} declaration_statement semi struct_body?
-  | {function} function_declaration struct_body?
-;
-
-// Function declaration
-functions =
-    function_declaration functions?
-;
-
-function_declaration =
-    {function} type identifier l_par formal_parameters? r_par scope
-  | {void_function} void_keyword identifier l_par formal_parameters? r_par scope
-;
-
-// Function call
-function_call =
-    identifier l_par actual_parameters? r_par
-;
-  
-// Parameters
-formal_parameters =
-    formal_parameter additional_formal_parameter?
-;
-  
-actual_parameters = 
-    actual_parameter additional_actual_parameter?
-;
-  
-formal_parameter = 
-    type identifier
-;
-  
-additional_formal_parameter = 
-    comma formal_parameters
-;
-  
-actual_parameter =
-    expr
-;
-  
-additional_actual_parameter =
-    comma actual_parameters
-;
-  
-// Statements
-statements = 
-    statement statements?
-;
-
-statement = 
-    {declaration} declaration_statement semi
-  | {assignment} assignment_statement semi
-  | {conditional} conditional_statement
-  | {iterative} iterative_statement
-  | {scope} scope
-  | {unary_assignment} unary_assignment semi
-  | {semi} semi
-  | {function} function_call additional_identifier? semi
-  | {return} return_statement semi
-;
-
-// Return statement
-return_statement =
-    {normal_return} return_keyword expr
-  | {void_return} return_keyword
-;
-
+	
 // Declaration
-declaration_statement =
-    {declaration} type identifier
-  | {declaration_assignment} type identifier assignment_operator expr
+declaration {-> declaration} =
+	{simple} type_specifier identifier semi																				{-> New declaration.simple(type_specifier.type_specifier, identifier)}
+  | {assignment} type_specifier identifier assignment_operator expr semi												{-> New declaration.assignment(type_specifier.type_specifier, identifier, expr)}
 ;
 
-// Assignment
-assignment_statement = 
-    {assignment} identifier additional_identifier? assignment_operator expr
-;
+// Statements
+statement {-> statement} =
+	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
+  |	{expr} expr	semi																									{-> New statement.expr(expr.expr)}
   
-unary_assignment =
-    {add} identifier add_assignment_operator expr
-  | {sub} identifier sub_assignment_operator expr
-  | {mult} identifier mult_assignment_operator expr
-  | {div} identifier div_assignment_operator expr
-  | {mod} identifier mod_assignment_operator expr
-  | {unary} unary_expression
-;
+  // Conditional
+  | {if} if_statement																									{-> if_statement.statement}
   
-// Conditional statement
-conditional_statement =
-    {if} if_statement
-;
-
-if_statement =
-    {if} [if]:if_keyword l_par expr r_par scope
-  | {if_else} [if]:if_keyword l_par expr r_par scope else_statement
-;
-
-else_statement = 
-    {else} else_keyword scope
-  | {else_if} else_keyword if_statement
-;
-
-// Iterative statement
-iterative_statement =
-    {while} while_statement
-  | {for} for_statement
-;
+  // Iteration
+  | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
+  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par scope		{-> New statement.for(initilizer.expr, condition.expr, iterator.expr)} // TODO: for with declaration
   
-while_statement = 
-    {while} while_keyword l_par expr r_par scope
+  // Return
+  | {return} return_keyword semi																						{-> New statement.return()}
+  | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
+
+  // Continue
+  | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
+
+  // Break
+  | {break} break_keyword semi                                                                                          {-> New statement.break()}
 ;
 
-for_statement =
-    {for} for_keyword l_par for_initializer for_condition for_iterator r_par scope
-;
-  
-for_initializer =
-    {assignment} assignment_statement semi
-  | {declaration} declaration_statement semi
+// If
+if_statement {-> statement} =
+    {if} if_keyword l_par [condition]:expr r_par scope																	{-> New statement.if(condition.expr, [scope.statement])}
+  | {if_else} if_keyword l_par [condition]:expr r_par scope else_statement												{-> New statement.if_else(condition.expr, [scope.statement], [else_statement.statement])}
 ;
 
-for_condition =
-    {expr} expr semi
-;
-  
-for_iterator =
-    {iterator} assignment_statement
-  | {unary_assign} unary_assignment
+else_statement {-> statement} = 
+    {else} else_keyword scope																							{-> scope.statement}
+  | {else_if} else_keyword if_statement																					{-> if_statement.statement}
 ;
 
-// Additional identifier
-additional_identifier =
-    {identifier} dot identifier additional_identifier?
-  | {function} dot function_call additional_identifier?
+// Switch
+switch_statement {-> statement} =
+    {switch} switch_keyword l_par [condition]:expr r_par scope                                                          {-> New statement.switch(condition.expr, [scope.statement])}
+;
+
+label_statements {-> statement} =
+    {case} case_keyword [condition]:expr semi scope                                                                     {-> New statement.case(condition.expr, [scope.statement])}
+  | {default} default_keyword semi scope                                                                                {-> New statement.default([scope.statement])}
 ;
 
 // Expression
+// C operator precedence - precedence inverted
+// Precedence 14
 expr {-> expr} =
-    {compare_and}               [left]:expr       and_operator                   [right]:expr2                          {-> New expr.compare_and(left.expr, right.expr)}
-  | {compare_or}                [left]:expr       or_operator                    [right]:expr2                          {-> New expr.compare_or(left.expr, right.expr)}
-  | {term}                      expr2                                                                                   {-> expr2.expr}
+	// Assignment
+	{assignment} identifier assignment_operator expr																	{-> New expr.assignment(identifier, expr.expr)}
+	
+	// Compound
+  |	{compound_add} identifier add_assignment_operator expr																{-> New expr.compound_add(identifier, expr.expr)}
+  | {compound_sub} identifier sub_assignment_operator expr																{-> New expr.compound_sub(identifier, expr.expr)}
+  | {compound_mult} identifier mult_assignment_operator expr															{-> New expr.compound_mult(identifier, expr.expr)}
+  | {compound_div} identifier div_assignment_operator expr																{-> New expr.compound_div(identifier, expr.expr)}
+  | {compound_mod} identifier mod_assignment_operator expr																{-> New expr.compound_mod(identifier, expr.expr)}
+  | {factor} [expr]:expr2																								{-> expr.expr}	
 ;
 
+// Precedence 12
 expr2 {-> expr} =
-    {compare_equal}             [left]:expr2      equal_operator                 [right]:expr3                          {-> New expr.compare_equal(left.expr, right.expr)}
-  | {compare_not_equal}         [left]:expr2      not_equal_operator             [right]:expr3                          {-> New expr.compare_not_equal(left.expr, right.expr)}
-  | {term}                      expr3                                                                                   {-> expr3.expr}
+	{or} [left]:expr2 or_operator [right]:expr3																			{-> New expr.compare_or(left.expr, right.expr)}
+  | {factor} [expr]:expr3																								{-> expr.expr}
 ;
 
+// Precedence 11
 expr3 {-> expr} =
-    {compare_greater}           [left]:expr3      greater_than_operator          [right]:expr4                          {-> New expr.compare_greater(left.expr, right.expr)}
-  | {compare_less}              [left]:expr3      less_than_operator             [right]:expr4                          {-> New expr.compare_less(left.expr, right.expr)}
-  | {compare_greater_or_equal}  [left]:expr3      greater_than_or_equal_operator [right]:expr4                          {-> New expr.compare_greater_or_equal(left.expr, right.expr)}
-  | {compare_less_or_equal}     [left]:expr3      less_than_or_equal_operator    [right]:expr4                          {-> New expr.compare_less_or_equal(left.expr, right.expr)}
-  | {term}                      expr4                                                                                   {-> expr4.expr}
+	{and} [left]:expr3 and_operator [right]:expr4																		{-> New expr.compare_and(left.expr, right.expr)}
+  | {factor} [expr]:expr4																								{-> expr.expr}
 ;
 
+// Precedence 7
 expr4 {-> expr} =
-    {add}                       [left]:expr4      add_operator                   [right]:expr5                          {-> New expr.add(left.expr, right.expr)}
-  | {sub}                       [left]:expr4      sub_operator                   [right]:expr5                          {-> New expr.sub(left.expr, right.expr)}
-  | {term}                      expr5                                                                                   {-> expr5.expr}
+	{equal} [left]:expr4 equal_operator [right]:expr5																	{-> New expr.compare_equal(left.expr, right.expr)}
+  |	{not_equal} [left]:expr4 not_equal_operator [right]:expr5															{-> New expr.compare_not_equal(left.expr, right.expr)}
+  | {factor} [expr]:expr5																								{-> expr.expr}
 ;
 
+// Precedence 6
 expr5 {-> expr} =
-    {multi}                     [left]:expr5      mult_operator                  [right]:expr_value                     {-> New expr.multi(left.expr, right.expr)}
-  | {div}                       [left]:expr5      div_operator                   [right]:expr_value                     {-> New expr.div(left.expr, right.expr)}
-  | {mod}                       [left]:expr5      mod_operator                   [right]:expr_value                     {-> New expr.mod(left.expr, right.expr)}
-  | {negated}                   negate_operator                                  [right]:expr_value                     {-> New expr.negate_bool(right.expr)}
-  | {term}                      expr_value                                                                              {-> expr_value.expr}
+	{less} [left]:expr5 less_than_operator [right]:expr6																{-> New expr.compare_less(left.expr, right.expr)}
+  |	{less_or_equal} [left]:expr5 less_than_or_equal_operator [right]:expr6												{-> New expr.compare_less_or_equal(left.expr, right.expr)}
+  |	{greater} [left]:expr5 greater_than_operator [right]:expr6															{-> New expr.compare_greater(left.expr, right.expr)}
+  |	{greater_or_equal} [left]:expr5 greater_than_or_equal_operator [right]:expr6										{-> New expr.compare_greater_or_equal(left.expr, right.expr)}
+  | {factor} [expr]:expr6																								{-> expr.expr}
+;
+
+// Precedence 4
+expr6 {-> expr} =
+	{add} [left]:expr6 add_operator [right]:expr7																		{-> New expr.add(left.expr, right.expr)}
+  |	{sub} [left]:expr6 sub_operator [right]:expr7																		{-> New expr.sub(left.expr, right.expr)}
+  | {factor} [expr]:expr7																								{-> expr.expr}
+;
+
+// Precedence 3
+expr7 {-> expr} =
+	{multi} [left]:expr7 mult_operator [right]:expr8																	{-> New expr.multi(left.expr, right.expr)}
+  |	{div} [left]:expr7 div_operator [right]:expr8																		{-> New expr.div(left.expr, right.expr)}
+  |	{mod} [left]:expr7 mod_operator [right]:expr8																		{-> New expr.mod(left.expr, right.expr)}
+  | {factor} [expr]:expr8																								{-> expr.expr}
+;
+
+// Precedence 2
+expr8 {-> expr} =
+	// Prefix increment / decrement
+	{increment} increment_operator identifier																			{-> New expr.increment(identifier)}
+  |	{decrement} decrement_operator identifier																			{-> New expr.decrement(identifier)}
+	
+	// Unary plus and minus
+  |	{unary_plus} add_operator [expr]:expr8																				{-> New expr.unary_plus(expr.expr)}
+  |	{unary_minus} sub_operator [expr]:expr8																				{-> New expr.unary_minus(expr.expr)}
+
+	// Negation
+  | {negate} negate_operator [expr]:expr8																				{-> New expr.negation(expr.expr)}
+  
+	// Type cast
+  | {cast} l_par [type]:type_specifier r_par [expr]:expr8																{-> New expr.type_cast(type.type_specifier, expr.expr)}
+  
+  | {factor} [expr]:expr9																								{-> expr.expr}
+;
+
+// Precedence 1
+expr9 {-> expr} =
+  	// Postfix increment / decrement
+	{increment} identifier increment_operator																			{-> New expr.increment(identifier)}
+  |	{decrement} identifier decrement_operator																			{-> New expr.decrement(identifier)}
+  
+	// Array
+  | {array_subscript} identifier l_bkt [expr]:expr9 r_bkt																{-> New expr.array(identifier, expr.expr)}
+  
+	// Dot
+  | {member} [left]:expr9 dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
+  
+	// Parenthesis
+  | {par} l_par expr r_par																								{-> expr.expr}
+  
+  | {factor} [expr]:expr_value																							{-> expr.expr}
+;
+
+// Function call
+function_call {-> expr} =
+  	identifier l_par actual_parameter? r_par																			{-> New expr.function_call(identifier, [actual_parameter.expr])}
+;
+  
+// Actual parameters
+actual_parameter {-> expr*} =
+	{single} expr																										{-> [expr.expr]}
+  | {multiple} expr comma actual_parameter																				{-> [expr.expr, actual_parameter.expr]}
 ;
 
 expr_value {-> expr} =
-    {value}                     value                                                                                   {-> value.expr}
-  | {expr}                      l_par expr r_par                                                                        {-> expr}
-;
-
-value {-> expr} =
-//    {unary}                     unary_expression                                                                        {-> New expr.unary_expression(unary)}
-  {integer}                     integer_literal                                                                         {-> New expr.integer(integer_literal)}
+    {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
   | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
   | {true}                      true_keyword                                                                            {-> New expr.true()}
   | {false}                     false_keyword                                                                           {-> New expr.false()}
-//  | {function}                  [name]:function_call additional_identifier?                                             {-> New expr.function(name)}
-//  | {identifier}                [name]:identifier additional_identifier?                                                {-> New expr.identifier(name)}
-  | {negative}                  sub_operator [right]:value                                                              {-> New expr.negate_number(right.expr)}
-//  | {port}                      port_identifier expr
+  | {identifier}				identifier																				{-> New expr.identifier(identifier)}
+  	
+//  | {port_identifier}			port_identifier expr																	}
+	
+	// Precedence changed from C to allow functions in structs
+	// Function call
+  | {function_call} function_call																						{-> function_call.expr}
 ;
-  
-unary_expression =//{-> expr} =
-    {increment_prefix}          [name]:increment_operator identifier
-  | {increment_suffix}          [name]:identifier increment_operator
-  | {decrement_prefix}          [name]:decrement_operator identifier
-  | {decrement_suffix}          [name]:identifier decrement_operator
-;
+
+
+// Expression
 
 Abstract Syntax Tree
 
-declaration =
-    {struct}                    [name]:identifier
-  | {function}                  [name]:identifier
+program =
+	root_declaration*
 ;
 
-function =
-    {call}                      [name]:identifier         [args]:expr*
+root_declaration = 
+	{declaration} 				declaration 
+  |	{function} 					[return_type]:type_specifier	[name]:identifier			[params]:declaration*		[statements]:statement*
+  | {struct}					[name]:identifier				[program]:program
+;
+  
+declaration =
+	{simple}					[type]:type_specifier			[name]:identifier
+  |	{assignment}				[type]:type_specifier			[name]:identifier			[expr]:expr
+;
+	
+type_specifier =
+    {char}
+  | {bool}
+  | {int}
+  | {long}
+  | {float}
+  | {double}
+  | {timer}
+  | {port}
+  | {identifier}
+  | {void}
+;
+
+statement =
+	{declaration} 				declaration
+  | {expr} 						expr
+  | {scope}					    statement*
+  
+  // Conditional
+  | {if}						[condition]:expr				[statements]:statement*
+  | {if_else}					[condition]:expr				[statements]:statement*		[else]:statement*
+
+  // Switch
+  | {switch}                    [condition]:expr                [statements]:statement*
+  | {case}                      [case]:expr                     [statements]:statement*
+  | {default}                                                   [statements]:statement*
+
+  // Iteration
+  | {while}						[condition]:expr				[statements]:statement*
+  | {for}						[initilizer]:expr?				[condition]:expr?			[iterator]:expr?
+  
+  // Control-statements
+  | {return}
+  | {return_expr}				expr
+  | {continue}
+  | {break}
 ;
 
 expr =
-    {compare_and}               [left]:expr               [right]:expr
-  | {compare_or}                [left]:expr               [right]:expr
-  | {compare_equal}             [left]:expr               [right]:expr
-  | {compare_not_equal}         [left]:expr               [right]:expr
-  | {compare_greater}           [left]:expr               [right]:expr
-  | {compare_less}              [left]:expr               [right]:expr
-  | {compare_greater_or_equal}  [left]:expr               [right]:expr
-  | {compare_less_or_equal}     [left]:expr               [right]:expr
-  | {add}                       [left]:expr               [right]:expr
-  | {sub}                       [left]:expr               [right]:expr
-  | {multi}                     [left]:expr               [right]:expr
-  | {div}                       [left]:expr               [right]:expr
-  | {mod}                       [left]:expr               [right]:expr
-  | {negate_bool}                                         [right]:expr
-  | {negate_number}                                       [right]:expr
-  | {integer}                                             [right]:integer_literal
-  | {decimal}                                             [right]:decimal_literal
+  | {identifier}				[name]:identifier
+
+  | {function_call}				[name]:identifier				[args]:expr*
+  | {array}						[name]:identifier				expr
+  | {member}					[left]:expr						[right]:expr
+
+  | {increment}					[name]:identifier
+  | {decrement}					[name]:identifier
+  | {unary_plus}				expr
+  | {unary_minus}				expr
+  | {negation}					expr
+  | {type_cast}					[target_type]:type_specifier	expr
+  
+  | {multi}						[left]:expr						[right]:expr
+  | {div}						[left]:expr						[right]:expr
+  | {mod}						[left]:expr						[right]:expr
+
+  | {add}						[left]:expr						[right]:expr
+  | {sub}						[left]:expr						[right]:expr
+
+  | {compare_less}				[left]:expr						[right]:expr
+  | {compare_less_or_equal}		[left]:expr						[right]:expr
+  | {compare_greater}			[left]:expr						[right]:expr
+  | {compare_greater_or_equal}	[left]:expr						[right]:expr
+
+  | {compare_equal}				[left]:expr						[right]:expr
+  | {compare_not_equal}			[left]:expr						[right]:expr
+  
+  | {compare_and}				[left]:expr						[right]:expr
+  | {compare_or}				[left]:expr						[right]:expr
+  | {assignment}				[name]:identifier				expr
+  | {compound_add}				[name]:identifier				expr
+  | {compound_sub}				[name]:identifier				expr
+  | {compound_mult}				[name]:identifier				expr
+  | {compound_div}				[name]:identifier				expr
+  | {compound_mod}				[name]:identifier				expr
+  
+  |	{integer}                   integer_literal
+  | {decimal}                   decimal_literal
   | {true}
   | {false}
-//  | {function}                  [left]:function           [right]:additional_identifier?
 ;
