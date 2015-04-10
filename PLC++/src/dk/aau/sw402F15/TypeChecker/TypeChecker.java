@@ -3,6 +3,7 @@ package dk.aau.sw402F15.TypeChecker;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -13,15 +14,41 @@ import java.util.Stack;
  * Created by Mikkel on 08-04-2015.
  */
 public class TypeChecker extends DepthFirstAdapter {
-    Stack<SymbolType> stack = new Stack<SymbolType>();
+    private Stack<SymbolType> stack = new Stack<SymbolType>();
+    private final Scope rootScope;
+    private Scope currentScope;
+
+    public TypeChecker(Scope rootScope) {
+        this.rootScope = rootScope;
+        this.currentScope = rootScope;
+    }
+
+    @Override
+    public void inAScope(AScope node) {
+        super.inAScope(node);
+
+        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
+    }
+
+    @Override
+    public void outAScope(AScope node) {
+        super.outAScope(node);
+
+        currentScope = currentScope.getParentScope();
+    }
 
     @Override
     public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
         super.outADeclarationAssignmentDeclarationStatement(node);
 
         if (stack.pop() != stack.pop()) {
-            throw new IllegalAssignment(); // Needs a better exception
+            throw new IllegalAssignment();
         }
+    }
+
+    @Override
+    public void caseTIdentifier(TIdentifier node) {
+        //stack.push(currentScope.getSymbol(node.getText()).getType());
     }
 
     @Override
@@ -155,7 +182,7 @@ public class TypeChecker extends DepthFirstAdapter {
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int || arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal) {
+        if ((arg1 == SymbolType.Int && arg2 == SymbolType.Int) || (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal)) {
             stack.push(SymbolType.Boolean);
         }
         else {

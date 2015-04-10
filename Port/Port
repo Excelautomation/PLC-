@@ -1,0 +1,49 @@
+Package dk.aau.sw402F15.portlang.parser;
+
+Tokens
+semi = ';';
+equal_operator = '==';
+not_equal_operator = '!=';
+and_operator = '&&';
+or_operator = '||';
+assignment_operator = '=';
+
+true_keyword = 'true';
+false_keyword = 'false';
+
+decimal_literal = (['0' .. '9'])+ '.' (['0' .. '9'])+;
+port_identifier = ('I' | 'Q' | 'M') '#';
+
+// White space
+white_space = (' ' | 13 | 10)+;
+
+Ignored Tokens
+white_space;
+
+Productions
+
+program =
+  {assignment} assignment program? |
+  {empty} semi program?;
+
+assignment =
+  port assignment_operator expr semi;
+   
+port =
+  port_identifier decimal_literal;
+   
+expr =
+  {compare_and} expr and_operator term |
+  {compare_or} expr or_operator term |
+  {term} term;
+  
+term =
+  {compare_equal} term equal_operator value | 
+  {compare_not_equal} term not_equal_operator value | 
+  {value} value;
+  
+value =
+  {port} port |
+  {true} true_keyword |
+  {false} false_keyword |
+  {expr} expr;
