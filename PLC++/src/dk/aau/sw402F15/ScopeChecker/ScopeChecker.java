@@ -247,4 +247,8 @@ public class ScopeChecker extends DepthFirstAdapter {
         //Assume success of struct types
         structs.add(node);
     }
+
+    public Scope getSymbolTable() {
+        return rootScope;
+    }
 }

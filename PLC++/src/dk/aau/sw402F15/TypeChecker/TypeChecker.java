@@ -47,11 +47,20 @@ public class TypeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void caseTIdentifier(TIdentifier node) {
-        //stack.push(currentScope.getSymbol(node.getText()).getType());
+    public void outAAssignmentStatement(AAssignmentStatement node) {
+        super.outAAssignmentStatement(node);
+
+        if (stack.pop() != stack.pop()) {
+            throw new IllegalAssignment();
+        }
     }
 
     @Override
+    public void caseTIdentifier(TIdentifier node) {
+        stack.push(currentScope.getSymbol(node.getText()).getType());
+    }
+
+   @Override
     public void outAIntegerValue(AIntegerValue node) {
         super.outAIntegerValue(node);
         stack.push(SymbolType.Int);
@@ -75,6 +84,7 @@ public class TypeChecker extends DepthFirstAdapter {
         stack.push(SymbolType.Boolean);
     }
 
+    /*
     @Override
     public void outAIntType(AIntType node) {
         super.outAIntType(node);
@@ -111,7 +121,7 @@ public class TypeChecker extends DepthFirstAdapter {
         stack.push(SymbolType.Boolean);
 
 
-    }
+    }*/
 
     @Override
     public void outACompareGreaterExpr3(ACompareGreaterExpr3 node) {
@@ -194,10 +204,10 @@ public class TypeChecker extends DepthFirstAdapter {
     private void checkExpression(){
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1 == SymbolType.Int || arg2 == SymbolType.Int){
+        if (arg1 == SymbolType.Int && arg2 == SymbolType.Int){
             stack.push(SymbolType.Int);
         }
-        else if (arg1 == SymbolType.Decimal || arg2 == SymbolType.Decimal){
+        else if (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal){
             stack.push(SymbolType.Decimal);
         }
         else{
