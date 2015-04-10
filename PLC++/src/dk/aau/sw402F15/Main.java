@@ -1,5 +1,6 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -46,7 +47,7 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int i = 5;";
+        code = "int i = 5; int f = 6; int x = 9; i = i + f + x;";
 
         System.out.println(code);
 
@@ -56,8 +57,12 @@ public class Main {
 
             // Print tree
             tree.apply(new PrettyPrinter());
-            tree.apply(new TypeChecker(new Scope(null, tree)));
-            tree.apply(new ExpressionEvaluator());
+
+            ScopeChecker checker = new ScopeChecker();
+            tree.apply(checker);
+
+            tree.apply(new TypeChecker(checker.getSymbolTable()));
+            //tree.apply(new ExpressionEvaluator());
 
         } catch (ParserException e) {
             e.printStackTrace();
