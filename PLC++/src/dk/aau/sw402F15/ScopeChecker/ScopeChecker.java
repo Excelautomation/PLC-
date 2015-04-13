@@ -145,11 +145,8 @@ public class ScopeChecker extends DepthFirstAdapter {
             throw new NullPointerException();
         }
 
-        //Find the symbol type
-        SymbolType type = getSymbolType(node.getType());
-
         //Add the symbol
-        currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+        currentScope.addSymbol(new Symbol(getSymbolType(node.getType()), id.getText(), node, currentScope));
     }
 
     @Override
