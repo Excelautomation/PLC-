@@ -47,7 +47,13 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int i = 5;";
+        //code = "int i = 5;";
+
+        code = "int i = 3;\n" +
+                "void func(int p){\n" +
+                "int j = 3;\n" +
+                "double k = 4.1;\n" +
+                "}";
 
         System.out.println(code);
 
