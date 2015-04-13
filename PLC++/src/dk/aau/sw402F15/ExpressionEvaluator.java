@@ -9,18 +9,18 @@ import java.util.Stack;
 public class ExpressionEvaluator extends DepthFirstAdapter {
 
     Stack<Object> stack = new Stack<Object>();
-
+    
     @Override
-    public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
-        super.outADeclarationAssignmentDeclarationStatement(node);
+    public void outADeclarationStatement(ADeclarationStatement node) {
+        super.outADeclarationStatement(node);
 
         System.out.println("Resultat: " + stack.pop());
         System.out.println();
     }
 
     @Override
-    public void outAAssignmentAssignmentStatement(AAssignmentAssignmentStatement node) {
-        super.outAAssignmentAssignmentStatement(node);
+    public void outAAssignmentDeclaration(AAssignmentDeclaration node) {
+        super.outAAssignmentDeclaration(node);
 
         System.out.println("Resultat: " + stack.pop());
         System.out.println();
@@ -49,8 +49,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareEqualExpr2(ACompareEqualExpr2 node) {
-        super.outACompareEqualExpr2(node);
+    public void outACompareEqualExpr(ACompareEqualExpr node) {
+        super.outACompareEqualExpr(node);
 
         Boolean arg2 = (Boolean) stack.pop(), arg1 = (Boolean) stack.pop();
 
@@ -60,8 +60,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareNotEqualExpr2(ACompareNotEqualExpr2 node) {
-        super.outACompareNotEqualExpr2(node);
+    public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
+        super.outACompareNotEqualExpr(node);
 
         Boolean arg2 = (Boolean) stack.pop(), arg1 = (Boolean) stack.pop();
 
@@ -71,8 +71,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareGreaterExpr3(ACompareGreaterExpr3 node) {
-        super.outACompareGreaterExpr3(node);
+    public void outACompareGreaterExpr(ACompareGreaterExpr node) {
+        super.outACompareGreaterExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
 
@@ -90,8 +90,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareGreaterOrEqualExpr3(ACompareGreaterOrEqualExpr3 node) {
-        super.outACompareGreaterOrEqualExpr3(node);
+    public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node) {
+        super.outACompareGreaterOrEqualExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
 
@@ -109,8 +109,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareLessExpr3(ACompareLessExpr3 node) {
-        super.outACompareLessExpr3(node);
+    public void outACompareLessExpr(ACompareLessExpr node) {
+        super.outACompareLessExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
 
@@ -128,8 +128,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outACompareLessOrEqualExpr3(ACompareLessOrEqualExpr3 node) {
-        super.outACompareLessOrEqualExpr3(node);
+    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
+        super.outACompareLessOrEqualExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
 
@@ -147,8 +147,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAAddExpr4(AAddExpr4 node) {
-        super.outAAddExpr4(node);
+    public void outAAddExpr(AAddExpr node) {
+        super.outAAddExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
         if (arg1 instanceof Float || arg2 instanceof Float)
@@ -165,8 +165,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outASubExpr4(ASubExpr4 node) {
-        super.outASubExpr4(node);
+    public void outASubExpr(ASubExpr node) {
+        super.outASubExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
         if (arg1 instanceof Float || arg2 instanceof Float)
@@ -183,8 +183,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAMultiExpr5(AMultiExpr5 node) {
-        super.outAMultiExpr5(node);
+    public void outAMultiExpr(AMultiExpr node) {
+        super.outAMultiExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
         if (arg1 instanceof Float || arg2 instanceof Float)
@@ -201,8 +201,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outADivExpr5(ADivExpr5 node) {
-        super.outADivExpr5(node);
+    public void outADivExpr(ADivExpr node) {
+        super.outADivExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
         if (arg1 instanceof Float || arg2 instanceof Float)
@@ -219,8 +219,8 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAModExpr5(AModExpr5 node) {
-        super.outAModExpr5(node);
+    public void outAModExpr(AModExpr node) {
+        super.outAModExpr(node);
 
         Object arg2 = stack.pop(), arg1 = stack.pop();
         if (arg1 instanceof Float || arg2 instanceof Float)
@@ -237,24 +237,24 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outATrueValue(ATrueValue node) {
-        super.outATrueValue(node);
+    public void outATrueExpr(ATrueExpr node) {
+        super.outATrueExpr(node);
 
         System.out.println("True");
         stack.push(true);
     }
 
     @Override
-    public void outAFalseValue(AFalseValue node) {
-        super.outAFalseValue(node);
+    public void outAFalseExpr(AFalseExpr node) {
+        super.outAFalseExpr(node);
 
         System.out.println("False");
         stack.push(false);
     }
 
     @Override
-    public void outADecimalValue(ADecimalValue node) {
-        super.outADecimalValue(node);
+    public void outADecimalExpr(ADecimalExpr node) {
+        super.outADecimalExpr(node);
 
         System.out.println(node.getDecimalLiteral().getText());
 
@@ -262,17 +262,19 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAIntegerValue(AIntegerValue node) {
-        super.outAIntegerValue(node);
+    public void outAIntegerExpr(AIntegerExpr node) {
+        super.outAIntegerExpr(node);
 
         System.out.println(node.getIntegerLiteral().getText());
 
         stack.push(Integer.parseInt(node.getIntegerLiteral().getText()));
     }
 
+
+
     @Override
-    public void outANegativeValue(ANegativeValue node) {
-        super.outANegativeValue(node);
+    public void outANegationExpr(ANegationExpr node) {
+        super.outANegationExpr(node);
 
         System.out.println("-");
 
