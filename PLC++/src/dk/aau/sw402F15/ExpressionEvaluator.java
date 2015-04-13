@@ -9,10 +9,10 @@ import java.util.Stack;
 public class ExpressionEvaluator extends DepthFirstAdapter {
 
     Stack<Object> stack = new Stack<Object>();
-    
+
     @Override
-    public void outADeclarationStatement(ADeclarationStatement node) {
-        super.outADeclarationStatement(node);
+    public void outAAssignmentExpr(AAssignmentExpr node) {
+        super.outAAssignmentExpr(node);
 
         System.out.println("Resultat: " + stack.pop());
         System.out.println();
