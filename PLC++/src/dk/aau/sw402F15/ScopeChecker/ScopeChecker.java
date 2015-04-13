@@ -33,10 +33,14 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
         super.outAFunctionFunctionDeclaration(node);
+        ArrayList<SymbolType> symbolTypeList = new ArrayList<SymbolType>();
 
         // convert parameter nodes to symboltype.
-        // typeList.subList(1, typeList.size())
-        //currentScope.addSymbol(new SymbolFunction(typeList.get(0), , node.getIdentifier().getText(), currentScope);
+        for(PType type: typeList.subList(1, typeList.size())){
+            symbolTypeList.add(this.getSymbolType(type));
+        }
+        // add to symbolTable
+        currentScope.addSymbol(new SymbolFunction(this.getSymbolType(typeList.get(0)), symbolTypeList, node.getIdentifier().getText(), node, currentScope));
     }
 
     @Override
@@ -299,5 +303,46 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     public Scope getSymbolTable() {
         return rootScope;
+    }
+
+    private SymbolType getSymbolType(Object type){
+
+        //Check for errors
+        if(type == null){
+            throw new NullPointerException();
+        }
+
+        //Find the symbol type
+        SymbolType sType = null;
+        if(type instanceof ABoolType)
+        {
+            sType = SymbolType.Boolean;
+        }
+        else if(type instanceof ACharType)
+        {
+            sType = SymbolType.Char;
+        }
+        else if(type instanceof ADoubleType || type instanceof AFloatType)
+        {
+            sType = SymbolType.Decimal;
+        }
+        else if(type instanceof AIntType || type instanceof ALongType)
+        {
+            sType = SymbolType.Int;
+        }
+        else if(type instanceof APortType)
+        {
+            sType = SymbolType.Port;
+        }
+        else if(type instanceof ATimerType)
+        {
+            sType = SymbolType.Timer;
+        }
+        else if(type instanceof AIdentifierType){
+            sType = SymbolType.Struct;
+            structs.add((AIdentifierType) type);
+        }
+
+        return sType;
     }
 }
