@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.tests.typechecker;
 
+import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
@@ -145,8 +146,12 @@ public class TypeCheckerTests {
             throw new RuntimeException(e);
         }
 
+        // Apply scopechecker
+        ScopeChecker scopeChecker = new ScopeChecker();
+        node.apply(scopeChecker);
+
         // Apply typechecker
-        node.apply(new TypeChecker(new Scope(null, null)));
+        node.apply(new TypeChecker(scopeChecker.getSymbolTable()));
     }
 
     private Parser getParser(String code) {
