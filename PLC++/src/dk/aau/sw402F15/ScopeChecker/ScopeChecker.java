@@ -141,43 +141,15 @@ public class ScopeChecker extends DepthFirstAdapter {
         PTypeSpecifier type = node.getType();
 
         //Check for errors
-        if(id == null || type == null){
+        if(id == null){
             throw new NullPointerException();
         }
 
         //Find the symbol type
-        SymbolType sType = null;
-        if(type instanceof ABoolTypeSpecifier)
-        {
-            sType = SymbolType.Boolean;
-        }
-        else if(type instanceof ACharTypeSpecifier)
-        {
-            sType = SymbolType.Char;
-        }
-        else if(type instanceof ADoubleTypeSpecifier || type instanceof AFloatTypeSpecifier)
-        {
-            sType = SymbolType.Decimal;
-        }
-        else if(type instanceof AIntTypeSpecifier || type instanceof ALongTypeSpecifier)
-        {
-            sType = SymbolType.Int;
-        }
-        else if(type instanceof APortTypeSpecifier)
-        {
-            sType = SymbolType.Port;
-        }
-        else if(type instanceof ATimerTypeSpecifier)
-        {
-            sType = SymbolType.Timer;
-        }
-        else if(type instanceof AIdentifierTypeSpecifier){
-            sType = SymbolType.Struct;
-            structs.add((AIdentifierTypeSpecifier) type);
-        }
+        SymbolType type = getSymbolType(node.getType());
 
         //Add the symbol
-        currentScope.addSymbol(new Symbol(sType, id.getText(), node, currentScope));
+        currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
     }
 
     @Override
@@ -187,10 +159,9 @@ public class ScopeChecker extends DepthFirstAdapter {
         PTypeSpecifier type = node.getType();
 
         //Check for errors
-        if(id == null || type == null){
+        if(id == null){
             throw new NullPointerException();
         }
-
         //Add the symbol
         currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
     }
