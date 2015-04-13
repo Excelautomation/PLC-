@@ -32,10 +32,13 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
-
+        ArrayList<SymbolType> symbolTypeList = new ArrayList<SymbolType>();
         // convert parameter nodes to symboltype.
-        // typeList.subList(1, typeList.size())
-        //currentScope.addSymbol(new SymbolFunction(typeList.get(0), , node.getIdentifier().getText(), currentScope);
+        for(PTypeSpecifier type: typeList.subList(1, typeList.size())){
+            symbolTypeList.add(this.getSymbolType(type));
+        }
+        // add to symbolTable
+        currentScope.addSymbol(new SymbolFunction(this.getSymbolType(typeList.get(0)), symbolTypeList, node.getName().getText(), node, currentScope));
     }
 
     @Override
@@ -253,5 +256,46 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     public Scope getSymbolTable() {
         return rootScope;
+    }
+
+    private SymbolType getSymbolType(Object type){
+
+        //Check for errors
+        if(type == null){
+            throw new NullPointerException();
+        }
+
+        //Find the symbol type
+        SymbolType sType = null;
+        if(type instanceof ABoolTypeSpecifier)
+        {
+            sType = SymbolType.Boolean;
+        }
+        else if(type instanceof ACharTypeSpecifier)
+        {
+            sType = SymbolType.Char;
+        }
+        else if(type instanceof ADoubleTypeSpecifier || type instanceof AFloatTypeSpecifier)
+        {
+            sType = SymbolType.Decimal;
+        }
+        else if(type instanceof AIntTypeSpecifier || type instanceof ALongTypeSpecifier)
+        {
+            sType = SymbolType.Int;
+        }
+        else if(type instanceof APortTypeSpecifier)
+        {
+            sType = SymbolType.Port;
+        }
+        else if(type instanceof ATimerTypeSpecifier)
+        {
+            sType = SymbolType.Timer;
+        }
+        else if(type instanceof AIdentifierTypeSpecifier){
+            sType = SymbolType.Struct;
+            structs.add((AIdentifierTypeSpecifier) type);
+        }
+
+        return sType;
     }
 }
