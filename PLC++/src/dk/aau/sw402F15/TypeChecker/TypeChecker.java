@@ -79,7 +79,6 @@ public class TypeChecker extends DepthFirstAdapter {
             // pop again
         }
 
-
         if (arg1 != arg2) {
             throw new IllegalAssignment();
         }
@@ -179,8 +178,6 @@ public class TypeChecker extends DepthFirstAdapter {
         super.outAModExpr(node);
         checkExpression();
     }
-
-
 
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
