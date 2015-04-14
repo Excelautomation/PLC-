@@ -147,8 +147,8 @@ function_definition {-> root_declaration} =
 
 // Formal parameters
 formal_parameter {-> declaration*} =
-	{single} type_specifier identifier																					{-> [New declaration.simple(type_specifier, identifier)]}
-  | {multiple} type_specifier identifier comma formal_parameter															{-> [New declaration.simple(type_specifier, identifier), formal_parameter.declaration]}
+	{single} type_specifier identifier																					{-> [New declaration(type_specifier, identifier)]}
+  | {multiple} type_specifier identifier comma formal_parameter															{-> [New declaration(type_specifier, identifier), formal_parameter.declaration]}
 ;
 
 // Struct
@@ -158,7 +158,7 @@ struct_definition {-> root_declaration} =
 	
 // Declaration
 declaration {-> declaration} =
-	{simple} type_specifier identifier semi																				{-> New declaration.simple(type_specifier.type_specifier, identifier)}
+	type_specifier identifier semi																				        {-> New declaration(type_specifier.type_specifier, identifier)}
   | {assignment} type_specifier identifier assignment_operator expr semi												{-> New declaration.assignment(type_specifier.type_specifier, identifier, expr)}
 ;
 
@@ -343,7 +343,7 @@ root_declaration =
 ;
   
 declaration =
-	{simple}					[type]:type_specifier			[name]:identifier
+						        [type]:type_specifier			[name]:identifier
   |	{assignment}				[type]:type_specifier			[name]:identifier			[expr]:expr
 ;
 	
