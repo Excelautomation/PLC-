@@ -10,9 +10,9 @@ import java.io.IOException;
 /**
  * Created by sahb on 14/04/15.
  */
-public class StructDefinition extends ScannerTest {
+public class ForIteration extends ScannerTest {
     @Test
-    public void StructTest() throws ParserException, IOException, LexerException {
-        checkCode("struct str { int i; int j; float k; }");
+    public void forIteration() throws ParserException, IOException, LexerException {
+        checkCode("void run() { for (i = 0; i < 10; i++) { } }");
     }
 }

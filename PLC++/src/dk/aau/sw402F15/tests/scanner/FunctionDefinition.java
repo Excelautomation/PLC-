@@ -2,7 +2,7 @@ package dk.aau.sw402F15.tests.scanner;
 
 import dk.aau.sw402F15.parser.lexer.LexerException;
 import dk.aau.sw402F15.parser.parser.ParserException;
-import dk.aau.sw402F15.tests.AbstractTest;
+import dk.aau.sw402F15.tests.ScannerTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,7 +14,7 @@ import java.util.Arrays;
  * Created by sahb on 08/04/15.
  */
 @RunWith(Parameterized.class)
-public class FunctionDefinition extends AbstractTest {
+public class FunctionDefinition extends ScannerTest {
 
     @Parameterized.Parameters
     public static Iterable<? extends Object> data() {

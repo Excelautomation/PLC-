@@ -12,7 +12,7 @@ import java.io.StringReader;
 /**
  * Created by sahb on 14/04/15.
  */
-public abstract class AbstractTest {
+public abstract class ScannerTest {
     protected void checkCode(String code) throws ParserException, IOException, LexerException {
         getParser(code).parse();
     }
