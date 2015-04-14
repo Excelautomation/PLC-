@@ -46,11 +46,11 @@ public class Main {
 
         //code = "int i = 5;";
 
-        code = "int i = 3;\n" +
-                "void func(int p){\n" +
-                "   int j = 3;\n" +
-                "   double k = 4.1;\n" +
-                "}";
+        code = "int i = 1;\n" +
+                "float func(int p){\n" +
+                "i = func(8);\n" +
+                "return 3;\n" +
+                "}\n";
 
         System.out.println(code);
 
@@ -81,4 +81,3 @@ public class Main {
         }
     }
 }
-
