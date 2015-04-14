@@ -29,8 +29,8 @@ public class ScopeChecker extends DepthFirstAdapter {
         // convert parameters to SymbolType's
         ArrayList<SymbolType> symbolTypeList = new ArrayList<SymbolType>();
         for (Node parameter : node.getParams()) {
-            if (parameter.getClass() == ASimpleDeclaration.class) {
-                ASimpleDeclaration simpleDeclaration = (ASimpleDeclaration) parameter;
+            if (parameter.getClass() == ADeclaration.class) {
+                ADeclaration simpleDeclaration = (ADeclaration) parameter;
                 //add to list
                 symbolTypeList.add(this.getSymbolType(simpleDeclaration.getType()));
             }
@@ -156,7 +156,7 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void inASimpleDeclaration(ASimpleDeclaration node){
+    public void inADeclaration(ADeclaration node){
         //Get children
         TIdentifier id = node.getName();
         PTypeSpecifier type = node.getType();
