@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.tests.scanner.assignment;
+package dk.aau.sw402F15.tests;
 
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
@@ -10,14 +10,14 @@ import java.io.PushbackReader;
 import java.io.StringReader;
 
 /**
- * Created by sahb on 08/04/15.
+ * Created by sahb on 14/04/15.
  */
-public class Assignment {
-    private void checkCode(String code) throws ParserException, IOException, LexerException {
+public abstract class AbstractTest {
+    protected void checkCode(String code) throws ParserException, IOException, LexerException {
         getParser(code).parse();
     }
 
-    private Parser getParser(String code) {
+    protected Parser getParser(String code) {
         return new Parser(new Lexer(new PushbackReader(new StringReader(code), 1024)));
     }
 }
