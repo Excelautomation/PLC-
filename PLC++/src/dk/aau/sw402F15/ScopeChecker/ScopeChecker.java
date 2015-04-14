@@ -21,24 +21,24 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = rootScope;
     }
 
+    // Root_declaration
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
-        // TODO: Add params to symbol table
-        // Clear list for loading returntypes and input parameters.
-        typeList.clear();
-    }
 
-    @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
-        super.outAFunctionRootDeclaration(node);
+        // convert parameters to SymbolType's
         ArrayList<SymbolType> symbolTypeList = new ArrayList<SymbolType>();
-        // convert parameter nodes to symboltype.
-        for(PTypeSpecifier type: typeList.subList(1, typeList.size())){
-            symbolTypeList.add(this.getSymbolType(type));
+        for (Node parameter : node.getParams()) {
+            if (parameter.getClass() == ASimpleDeclaration.class) {
+                ASimpleDeclaration simpleDeclaration = (ASimpleDeclaration) parameter;
+                //add to list
+                symbolTypeList.add(this.getSymbolType(simpleDeclaration.getType()));
+            }
+            else
+                throw new RuntimeException();
         }
-        // add to symbolTable
-        currentScope.addSymbol(new SymbolFunction(this.getSymbolType(typeList.get(0)), symbolTypeList, node.getName().getText(), node, currentScope));
+
+        currentScope.addSymbol(new SymbolFunction(this.getSymbolType(node.getReturnType()), symbolTypeList, node.getName().getText(), node, currentScope));
     }
 
     @Override
@@ -49,6 +49,11 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = currentScope.getParentScope();
         currentScope.addSymbol(new SymbolStruct(node.getName().getText(), list, node, currentScope));
     }
+
+    // Declaration
+
+    // Assignment declaration
+
 
     @Override
     public void outStart(Start node)
@@ -67,31 +72,26 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outABoolTypeSpecifier(ABoolTypeSpecifier node) {
         super.outABoolTypeSpecifier(node);
-        typeList.add(node);
     }
 
     @Override
     public void outACharTypeSpecifier(ACharTypeSpecifier node) {
         super.outACharTypeSpecifier(node);
-        typeList.add(node);
     }
 
     @Override
     public void outAIntTypeSpecifier(AIntTypeSpecifier node) {
         super.outAIntTypeSpecifier(node);
-        typeList.add(node);
     }
 
     @Override
     public void outALongTypeSpecifier(ALongTypeSpecifier node) {
         super.outALongTypeSpecifier(node);
-        typeList.add(node);
     }
 
     @Override
     public void outAFloatTypeSpecifier(AFloatTypeSpecifier node) {
         super.outAFloatTypeSpecifier(node);
-        typeList.add(node);
 
     }
 
@@ -104,7 +104,6 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outATimerTypeSpecifier(ATimerTypeSpecifier node) {
         super.outATimerTypeSpecifier(node);
-        typeList.add(node);
     }
 
     @Override
@@ -116,7 +115,6 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outAIdentifierTypeSpecifier(AIdentifierTypeSpecifier node) {
         super.outAIdentifierTypeSpecifier(node);
-        typeList.add(node);
     }
 
     @Override
@@ -146,34 +144,29 @@ public class ScopeChecker extends DepthFirstAdapter {
     public void inAAssignmentDeclaration(AAssignmentDeclaration node){
         //Get children
         TIdentifier id = node.getName();
+        PTypeSpecifier type = node.getType();
 
         //Check for errors
         if(id == null){
             throw new NullPointerException();
         }
 
-        //Find the symbol type
-        SymbolType type = getSymbolType(node.getType());
-
         //Add the symbol
-        currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+        currentScope.addSymbol(new Symbol(getSymbolType(node.getType()), id.getText(), node, currentScope));
     }
 
     @Override
     public void inASimpleDeclaration(ASimpleDeclaration node){
         //Get children
         TIdentifier id = node.getName();
+        PTypeSpecifier type = node.getType();
 
         //Check for errors
         if(id == null){
             throw new NullPointerException();
         }
-
-        //Find the symbol type
-        SymbolType type = getSymbolType(node.getType());
-
         //Add the symbol
-        currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+        currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
     }
 
     @Override
