@@ -21,6 +21,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = rootScope;
     }
 
+    // Root_declaration
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
@@ -48,6 +49,11 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = currentScope.getParentScope();
         currentScope.addSymbol(new SymbolStruct(node.getName().getText(), list, node, currentScope));
     }
+
+    // Declaration
+
+    // Assignment declaration
+
 
     @Override
     public void outStart(Start node)
