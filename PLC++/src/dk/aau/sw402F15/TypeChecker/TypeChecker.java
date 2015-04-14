@@ -30,6 +30,11 @@ public class TypeChecker extends DepthFirstAdapter {
     }
 
     @Override
+    public void outAFunctionCallExpr(AFunctionCallExpr node) {
+        stack.push(currentScope.getSymbol(node.getName().getText()).getType());
+    }
+
+    @Override
     public void outAScopeStatement(AScopeStatement node) {
         super.outAScopeStatement(node);
         currentScope = currentScope.getParentScope();
@@ -39,7 +44,20 @@ public class TypeChecker extends DepthFirstAdapter {
     public void outAAssignmentDeclaration(AAssignmentDeclaration node) {
         super.outAAssignmentDeclaration(node);
 
-        if (stack.pop() != stack.pop()) {
+        SymbolType arg1;
+        SymbolType arg2;
+
+        while ((arg1 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        while ((arg2 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        if (arg1 != arg2) {
             throw new IllegalAssignment();
         }
     }
@@ -48,7 +66,21 @@ public class TypeChecker extends DepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
-        if (stack.pop() != stack.pop()) {
+        SymbolType arg1;
+        SymbolType arg2;
+
+        while ((arg1 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        while ((arg2 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+
+        if (arg1 != arg2) {
             throw new IllegalAssignment();
         }
     }
