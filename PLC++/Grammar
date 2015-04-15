@@ -155,7 +155,7 @@ function_definition {-> root_declaration} =
 
 // Formal parameters
 formal_parameter {-> declaration*} =
-  {single} type_qualifier? type_specifier identifier array_definition?													{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)]}
+    {single} type_qualifier? type_specifier identifier array_definition?												{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)]}
   | {multiple} type_qualifier? type_specifier identifier array_definition? comma formal_parameter						{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition), formal_parameter.declaration]}
 ;
 
