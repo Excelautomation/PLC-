@@ -135,8 +135,8 @@ type_specifier {-> type_specifier} =
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
   | {port} port_keyword																									{-> New type_specifier.port()}
-  | {enum} enum_keyword                                                                                                 {-> New type_specifier.enum()}
-  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier()}
+  | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.identifier(identifier)}
+  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier(identifier)}
 ;
 
 // Declaration in root scope
@@ -391,7 +391,7 @@ declaration =
 ;
 
 array_definition =
-                         [number]:integer_literal?
+                                [number]:integer_literal?
 ;
 
 type_specifier =
@@ -403,9 +403,8 @@ type_specifier =
   | {double}
   | {timer}
   | {port}
-  | {identifier}
+  | {identifier}                identifier
   | {void}
-  | {enum}
 ;
 
 type_qualifier =
