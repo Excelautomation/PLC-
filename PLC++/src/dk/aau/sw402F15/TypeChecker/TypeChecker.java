@@ -24,33 +24,62 @@ public class TypeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void inAScope(AScope node) {
-        super.inAScope(node);
-
+    public void inAScopeStatement(AScopeStatement node) {
+        super.inAScopeStatement(node);
         currentScope = currentScope.getSubScopeByNodeOrThrow(node);
     }
 
     @Override
-    public void outAScope(AScope node) {
-        super.outAScope(node);
+    public void outAFunctionCallExpr(AFunctionCallExpr node) {
+        stack.push(currentScope.getSymbol(node.getName().getText()).getType());
+    }
 
+    @Override
+    public void outAScopeStatement(AScopeStatement node) {
+        super.outAScopeStatement(node);
         currentScope = currentScope.getParentScope();
     }
 
     @Override
-    public void outADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node) {
-        super.outADeclarationAssignmentDeclarationStatement(node);
+    public void outAAssignmentDeclaration(AAssignmentDeclaration node) {
+        super.outAAssignmentDeclaration(node);
 
-        if (stack.pop() != stack.pop()) {
+        SymbolType arg1;
+        SymbolType arg2;
+
+        while ((arg1 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        while ((arg2 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        if (arg1 != arg2) {
             throw new IllegalAssignment();
         }
     }
 
     @Override
-    public void outAAssignmentStatement(AAssignmentStatement node) {
-        super.outAAssignmentStatement(node);
+    public void outAAssignmentExpr(AAssignmentExpr node) {
+        super.outAAssignmentExpr(node);
 
-        if (stack.pop() != stack.pop()) {
+        SymbolType arg1;
+        SymbolType arg2;
+
+        while ((arg1 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        while ((arg2 = stack.pop()) == SymbolType.Function)
+        {
+            // pop again
+        }
+
+        if (arg1 != arg2) {
             throw new IllegalAssignment();
         }
     }
@@ -61,92 +90,92 @@ public class TypeChecker extends DepthFirstAdapter {
     }
 
    @Override
-    public void outAIntegerValue(AIntegerValue node) {
-        super.outAIntegerValue(node);
+    public void outAIntegerExpr(AIntegerExpr node) {
+        super.outAIntegerExpr(node);
         stack.push(SymbolType.Int);
     }
 
     @Override
-    public void outADecimalValue(ADecimalValue node) {
-        super.outADecimalValue(node);
+    public void outADecimalExpr(ADecimalExpr node) {
+        super.outADecimalExpr(node);
         stack.push(SymbolType.Decimal);
     }
 
     @Override
-    public void outATrueValue(ATrueValue node) {
-        super.outATrueValue(node);
+    public void outATrueExpr(ATrueExpr node) {
+        super.outATrueExpr(node);
         stack.push(SymbolType.Boolean);
     }
 
     @Override
-    public void outAFalseValue(AFalseValue node) {
-        super.outAFalseValue(node);
+    public void outAFalseExpr(AFalseExpr node) {
+        super.outAFalseExpr(node);
         stack.push(SymbolType.Boolean);
     }
 
     @Override
-    public void outACompareGreaterExpr3(ACompareGreaterExpr3 node) {
-        super.outACompareGreaterExpr3(node);
+    public void outACompareGreaterExpr(ACompareGreaterExpr node) {
+        super.outACompareGreaterExpr(node);
         checkComparison();
     }
 
     @Override
-    public void outACompareLessExpr3(ACompareLessExpr3 node) {
-        super.outACompareLessExpr3(node);
+    public void outACompareLessExpr(ACompareLessExpr node) {
+        super.outACompareLessExpr(node);
         checkComparison();
     }
 
     @Override
-    public void outACompareLessOrEqualExpr3(ACompareLessOrEqualExpr3 node) {
-        super.outACompareLessOrEqualExpr3(node);
+    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
+        super.outACompareLessOrEqualExpr(node);
         checkComparison();
     }
 
     @Override
-    public void outACompareGreaterOrEqualExpr3(ACompareGreaterOrEqualExpr3 node) {
-        super.outACompareGreaterOrEqualExpr3(node);
+    public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node) {
+        super.outACompareGreaterOrEqualExpr(node);
         checkComparison();
     }
 
     @Override
-    public void outACompareEqualExpr2(ACompareEqualExpr2 node) {
-        super.outACompareEqualExpr2(node);
+    public void outACompareEqualExpr(ACompareEqualExpr node) {
+        super.outACompareEqualExpr(node);
         checkComparison();
     }
 
     @Override
-    public void outACompareNotEqualExpr2(ACompareNotEqualExpr2 node) {
-        super.outACompareNotEqualExpr2(node);
+    public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
+        super.outACompareNotEqualExpr(node);
         checkComparison();
     }
 
     @Override
-    public void outAAddExpr4(AAddExpr4 node) {
-        super.outAAddExpr4(node);
+    public void outAAddExpr(AAddExpr node) {
+        super.outAAddExpr(node);
         checkExpression();
     }
 
     @Override
-    public void outASubExpr4(ASubExpr4 node) {
-        super.outASubExpr4(node);
+    public void outASubExpr(ASubExpr node) {
+        super.outASubExpr(node);
         checkExpression();
     }
 
     @Override
-    public void outAMultiExpr5(AMultiExpr5 node) {
-        super.outAMultiExpr5(node);
+    public void outAMultiExpr(AMultiExpr node) {
+        super.outAMultiExpr(node);
         checkExpression();
     }
 
     @Override
-    public void outADivExpr5(ADivExpr5 node) {
-        super.outADivExpr5(node);
+    public void outADivExpr(ADivExpr node) {
+        super.outADivExpr(node);
         checkExpression();
     }
 
     @Override
-    public void outAModExpr5(AModExpr5 node) {
-        super.outAModExpr5(node);
+    public void outAModExpr(AModExpr node) {
+        super.outAModExpr(node);
         checkExpression();
     }
 

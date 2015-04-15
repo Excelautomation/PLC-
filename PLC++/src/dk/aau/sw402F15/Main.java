@@ -9,15 +9,12 @@ import dk.aau.sw402F15.parser.node.Start;
 import dk.aau.sw402F15.parser.parser.Parser;
 import dk.aau.sw402F15.parser.parser.ParserException;
 
-import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.StringReader;
+import java.io.*;
 
 public class Main {
 
     public static void main(String[] args) {
-	    String code =
-                                "bool aaa = 5 + 3 > 7;\n" +
+        String code =           "bool aaa = 5 + 3 > 7;\n" +
                                 "a = 10; int i(){}\n" +
                                 "int a = 1 + 5 - 6 * 7;\n" +
                                 "bool a = true && false;\n" +
@@ -47,12 +44,23 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int i = 5;";
+        //code = "int i = 5;";
+
+        code = "int i = 1;\n" +
+                "float func(int p){\n" +
+                "i = func(8);\n" +
+                "return 3;\n" +
+                "}\n";
 
         System.out.println(code);
 
         try {
-            Parser parser = new Parser(new Lexer(new PushbackReader(new StringReader(code), 1024)));
+            Reader reader;
+            if(args.length != 0)
+                reader = new FileReader(args[0]);
+            else
+                reader = new StringReader(code);
+            Parser parser = new Parser(new Lexer(new PushbackReader(reader, 1024)));
             Start tree = parser.parse();
 
             // Print tree
@@ -73,4 +81,3 @@ public class Main {
         }
     }
 }
-

@@ -2,7 +2,6 @@ package dk.aau.sw402F15.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-import sun.org.mozilla.javascript.internal.ast.FunctionCall;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,267 +13,160 @@ import java.util.List;
 public class ScopeChecker extends DepthFirstAdapter {
     private Scope rootScope = new Scope(null, null);
     private Scope currentScope;
-    private List<PType> typeList = new ArrayList<PType>();
-    private List<AIdentifierType> structs = new ArrayList<AIdentifierType>();
-    private List<AFunctionCall> functions = new ArrayList<AFunctionCall>();
+    private List<PTypeSpecifier> typeList = new ArrayList<PTypeSpecifier>();
+    private List<AIdentifierTypeSpecifier> structs = new ArrayList<AIdentifierTypeSpecifier>();
+    private List<AFunctionCallExpr> functions = new ArrayList<AFunctionCallExpr>();
 
     public ScopeChecker() {
         currentScope = rootScope;
     }
 
+    // Root_declaration
     @Override
-    public void inAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
-        super.outAFunctionFunctionDeclaration(node);
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
 
-        // Clear list for loading returntypes and input parameters.
-        typeList.clear();
+        // convert parameters to SymbolType's
+        ArrayList<SymbolType> symbolTypeList = new ArrayList<SymbolType>();
+        for (Node parameter : node.getParams()) {
+            if (parameter.getClass() == ADeclaration.class) {
+                ADeclaration simpleDeclaration = (ADeclaration) parameter;
+                //add to list
+                symbolTypeList.add(this.getSymbolType(simpleDeclaration.getType()));
+            }
+            else
+                throw new RuntimeException();
+        }
+
+        currentScope.addSymbol(new SymbolFunction(this.getSymbolType(node.getReturnType()), symbolTypeList, node.getName().getText(), node, currentScope));
     }
 
     @Override
-    public void outAFunctionFunctionDeclaration(AFunctionFunctionDeclaration node) {
-        super.outAFunctionFunctionDeclaration(node);
-
-        // convert parameter nodes to symboltype.
-        // typeList.subList(1, typeList.size())
-        //currentScope.addSymbol(new SymbolFunction(typeList.get(0), , node.getIdentifier().getText(), currentScope);
-    }
-
-    @Override
-    public void caseAStruct(AStruct node){
+    public void inAStructRootDeclaration(AStructRootDeclaration node){
         currentScope = currentScope.addSubScope(node);
         List<Symbol> list = currentScope.toList();
-        node.getStructBody().apply(this);
+        node.getProgram().apply(this);
         currentScope = currentScope.getParentScope();
-        currentScope.addSymbol(new SymbolStruct(node.getIdentifier().getText(), list, node, currentScope));
+        currentScope.addSymbol(new SymbolStruct(node.getName().getText(), list, node, currentScope));
     }
+
+    // Declaration
+
+    // Assignment declaration
+
 
     @Override
     public void outStart(Start node)
     {
         // Check success of functions
-        for (AFunctionCall n : functions) {
-            super.caseAFunctionCall(n);
+        for (AFunctionCallExpr n : functions) {
+            super.caseAFunctionCallExpr(n);
         }
         // Check success of structs
-        for (AIdentifierType n : structs) {
-            super.caseAIdentifierType(n);
+        for (AIdentifierTypeSpecifier n : structs) {
+            super.caseAIdentifierTypeSpecifier(n);
         }
     }
 
     // Types
     @Override
-    public void outABoolType(ABoolType node) {
-        super.outABoolType(node);
-        typeList.add(node);
+    public void outABoolTypeSpecifier(ABoolTypeSpecifier node) {
+        super.outABoolTypeSpecifier(node);
     }
 
     @Override
-    public void outACharType(ACharType node) {
-        super.outACharType(node);
-        typeList.add(node);
+    public void outACharTypeSpecifier(ACharTypeSpecifier node) {
+        super.outACharTypeSpecifier(node);
     }
 
     @Override
-    public void outAIntType(AIntType node) {
-        super.outAIntType(node);
-        typeList.add(node);
+    public void outAIntTypeSpecifier(AIntTypeSpecifier node) {
+        super.outAIntTypeSpecifier(node);
     }
 
     @Override
-    public void outALongType(ALongType node) {
-        super.outALongType(node);
-        typeList.add(node);
+    public void outALongTypeSpecifier(ALongTypeSpecifier node) {
+        super.outALongTypeSpecifier(node);
     }
 
     @Override
-    public void outAFloatType(AFloatType node) {
-        super.outAFloatType(node);
-        typeList.add(node);
+    public void outAFloatTypeSpecifier(AFloatTypeSpecifier node) {
+        super.outAFloatTypeSpecifier(node);
 
     }
 
     @Override
-    public void outADoubleType(ADoubleType node) {
-        super.outADoubleType(node);
+    public void outADoubleTypeSpecifier(ADoubleTypeSpecifier node) {
+        super.outADoubleTypeSpecifier(node);
         typeList.add(node);
     }
 
     @Override
-    public void outATimerType(ATimerType node) {
-        super.outATimerType(node);
+    public void outATimerTypeSpecifier(ATimerTypeSpecifier node) {
+        super.outATimerTypeSpecifier(node);
+    }
+
+    @Override
+    public void outAPortTypeSpecifier(APortTypeSpecifier node) {
+        super.outAPortTypeSpecifier(node);
         typeList.add(node);
     }
 
     @Override
-    public void outAPortType(APortType node) {
-        super.outAPortType(node);
-        typeList.add(node);
+    public void outAIdentifierTypeSpecifier(AIdentifierTypeSpecifier node) {
+        super.outAIdentifierTypeSpecifier(node);
     }
 
     @Override
-    public void outAIdentifierType(AIdentifierType node) {
-        super.outAIdentifierType(node);
-        typeList.add(node);
-    }
-
-    @Override
-    public void caseAScope(AScope node)
+    public void inAScopeStatement(AScopeStatement node)
     {
         currentScope = currentScope.addSubScope(node);
+
+        /* TODO: Make sure the program functions without this code segment
         // Import formal parameters if any
         if(node.parent() instanceof AVoidFunctionFunctionDeclaration)
         {
             ((AVoidFunctionFunctionDeclaration) node.parent()).getFormalParameters().apply(this);
         }
-        if(node.parent() instanceof AFunctionFunctionDeclaration)
+        if(node.parent() instanceof AFunctionRootDeclaration)
         {
-            ((AFunctionFunctionDeclaration) node.parent()).getFormalParameters().apply(this);
+            ((AFunctionRootDeclaration) node.parent()).getParams().apply(this);
         }
+        */
+    }
 
-        if(node.getStatements() != null)
-        {
-            super.caseAScope(node);
-        }
+    @Override
+    public void outAScopeStatement(AScopeStatement node){
         currentScope = currentScope.getParentScope();
     }
 
     @Override
-    public void caseADeclarationAssignmentDeclarationStatement(ADeclarationAssignmentDeclarationStatement node){
+    public void inAAssignmentDeclaration(AAssignmentDeclaration node){
         //Get children
-        TIdentifier id = node.getIdentifier();
-        PType type = node.getType();
+        TIdentifier id = node.getName();
+        PTypeSpecifier type = node.getType();
 
         //Check for errors
-        if(id == null || type == null){
+        if(id == null){
             throw new NullPointerException();
         }
 
-        //Find the symbol type
-        SymbolType sType = null;
-        if(type instanceof ABoolType)
-        {
-            sType = SymbolType.Boolean;
-        }
-        else if(type instanceof ACharType)
-        {
-            sType = SymbolType.Char;
-        }
-        else if(type instanceof ADoubleType || type instanceof AFloatType)
-        {
-            sType = SymbolType.Decimal;
-        }
-        else if(type instanceof AIntType || type instanceof ALongType)
-        {
-            sType = SymbolType.Int;
-        }
-        else if(type instanceof APortType)
-        {
-            sType = SymbolType.Port;
-        }
-        else if(type instanceof ATimerType)
-        {
-            sType = SymbolType.Timer;
-        }
-        else if(type instanceof AIdentifierType){
-            sType = SymbolType.Struct;
-            structs.add((AIdentifierType) type);
-        }
-
         //Add the symbol
-        currentScope.addSymbol(new Symbol(sType, id.getText(), node, currentScope));
+        currentScope.addSymbol(new Symbol(getSymbolType(node.getType()), id.getText(), node, currentScope));
     }
 
     @Override
-    public void caseADeclarationDeclarationStatement(ADeclarationDeclarationStatement node){
+    public void inADeclaration(ADeclaration node){
         //Get children
-        TIdentifier id = node.getIdentifier();
-        PType type = node.getType();
+        TIdentifier id = node.getName();
+        PTypeSpecifier type = node.getType();
 
         //Check for errors
-        if(id == null || type == null){
+        if(id == null){
             throw new NullPointerException();
         }
-
-        //Find the symbol type
-        SymbolType sType = null;
-        if(type instanceof ABoolType)
-        {
-            sType = SymbolType.Boolean;
-        }
-        else if(type instanceof ACharType)
-        {
-            sType = SymbolType.Char;
-        }
-        else if(type instanceof ADoubleType || type instanceof AFloatType)
-        {
-            sType = SymbolType.Decimal;
-        }
-        else if(type instanceof AIntType || type instanceof ALongType)
-        {
-            sType = SymbolType.Int;
-        }
-        else if(type instanceof APortType)
-        {
-            sType = SymbolType.Port;
-        }
-        else if(type instanceof ATimerType)
-        {
-            sType = SymbolType.Timer;
-        }
-        else if(type instanceof AIdentifierType){
-            sType = SymbolType.Struct;
-            structs.add((AIdentifierType) type);
-        }
-
         //Add the symbol
-        currentScope.addSymbol(new Symbol(sType, id.getText(), node, currentScope));
-    }
-
-    @Override
-    public void caseAFormalParameter(AFormalParameter node)
-    {
-        //Get children
-        TIdentifier id = node.getIdentifier();
-        PType type = node.getType();
-
-        //Check for errors
-        if(id == null || type == null){
-            throw new NullPointerException();
-        }
-
-        //Find the symbol type
-        SymbolType sType = null;
-        if(type instanceof ABoolType)
-        {
-            sType = SymbolType.Boolean;
-        }
-        else if(type instanceof ACharType)
-        {
-            sType = SymbolType.Char;
-        }
-        else if(type instanceof ADoubleType || type instanceof AFloatType)
-        {
-            sType = SymbolType.Decimal;
-        }
-        else if(type instanceof AIntType || type instanceof ALongType)
-        {
-            sType = SymbolType.Int;
-        }
-        else if(type instanceof APortType)
-        {
-            sType = SymbolType.Port;
-        }
-        else if(type instanceof ATimerType)
-        {
-            sType = SymbolType.Timer;
-        }
-        else if(type instanceof AIdentifierType){
-            sType = SymbolType.Struct;
-            structs.add((AIdentifierType) type);
-        }
-
-        //Add the symbol
-        currentScope.addSymbol(new Symbol(sType, id.getText(), node, currentScope));
+        currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
     }
 
     @Override
@@ -284,14 +176,14 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void caseAFunctionCall(AFunctionCall node)
+    public void caseAFunctionCallExpr(AFunctionCallExpr node)
     {
         //Assume success of functions
         functions.add(node);
     }
 
     @Override
-    public void caseAIdentifierType(AIdentifierType node)
+    public void caseAIdentifierTypeSpecifier(AIdentifierTypeSpecifier node)
     {
         //Assume success of struct types
         structs.add(node);
@@ -299,5 +191,46 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     public Scope getSymbolTable() {
         return rootScope;
+    }
+
+    private SymbolType getSymbolType(Object type){
+
+        //Check for errors
+        if(type == null){
+            throw new NullPointerException();
+        }
+
+        //Find the symbol type
+        SymbolType sType = null;
+        if(type instanceof ABoolTypeSpecifier)
+        {
+            sType = SymbolType.Boolean;
+        }
+        else if(type instanceof ACharTypeSpecifier)
+        {
+            sType = SymbolType.Char;
+        }
+        else if(type instanceof ADoubleTypeSpecifier || type instanceof AFloatTypeSpecifier)
+        {
+            sType = SymbolType.Decimal;
+        }
+        else if(type instanceof AIntTypeSpecifier || type instanceof ALongTypeSpecifier)
+        {
+            sType = SymbolType.Int;
+        }
+        else if(type instanceof APortTypeSpecifier)
+        {
+            sType = SymbolType.Port;
+        }
+        else if(type instanceof ATimerTypeSpecifier)
+        {
+            sType = SymbolType.Timer;
+        }
+        else if(type instanceof AIdentifierTypeSpecifier){
+            sType = SymbolType.Struct;
+            structs.add((AIdentifierTypeSpecifier) type);
+        }
+
+        return sType;
     }
 }

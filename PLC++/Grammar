@@ -154,8 +154,8 @@ function_definition {-> root_declaration} =
 
 // Formal parameters
 formal_parameter {-> declaration*} =
-  {single} type_qualifier? type_specifier identifier array_definition?													{-> [New declaration.simple(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)]}
-  | {multiple} type_qualifier? type_specifier identifier array_definition? comma formal_parameter						{-> [New declaration.simple(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition), formal_parameter.declaration]}
+  {single} type_qualifier? type_specifier identifier array_definition?													{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)]}
+  | {multiple} type_qualifier? type_specifier identifier array_definition? comma formal_parameter						{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition), formal_parameter.declaration]}
 ;
 
 // Struct
@@ -182,7 +182,7 @@ type_qualifier {-> type_qualifier} =
 
 // Declaration
 declaration {-> declaration} =
-	{simple} type_qualifier? type_specifier identifier array_definition? semi											{-> New declaration.simple(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)}
+	{simple} type_qualifier? type_specifier identifier array_definition? semi											{-> New declaration(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)}
   | {assignment} type_qualifier? type_specifier identifier array_definition? assignment_operator expr semi				{-> New declaration.assignment(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, expr)}
 ;
 
@@ -382,7 +382,7 @@ enum_flag =
 ;
   
 declaration =
-	{simple}					[type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier? [array]:array_definition?
+						        [type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier? [array]:array_definition?
   |	{assignment}				[type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier?	[array]:array_definition?  [expr]:expr
 ;
 
