@@ -2,15 +2,9 @@ package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
-import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
 
 /**
  * Created by Mikkel on 08-04-2015.
@@ -30,7 +24,7 @@ public class TypeChecker extends ExpressionEvaluator {
         SymbolType arg2 = stack.pop();
 
         if (arg1 != arg2) {
-            throw new IllegalAssignment();
+            throw new IllegalAssignmentException();
         }
     }
 
@@ -48,9 +42,9 @@ public class TypeChecker extends ExpressionEvaluator {
         stack.pop();
 
         if (node.getReturnType().getClass() != AVoidTypeSpecifier.class && !returnFound)
-            throw new MissingReturnStatement();
+            throw new MissingReturnStatementException();
         if (node.getReturnType().getClass() == AVoidTypeSpecifier.class && returnFound)
-            throw new ReturnInVoidFunction();
+            throw new ReturnInVoidFunctionException();
     }
 
 

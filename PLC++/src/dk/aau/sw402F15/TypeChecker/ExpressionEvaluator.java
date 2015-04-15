@@ -1,8 +1,8 @@
 package dk.aau.sw402F15.TypeChecker;
-
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Exceptions.WrongParameterException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpressionException;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
@@ -74,7 +74,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
             // Check number of parameters
             if (copy.size() != func.getFormalParameters().size())
-                throw new RuntimeException();
+                throw new WrongParameterException();
 
             // Check each expression
             for (int i = 0; i < copy.size(); i++) {
@@ -85,7 +85,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
                 SymbolType type = expressionEvaluator.getSymbol();
                 if (type != func.getFormalParameters().get(i))
-                    throw new RuntimeException();
+                    throw new WrongParameterException();
             }
         }
 
@@ -97,11 +97,11 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
-        SymbolType arg1 = currentScope.getSymbol(node.getName().getText()).getType();
+        SymbolType arg1 = currentScope.getSymbolOrThrow(node.getName().getText()).getType();
         SymbolType arg2 = stack.pop();
 
         if (arg1 != arg2) {
-            throw new IllegalAssignment();
+            throw new IllegalAssignmentException();
         }
     }
 
@@ -109,7 +109,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     public void outAIdentifierExpr(AIdentifierExpr node) {
         super.outAIdentifierExpr(node);
 
-        stack.push(currentScope.getSymbol(node.getName().getText()).getType());
+        stack.push(currentScope.getSymbolOrThrow(node.getName().getText()).getType());
     }
 
     @Override
@@ -209,7 +209,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
             stack.push(SymbolType.Boolean);
         }
         else {
-            throw new IllegalComparison();
+            throw new IllegalComparisonException();
         }
 
     }
@@ -224,7 +224,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
             stack.push(SymbolType.Decimal);
         }
         else{
-            throw new IllegalExpression();
+            throw new IllegalExpressionException();
         }
     }
 }
