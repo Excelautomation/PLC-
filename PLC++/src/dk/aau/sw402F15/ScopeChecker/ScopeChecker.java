@@ -71,7 +71,6 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     // Assignment declaration
 
-
     @Override
     public void outStart(Start node)
     {
@@ -161,7 +160,8 @@ public class ScopeChecker extends DepthFirstAdapter {
     public void inAAssignmentDeclaration(AAssignmentDeclaration node){
         //Get children
         TIdentifier id = node.getName();
-        PTypeSpecifier type = node.getType();
+        boolean isArray = node.getArray() != null;
+        SymbolType type = getSymbolType(node.getType());
 
         //Check for errors
         if(id == null){
@@ -169,21 +169,28 @@ public class ScopeChecker extends DepthFirstAdapter {
         }
 
         //Add the symbol
-        currentScope.addSymbol(new Symbol(getSymbolType(node.getType()), id.getText(), node, currentScope));
+        if(isArray)
+            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
+        else
+            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
     }
 
     @Override
     public void inADeclaration(ADeclaration node){
         //Get children
         TIdentifier id = node.getName();
-        PTypeSpecifier type = node.getType();
+        SymbolType type = getSymbolType(node.getType());
+        boolean isArray = node.getArray() != null;
 
         //Check for errors
         if(id == null){
             throw new NullPointerException();
         }
         //Add the symbol
-        currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
+        if(isArray)
+            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
+        else
+            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
     }
 
     @Override
@@ -224,7 +231,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         return rootScope;
     }
 
-    private SymbolType getSymbolType(Object type){
+    private SymbolType getSymbolType(PTypeSpecifier type){
 
         //Check for errors
         if(type == null){
