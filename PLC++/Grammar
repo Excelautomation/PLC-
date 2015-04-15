@@ -356,19 +356,21 @@ expr_value {-> expr} =
   | {false}                           false_keyword                                                                     {-> New expr.false()}
   | {identifier}				      identifier																	    {-> New expr.identifier(identifier)}
 
-  | {port_input_identifier}		      port_input_identifier [expr]:expr_value											{-> New expr.port_input(expr.expr)}
-  | {port_output_identifier}	      port_output_identifier [expr]:expr_value											{-> New expr.port_output(expr.expr)}
-  | {port_memory_identifier}	      port_memory_identifier [expr]:expr_value											{-> New expr.port_memory(expr.expr)}
-  | {port_analog_input_identifier}	  port_analog_input_identifier [expr]:expr_value									{-> New expr.port_analog_input(expr.expr)}
-  | {port_analog_output_identifier}   port_analog_output_identifier [expr]:expr_value									{-> New expr.port_analog_output(expr.expr)}
+  | {port_input_identifier}		      port_input_identifier [expr]:port_value											{-> New expr.port_input(expr.expr)}
+  | {port_output_identifier}	      port_output_identifier [expr]:port_value											{-> New expr.port_output(expr.expr)}
+  | {port_memory_identifier}	      port_memory_identifier [expr]:port_value											{-> New expr.port_memory(expr.expr)}
+  | {port_analog_input_identifier}	  port_analog_input_identifier [expr]:port_value									{-> New expr.port_analog_input(expr.expr)}
+  | {port_analog_output_identifier}   port_analog_output_identifier [expr]:port_value									{-> New expr.port_analog_output(expr.expr)}
 	
   // Precedence changed from C to allow functions in structs
   // Function call
   | {function_call} function_call																						{-> function_call.expr}
 ;
 
-
-// Expression
+port_value {-> expr} =
+    {value} [expr]:expr_value                                                                                           {-> expr.expr}
+  | {par} l_par [expr]:expr r_par                                                                                       {-> expr.expr}
+;
 
 Abstract Syntax Tree
 
