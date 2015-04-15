@@ -151,7 +151,7 @@ public class TypeCheckerTests {
         checkCode("int func(){return 2;}");
     }
 
-    @Test(expected = WrongParameter.class)
+    @Test(expected = WrongParameterException.class)
     public void checkWrongParameterInFunction() {
         checkCode("int func(int k, int p){ func(2.2, 2); return k + p; } ");
     }

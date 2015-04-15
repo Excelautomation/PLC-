@@ -1,5 +1,5 @@
 package dk.aau.sw402F15.TypeChecker;
-import dk.aau.sw402F15.TypeChecker.Exceptions.WrongParameter;
+import dk.aau.sw402F15.TypeChecker.Exceptions.WrongParameterException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpressionException;
@@ -62,7 +62,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
             // Check number of parameters
             if (copy.size() != func.getFormalParameters().size())
-                throw new WrongParameter();
+                throw new WrongParameterException();
 
             // Check each expression
             for (int i = 0; i < copy.size(); i++) {
@@ -73,7 +73,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
                 SymbolType type = expressionEvaluator.getSymbol();
                 if (type != func.getFormalParameters().get(i))
-                    throw new WrongParameter();
+                    throw new WrongParameterException();
             }
         }
 
