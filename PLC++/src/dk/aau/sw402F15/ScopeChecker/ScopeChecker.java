@@ -23,6 +23,32 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     // Root_declaration
     @Override
+    public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        inAFunctionRootDeclaration(node);
+
+        if (node.getReturnType() != null) {
+            node.getReturnType().apply(this);
+        }
+        if (node.getName() != null) {
+            node.getName().apply(this);
+        }
+        currentScope = currentScope.addSubScope(node);
+        List<PDeclaration> params = new ArrayList<PDeclaration>(node.getParams());
+        for (PDeclaration parameter : params) {
+            parameter.apply(this);
+        }
+
+        List<PStatement> statements = new ArrayList<PStatement>(node.getStatements());
+        for (PStatement statement : statements) {
+            statement.apply(this);
+        }
+
+        currentScope = currentScope.getParentScope();
+
+        outAFunctionRootDeclaration(node);
+    }
+
+    @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
 
@@ -41,15 +67,6 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope.addSymbol(new SymbolFunction(this.getSymbolType(node.getReturnType()), symbolTypeList, node.getName().getText(), node, currentScope));
     }
 
-    @Override
-    public void inAStructRootDeclaration(AStructRootDeclaration node){
-        currentScope = currentScope.addSubScope(node);
-        List<Symbol> list = currentScope.toList();
-        node.getProgram().apply(this);
-        currentScope = currentScope.getParentScope();
-        currentScope.addSymbol(new SymbolStruct(node.getName().getText(), list, node, currentScope));
-    }
-
     // Declaration
 
     // Assignment declaration
@@ -60,7 +77,7 @@ public class ScopeChecker extends DepthFirstAdapter {
     {
         // Check success of functions
         for (AFunctionCallExpr n : functions) {
-            super.caseAFunctionCallExpr(n);
+            n.getName().apply(this);
         }
         // Check success of structs
         for (AIdentifierTypeSpecifier n : structs) {
@@ -180,6 +197,20 @@ public class ScopeChecker extends DepthFirstAdapter {
     {
         //Assume success of functions
         functions.add(node);
+
+        //Check parameters
+        for(PExpr expr : node.getArgs()){
+            expr.apply(this);
+        }
+    }
+
+    @Override
+    public void caseAStructRootDeclaration(AStructRootDeclaration node){
+        inAStructRootDeclaration(node);
+        currentScope = currentScope.addSubScope(node);
+        node.getProgram().apply(this);
+        currentScope = currentScope.getParentScope();
+        outAStructRootDeclaration(node);
     }
 
     @Override

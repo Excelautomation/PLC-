@@ -1,61 +1,33 @@
 package dk.aau.sw402F15.TypeChecker;
 
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
+import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
+import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
  * Created by Mikkel on 08-04-2015.
  */
-public class TypeChecker extends DepthFirstAdapter {
-    private Stack<SymbolType> stack = new Stack<SymbolType>();
-    private final Scope rootScope;
-    private Scope currentScope;
-
+public class TypeChecker extends ExpressionEvaluator {
     public TypeChecker(Scope rootScope) {
-        this.rootScope = rootScope;
-        this.currentScope = rootScope;
+        super(rootScope, rootScope);
     }
 
-    @Override
-    public void inAScopeStatement(AScopeStatement node) {
-        super.inAScopeStatement(node);
-        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
-    }
-
-    @Override
-    public void outAFunctionCallExpr(AFunctionCallExpr node) {
-        stack.push(currentScope.getSymbol(node.getName().getText()).getType());
-    }
-
-    @Override
-    public void outAScopeStatement(AScopeStatement node) {
-        super.outAScopeStatement(node);
-        currentScope = currentScope.getParentScope();
-    }
+    private boolean returnFound = false;
 
     @Override
     public void outAAssignmentDeclaration(AAssignmentDeclaration node) {
         super.outAAssignmentDeclaration(node);
 
-        SymbolType arg1;
-        SymbolType arg2;
-
-        while ((arg1 = stack.pop()) == SymbolType.Function)
-        {
-            // pop again
-        }
-
-        while ((arg2 = stack.pop()) == SymbolType.Function)
-        {
-            // pop again
-        }
+        SymbolType arg1 = currentScope.getSymbol(node.getName().getText()).getType();
+        SymbolType arg2 = stack.pop();
 
         if (arg1 != arg2) {
             throw new IllegalAssignment();
@@ -63,145 +35,39 @@ public class TypeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAAssignmentExpr(AAssignmentExpr node) {
-        super.outAAssignmentExpr(node);
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.inAFunctionRootDeclaration(node);
 
-        SymbolType arg1;
-        SymbolType arg2;
-
-        while ((arg1 = stack.pop()) == SymbolType.Function)
-        {
-            // pop again
-        }
-
-        while ((arg2 = stack.pop()) == SymbolType.Function)
-        {
-            // pop again
-        }
-
-        if (arg1 != arg2) {
-            throw new IllegalAssignment();
-        }
+        stack.push(((SymbolFunction)currentScope.getSymbol(node.getName().getText())).getReturnType());
     }
 
     @Override
-    public void caseTIdentifier(TIdentifier node) {
-        stack.push(currentScope.getSymbol(node.getText()).getType());
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
+
+        stack.pop();
+
+        if (node.getReturnType().getClass() != AVoidTypeSpecifier.class && !returnFound)
+            throw new MissingReturnStatement();
+        if (node.getReturnType().getClass() == AVoidTypeSpecifier.class && returnFound)
+            throw new ReturnInVoidFunction();
     }
 
-   @Override
-    public void outAIntegerExpr(AIntegerExpr node) {
-        super.outAIntegerExpr(node);
-        stack.push(SymbolType.Int);
+
+
+    @Override
+    public void inAReturnStatement(AReturnStatement node) {
+        returnFound = true;
+        super.outAReturnStatement(node);
     }
 
     @Override
-    public void outADecimalExpr(ADecimalExpr node) {
-        super.outADecimalExpr(node);
-        stack.push(SymbolType.Decimal);
-    }
+    public void outAReturnExprStatement(AReturnExprStatement node) {
+        super.outAReturnExprStatement(node);
 
-    @Override
-    public void outATrueExpr(ATrueExpr node) {
-        super.outATrueExpr(node);
-        stack.push(SymbolType.Boolean);
-    }
+        returnFound = true;
+        SymbolType returnType = stack.peek();
 
-    @Override
-    public void outAFalseExpr(AFalseExpr node) {
-        super.outAFalseExpr(node);
-        stack.push(SymbolType.Boolean);
-    }
 
-    @Override
-    public void outACompareGreaterExpr(ACompareGreaterExpr node) {
-        super.outACompareGreaterExpr(node);
-        checkComparison();
-    }
-
-    @Override
-    public void outACompareLessExpr(ACompareLessExpr node) {
-        super.outACompareLessExpr(node);
-        checkComparison();
-    }
-
-    @Override
-    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
-        super.outACompareLessOrEqualExpr(node);
-        checkComparison();
-    }
-
-    @Override
-    public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node) {
-        super.outACompareGreaterOrEqualExpr(node);
-        checkComparison();
-    }
-
-    @Override
-    public void outACompareEqualExpr(ACompareEqualExpr node) {
-        super.outACompareEqualExpr(node);
-        checkComparison();
-    }
-
-    @Override
-    public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
-        super.outACompareNotEqualExpr(node);
-        checkComparison();
-    }
-
-    @Override
-    public void outAAddExpr(AAddExpr node) {
-        super.outAAddExpr(node);
-        checkExpression();
-    }
-
-    @Override
-    public void outASubExpr(ASubExpr node) {
-        super.outASubExpr(node);
-        checkExpression();
-    }
-
-    @Override
-    public void outAMultiExpr(AMultiExpr node) {
-        super.outAMultiExpr(node);
-        checkExpression();
-    }
-
-    @Override
-    public void outADivExpr(ADivExpr node) {
-        super.outADivExpr(node);
-        checkExpression();
-    }
-
-    @Override
-    public void outAModExpr(AModExpr node) {
-        super.outAModExpr(node);
-        checkExpression();
-    }
-
-    private void checkComparison() {
-        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
-
-        if ((arg1 == SymbolType.Int && arg2 == SymbolType.Int) || (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal)) {
-            stack.push(SymbolType.Boolean);
-        }
-        else {
-            throw new IllegalComparison();
-        }
-
-    }
-
-    private void checkExpression(){
-        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
-
-        if (arg1 == SymbolType.Int && arg2 == SymbolType.Int){
-            stack.push(SymbolType.Int);
-        }
-        else if (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal){
-            stack.push(SymbolType.Decimal);
-        }
-        else{
-            throw new IllegalExpression();
-        }
     }
 }

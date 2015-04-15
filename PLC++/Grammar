@@ -32,6 +32,7 @@ l_bkt = '[';
 r_bkt = ']';
 
 semi = ';';
+colon = ':';
 comma = ',';
 dot = '.';
 
@@ -51,7 +52,7 @@ not_equal_operator = '!=';
 and_operator = '&&';
 or_operator = '||';
 
-conditional_operator = '?';
+ternary_operator = '?';
 
 add_operator = '+';
 sub_operator = '-';
@@ -77,7 +78,8 @@ switch_keyword      = 'switch';
 case_keyword        = 'case';
 break_keyword       = 'break';
 continue_keyword    = 'continue';
-// enum_keyword     = 'enum';
+const_keyword       = 'const';
+enum_keyword        = 'enum';
 port_keyword        = 'port';
 timer_keyword       = 'timer';
 void_keyword        = 'void';
@@ -98,7 +100,11 @@ integer_literal = (digit)+;
 decimal_literal = (digit)+ '.' (digit)+;
 
 // Identifier
-port_identifier = ('I' | 'Q' | 'M' | 'AI' | 'AQ') '#';
+port_input_identifier = 'I#';
+port_output_identifier = 'O#';
+port_memory_identifier = 'M#';
+port_analog_input_identifier = 'AI#';
+port_analog_output_identifier = 'AO#';
 identifier = letter_or_specials letter_or_digit_or_specials*;
 
 // White space
@@ -129,6 +135,7 @@ type_specifier {-> type_specifier} =
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
   | {port} port_keyword																									{-> New type_specifier.port()}
+  | {enum} enum_keyword                                                                                                 {-> New type_specifier.enum()}
   | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier()}
 ;
 
@@ -147,19 +154,40 @@ function_definition {-> root_declaration} =
 
 // Formal parameters
 formal_parameter {-> declaration*} =
-	{single} type_specifier identifier																					{-> [New declaration(type_specifier, identifier)]}
-  | {multiple} type_specifier identifier comma formal_parameter															{-> [New declaration(type_specifier, identifier), formal_parameter.declaration]}
+  {single} type_qualifier? type_specifier identifier array_definition?													{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)]}
+  | {multiple} type_qualifier? type_specifier identifier array_definition? comma formal_parameter						{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition), formal_parameter.declaration]}
 ;
 
 // Struct
 struct_definition {-> root_declaration} =
 	struct_keyword identifier l_brc program r_brc																		{-> New root_declaration.struct(identifier, program)}
 ;
-	
+
+// Enum
+enum_definition {-> root_declaration} =
+	enum_keyword identifier l_brc enum_flag r_brc																		{-> New root_declaration.enum(identifier, [enum_flag.enum_flag])}
+;
+
+enum_flag {-> enum_flag*} =
+    {single} identifier                                                                                                 {-> [New enum_flag(identifier, Null)]}
+  | {multiple} identifier comma enum_flag                                                                               {-> [New enum_flag(identifier, Null), enum_flag.enum_flag]}
+;
+
+//    identifier assignment_operator integer_literal
+
+// Type-qualifier
+type_qualifier {-> type_qualifier} =
+    {const} const_keyword                                                                                               {-> New type_qualifier.const()}
+;
+
 // Declaration
 declaration {-> declaration} =
-	type_specifier identifier semi																				        {-> New declaration(type_specifier.type_specifier, identifier)}
-  | {assignment} type_specifier identifier assignment_operator expr semi												{-> New declaration.assignment(type_specifier.type_specifier, identifier, expr)}
+	{simple} type_qualifier? type_specifier identifier array_definition? semi											{-> New declaration(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)}
+  | {assignment} type_qualifier? type_specifier identifier array_definition? assignment_operator expr semi				{-> New declaration.assignment(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, expr)}
+;
+
+array_definition {-> array_definition} =
+    l_bkt [number]:integer_literal? r_bkt                                                                                {-> New array_definition(number)}
 ;
 
 // Statements
@@ -174,14 +202,10 @@ statement {-> statement} =
   | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
   | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par scope		{-> New statement.for(initilizer.expr, condition.expr, iterator.expr)} // TODO: for with declaration
   
-  // Return
+  // Control
   | {return} return_keyword semi																						{-> New statement.return()}
   | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
-
-  // Continue
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
-
-  // Break
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
 ;
 
@@ -219,82 +243,88 @@ expr {-> expr} =
   | {compound_mult} identifier mult_assignment_operator expr															{-> New expr.compound_mult(identifier, expr.expr)}
   | {compound_div} identifier div_assignment_operator expr																{-> New expr.compound_div(identifier, expr.expr)}
   | {compound_mod} identifier mod_assignment_operator expr																{-> New expr.compound_mod(identifier, expr.expr)}
-  | {factor} [expr]:expr2																								{-> expr.expr}	
+  | {factor} [expr]:expr13																								{-> expr.expr}
 ;
 
-// Precedence 12
-expr2 {-> expr} =
-	{or} [left]:expr2 or_operator [right]:expr3																			{-> New expr.compare_or(left.expr, right.expr)}
-  | {factor} [expr]:expr3																								{-> expr.expr}
+// Precedence 13 (Ternary conditional)
+expr13 {-> expr} =
+    {ternary} [condition]:expr13 ternary_operator [left]:expr12 colon [right]:expr12                                    {-> New expr.ternary(condition.expr, left.expr, right.expr)}
+  | {factor} [expr]:expr12                                                                                              {-> expr.expr}
 ;
 
-// Precedence 11
-expr3 {-> expr} =
-	{and} [left]:expr3 and_operator [right]:expr4																		{-> New expr.compare_and(left.expr, right.expr)}
-  | {factor} [expr]:expr4																								{-> expr.expr}
+// Precedence 12 (Logical OR)
+expr12 {-> expr} =
+	{or} [left]:expr12 or_operator [right]:expr11																		{-> New expr.compare_or(left.expr, right.expr)}
+  | {factor} [expr]:expr11																								{-> expr.expr}
 ;
 
-// Precedence 7
-expr4 {-> expr} =
-	{equal} [left]:expr4 equal_operator [right]:expr5																	{-> New expr.compare_equal(left.expr, right.expr)}
-  |	{not_equal} [left]:expr4 not_equal_operator [right]:expr5															{-> New expr.compare_not_equal(left.expr, right.expr)}
-  | {factor} [expr]:expr5																								{-> expr.expr}
-;
-
-// Precedence 6
-expr5 {-> expr} =
-	{less} [left]:expr5 less_than_operator [right]:expr6																{-> New expr.compare_less(left.expr, right.expr)}
-  |	{less_or_equal} [left]:expr5 less_than_or_equal_operator [right]:expr6												{-> New expr.compare_less_or_equal(left.expr, right.expr)}
-  |	{greater} [left]:expr5 greater_than_operator [right]:expr6															{-> New expr.compare_greater(left.expr, right.expr)}
-  |	{greater_or_equal} [left]:expr5 greater_than_or_equal_operator [right]:expr6										{-> New expr.compare_greater_or_equal(left.expr, right.expr)}
-  | {factor} [expr]:expr6																								{-> expr.expr}
-;
-
-// Precedence 4
-expr6 {-> expr} =
-	{add} [left]:expr6 add_operator [right]:expr7																		{-> New expr.add(left.expr, right.expr)}
-  |	{sub} [left]:expr6 sub_operator [right]:expr7																		{-> New expr.sub(left.expr, right.expr)}
+// Precedence 11 (Logical AND)
+expr11 {-> expr} =
+	{and} [left]:expr11 and_operator [right]:expr7																		{-> New expr.compare_and(left.expr, right.expr)}
   | {factor} [expr]:expr7																								{-> expr.expr}
 ;
 
-// Precedence 3
+// Precedence 7 (For relational and respectively)
 expr7 {-> expr} =
-	{multi} [left]:expr7 mult_operator [right]:expr8																	{-> New expr.multi(left.expr, right.expr)}
-  |	{div} [left]:expr7 div_operator [right]:expr8																		{-> New expr.div(left.expr, right.expr)}
-  |	{mod} [left]:expr7 mod_operator [right]:expr8																		{-> New expr.mod(left.expr, right.expr)}
-  | {factor} [expr]:expr8																								{-> expr.expr}
+	{equal} [left]:expr7 equal_operator [right]:expr6																	{-> New expr.compare_equal(left.expr, right.expr)}
+  |	{not_equal} [left]:expr7 not_equal_operator [right]:expr6															{-> New expr.compare_not_equal(left.expr, right.expr)}
+  | {factor} [expr]:expr6																								{-> expr.expr}
+;
+
+// Precedence 6 (For relational operators and respectively)
+expr6 {-> expr} =
+	{less} [left]:expr6 less_than_operator [right]:expr4																{-> New expr.compare_less(left.expr, right.expr)}
+  |	{less_or_equal} [left]:expr6 less_than_or_equal_operator [right]:expr4												{-> New expr.compare_less_or_equal(left.expr, right.expr)}
+  |	{greater} [left]:expr6 greater_than_operator [right]:expr4															{-> New expr.compare_greater(left.expr, right.expr)}
+  |	{greater_or_equal} [left]:expr6 greater_than_or_equal_operator [right]:expr4										{-> New expr.compare_greater_or_equal(left.expr, right.expr)}
+  | {factor} [expr]:expr4																								{-> expr.expr}
+;
+
+// Precedence 4 (Addition and subtraction)
+expr4 {-> expr} =
+	{add} [left]:expr4 add_operator [right]:expr3																		{-> New expr.add(left.expr, right.expr)}
+  |	{sub} [left]:expr4 sub_operator [right]:expr3																		{-> New expr.sub(left.expr, right.expr)}
+  | {factor} [expr]:expr3																								{-> expr.expr}
+;
+
+// Precedence 3 (Multiplication, division, and remainder)
+expr3 {-> expr} =
+	{multi} [left]:expr3 mult_operator [right]:expr2																	{-> New expr.multi(left.expr, right.expr)}
+  |	{div} [left]:expr3 div_operator [right]:expr2																		{-> New expr.div(left.expr, right.expr)}
+  |	{mod} [left]:expr3 mod_operator [right]:expr2																		{-> New expr.mod(left.expr, right.expr)}
+  | {factor} [expr]:expr2																								{-> expr.expr}
 ;
 
 // Precedence 2
-expr8 {-> expr} =
+expr2 {-> expr} =
 	// Prefix increment / decrement
 	{increment} increment_operator identifier																			{-> New expr.increment(identifier)}
   |	{decrement} decrement_operator identifier																			{-> New expr.decrement(identifier)}
 	
 	// Unary plus and minus
-  |	{unary_plus} add_operator [expr]:expr8																				{-> New expr.unary_plus(expr.expr)}
-  |	{unary_minus} sub_operator [expr]:expr8																				{-> New expr.unary_minus(expr.expr)}
+  |	{unary_plus} add_operator [expr]:expr2																				{-> New expr.unary_plus(expr.expr)}
+  |	{unary_minus} sub_operator [expr]:expr2																				{-> New expr.unary_minus(expr.expr)}
 
 	// Negation
-  | {negate} negate_operator [expr]:expr8																				{-> New expr.negation(expr.expr)}
+  | {negate} negate_operator [expr]:expr2																				{-> New expr.negation(expr.expr)}
   
 	// Type cast
-  | {cast} l_par [type]:type_specifier r_par [expr]:expr8																{-> New expr.type_cast(type.type_specifier, expr.expr)}
+  | {cast} l_par [type]:type_specifier r_par [expr]:expr2																{-> New expr.type_cast(type.type_specifier, expr.expr)}
   
-  | {factor} [expr]:expr9																								{-> expr.expr}
+  | {factor} [expr]:expr1																								{-> expr.expr}
 ;
 
 // Precedence 1
-expr9 {-> expr} =
+expr1 {-> expr} =
   	// Postfix increment / decrement
 	{increment} identifier increment_operator																			{-> New expr.increment(identifier)}
   |	{decrement} identifier decrement_operator																			{-> New expr.decrement(identifier)}
   
 	// Array
-  | {array_subscript} identifier l_bkt [expr]:expr9 r_bkt																{-> New expr.array(identifier, expr.expr)}
+  | {array_subscript} identifier l_bkt [expr]:expr1 r_bkt																{-> New expr.array(identifier, expr.expr)}
   
 	// Dot
-  | {member} [left]:expr9 dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
+  | {member} [left]:expr1 dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
   
 	// Parenthesis
   | {par} l_par expr r_par																								{-> expr.expr}
@@ -314,16 +344,20 @@ actual_parameter {-> expr*} =
 ;
 
 expr_value {-> expr} =
-    {integer}                   integer_literal                                                                         {-> New expr.integer(integer_literal)}
-  | {decimal}                   decimal_literal                                                                         {-> New expr.decimal(decimal_literal)}
-  | {true}                      true_keyword                                                                            {-> New expr.true()}
-  | {false}                     false_keyword                                                                           {-> New expr.false()}
-  | {identifier}				identifier																				{-> New expr.identifier(identifier)}
-  	
-//  | {port_identifier}			port_identifier expr																	}
+    {integer}                         integer_literal                                                                   {-> New expr.integer(integer_literal)}
+  | {decimal}                         decimal_literal                                                                   {-> New expr.decimal(decimal_literal)}
+  | {true}                            true_keyword                                                                      {-> New expr.true()}
+  | {false}                           false_keyword                                                                     {-> New expr.false()}
+  | {identifier}				      identifier																	    {-> New expr.identifier(identifier)}
+
+  | {port_input_identifier}		      port_input_identifier [expr]:expr_value											{-> New expr.port_input(expr.expr)}
+  | {port_output_identifier}	      port_output_identifier [expr]:expr_value											{-> New expr.port_output(expr.expr)}
+  | {port_memory_identifier}	      port_memory_identifier [expr]:expr_value											{-> New expr.port_memory(expr.expr)}
+  | {port_analog_input_identifier}	  port_analog_input_identifier [expr]:expr_value									{-> New expr.port_analog_input(expr.expr)}
+  | {port_analog_output_identifier}   port_analog_output_identifier [expr]:expr_value									{-> New expr.port_analog_output(expr.expr)}
 	
-	// Precedence changed from C to allow functions in structs
-	// Function call
+  // Precedence changed from C to allow functions in structs
+  // Function call
   | {function_call} function_call																						{-> function_call.expr}
 ;
 
@@ -340,13 +374,22 @@ root_declaration =
 	{declaration} 				declaration 
   |	{function} 					[return_type]:type_specifier	[name]:identifier			[params]:declaration*		[statements]:statement*
   | {struct}					[name]:identifier				[program]:program
+  | {enum}                      [name]:identifier				[program]:enum_flag*
+;
+
+enum_flag =
+    identifier                  [value]:integer_literal?
 ;
   
 declaration =
-						        [type]:type_specifier			[name]:identifier
-  |	{assignment}				[type]:type_specifier			[name]:identifier			[expr]:expr
+						        [type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier? [array]:array_definition?
+  |	{assignment}				[type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier?	[array]:array_definition?  [expr]:expr
 ;
-	
+
+array_definition =
+                         [number]:integer_literal?
+;
+
 type_specifier =
     {char}
   | {bool}
@@ -358,6 +401,11 @@ type_specifier =
   | {port}
   | {identifier}
   | {void}
+  | {enum}
+;
+
+type_qualifier =
+    {const}
 ;
 
 statement =
@@ -422,9 +470,17 @@ expr =
   | {compound_mult}				[name]:identifier				expr
   | {compound_div}				[name]:identifier				expr
   | {compound_mod}				[name]:identifier				expr
-  
+
+  | {ternary}                   [condition]:expr                [left]:expr             [right]:expr
+
   |	{integer}                   integer_literal
   | {decimal}                   decimal_literal
   | {true}
   | {false}
+
+  | {port_input}                expr
+  | {port_output}               expr
+  | {port_memory}               expr
+  | {port_analog_input}         expr
+  | {port_analog_output}        expr
 ;
