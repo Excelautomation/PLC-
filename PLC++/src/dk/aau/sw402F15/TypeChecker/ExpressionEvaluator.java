@@ -3,11 +3,7 @@ import dk.aau.sw402F15.TypeChecker.Exceptions.WrongParameterException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpressionException;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
-import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
+import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.node.*;
 
 import java.util.ArrayList;
@@ -17,42 +13,15 @@ import java.util.Stack;
 /**
  * Created by Mikkel on 15-04-2015.
  */
-public class ExpressionEvaluator extends DepthFirstAdapter {
-    protected final Scope rootScope;
-    protected Scope currentScope;
+public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
     protected Stack<SymbolType> stack = new Stack<SymbolType>();
 
     public ExpressionEvaluator(Scope rootScope, Scope currentScope) {
-        this.rootScope = rootScope;
-        this.currentScope = currentScope;
+        super(rootScope, currentScope);
     }
 
     public SymbolType getSymbol() {
         return stack.pop();
-    }
-
-    @Override
-    public void inAScopeStatement(AScopeStatement node) {
-        super.inAScopeStatement(node);
-        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
-    }
-
-    @Override
-    public void outAScopeStatement(AScopeStatement node) {
-        super.outAScopeStatement(node);
-        currentScope = currentScope.getParentScope();
-    }
-
-    @Override
-    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
-        super.inAFunctionRootDeclaration(node);
-        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
-    }
-
-    @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
-        super.outAFunctionRootDeclaration(node);
-        currentScope = currentScope.getParentScope();
     }
 
     @Override
