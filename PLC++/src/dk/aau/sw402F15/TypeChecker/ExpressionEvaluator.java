@@ -1,8 +1,8 @@
 package dk.aau.sw402F15.TypeChecker;
 
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpressionException;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
@@ -89,7 +89,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
         SymbolType arg2 = stack.pop();
 
         if (arg1 != arg2) {
-            throw new IllegalAssignment();
+            throw new IllegalAssignmentException();
         }
     }
 
@@ -197,7 +197,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
             stack.push(SymbolType.Boolean);
         }
         else {
-            throw new IllegalComparison();
+            throw new IllegalComparisonException();
         }
 
     }
@@ -212,7 +212,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
             stack.push(SymbolType.Decimal);
         }
         else{
-            throw new IllegalExpression();
+            throw new IllegalExpressionException();
         }
     }
 }

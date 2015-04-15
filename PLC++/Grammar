@@ -135,8 +135,8 @@ type_specifier {-> type_specifier} =
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
   | {port} port_keyword																									{-> New type_specifier.port()}
-  | {enum} enum_keyword                                                                                                 {-> New type_specifier.enum()}
-  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier()}
+  | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.identifier(identifier)}
+  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier(identifier)}
 ;
 
 // Declaration in root scope
@@ -144,6 +144,7 @@ root_declaration {-> root_declaration} =
 	{variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
   |	{function} function_definition																						{-> function_definition.root_declaration}
   | {struct} struct_definition																							{-> struct_definition.root_declaration}
+  | {enum} enum_definition                                                                                              {-> enum_definition.root_declaration}
 ;
 
 // Function definition
@@ -165,15 +166,18 @@ struct_definition {-> root_declaration} =
 
 // Enum
 enum_definition {-> root_declaration} =
-	enum_keyword identifier l_brc enum_flag r_brc																		{-> New root_declaration.enum(identifier, [enum_flag.enum_flag])}
+	enum_keyword identifier l_brc enum_flags r_brc																		{-> New root_declaration.enum(identifier, [enum_flags.enum_flag])}
 ;
 
-enum_flag {-> enum_flag*} =
-    {single} identifier                                                                                                 {-> [New enum_flag(identifier, Null)]}
-  | {multiple} identifier comma enum_flag                                                                               {-> [New enum_flag(identifier, Null), enum_flag.enum_flag]}
+enum_flags {-> enum_flag*} =
+    {single} enum_flag                                                                                                  {-> [enum_flag.enum_flag]}
+  | {multiple} enum_flag comma enum_flags                                                                               {-> [enum_flag.enum_flag, enum_flags.enum_flag]}
 ;
 
-//    identifier assignment_operator integer_literal
+enum_flag {-> enum_flag} =
+    {simple} identifier                                                                                                 {-> New enum_flag(identifier, Null)}
+  | {value} identifier assignment_operator integer_literal                                                              {-> New enum_flag(identifier, integer_literal)}
+;
 
 // Type-qualifier
 type_qualifier {-> type_qualifier} =
@@ -387,7 +391,7 @@ declaration =
 ;
 
 array_definition =
-                         [number]:integer_literal?
+                                [number]:integer_literal?
 ;
 
 type_specifier =
@@ -399,9 +403,8 @@ type_specifier =
   | {double}
   | {timer}
   | {port}
-  | {identifier}
+  | {identifier}                identifier
   | {void}
-  | {enum}
 ;
 
 type_qualifier =
