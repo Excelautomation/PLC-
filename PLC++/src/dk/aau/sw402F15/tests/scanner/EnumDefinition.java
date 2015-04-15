@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class EnumDefinition extends ScannerTest {
     @Test
-    public void StructTest() throws ParserException, IOException, LexerException {
-        checkCode("enum str { int i; int j; float k; }");
+    public void EnumTest() throws ParserException, IOException, LexerException {
+        checkCode("enum weekday { Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6, Sunday = 7 }");
     }
 }
