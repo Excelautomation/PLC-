@@ -144,6 +144,7 @@ root_declaration {-> root_declaration} =
 	{variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
   |	{function} function_definition																						{-> function_definition.root_declaration}
   | {struct} struct_definition																							{-> struct_definition.root_declaration}
+  | {enum} enum_definition                                                                                              {-> enum_definition.root_declaration}
 ;
 
 // Function definition
