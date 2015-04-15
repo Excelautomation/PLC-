@@ -1,11 +1,9 @@
-package dk.aau.sw402F15.tests.declaration;
+package dk.aau.sw402F15.tests.scanner.declaration;
 
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
-import dk.aau.sw402F15.parser.node.Start;
 import dk.aau.sw402F15.parser.parser.Parser;
 import dk.aau.sw402F15.parser.parser.ParserException;
-import junit.framework.TestSuite;
 import org.junit.Test;
 
 import java.io.IOException;
