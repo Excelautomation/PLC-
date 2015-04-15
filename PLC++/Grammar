@@ -201,6 +201,7 @@ statement {-> statement} =
   
   // Conditional
   | {if} if_statement																									{-> if_statement.statement}
+  | {switch} switch_statement                                                                                           {-> switch_statement.statement}
   
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
