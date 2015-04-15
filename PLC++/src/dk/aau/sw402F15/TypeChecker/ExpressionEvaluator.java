@@ -44,6 +44,18 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     }
 
     @Override
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.inAFunctionRootDeclaration(node);
+        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
+    }
+
+    @Override
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
+        currentScope = currentScope.getParentScope();
+    }
+
+    @Override
     public void caseAFunctionCallExpr(AFunctionCallExpr node) {
         Symbol symbol = currentScope.getSymbol(node.getName().getText());
         SymbolFunction func;
