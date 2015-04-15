@@ -47,10 +47,13 @@ public class Main {
         //code = "int i = 5;";
 
         code = "int i = 1;\n" +
-                "float func(int p){\n" +
-                "i = func(8);\n" +
-                "return 3;\n" +
+                "int func(int p){\n" +
+                    "i = func(9);\n" +
+                    "return 6;\n" +
                 "}\n";
+
+                //"void call(){\n" +
+                    //"func(true); }";
 
         System.out.println(code);
 
