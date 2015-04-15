@@ -1,7 +1,7 @@
 package dk.aau.sw402F15.TypeChecker.Symboltable;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.ScopeNotFoundException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolAlreadyExists;
+import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolAlreadyExistsException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
 import dk.aau.sw402F15.parser.node.Node;
 
@@ -33,7 +33,7 @@ public class Scope {
 
     public void addSymbol(Symbol symbol) {
         if (getSymbol(symbol.getName()) != null) {
-            throw new SymbolAlreadyExists();
+            throw new SymbolAlreadyExistsException();
         }
 
         symbols.put(symbol.getName(), symbol);

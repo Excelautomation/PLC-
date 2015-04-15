@@ -1,9 +1,8 @@
 package dk.aau.sw402F15.tests.typechecker;
 
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
@@ -36,32 +35,32 @@ public class TypeCheckerTests {
         checkCode("float b = 1.1;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkIntDeclarationSetToBool() {
         checkCode("int i = true;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkIntDeclarationSetToDecimal() {
         checkCode("int i = 1.1;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkBoolDeclarationSetToInt() {
         checkCode("bool b = 1;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkBoolDeclarationSetToDecimal() {
         checkCode("bool b = 1.1;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkDecimalSetToBool(){
         checkCode("float f = true;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkDecimalSetToInt(){
         checkCode("float f = 1;");
     }
@@ -86,47 +85,47 @@ public class TypeCheckerTests {
         checkCode("bool b = 1 <= 2;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntDecimalComparisonGreater(){
         checkCode("bool b = 1 > 1.1;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntDecimalComparisonGreaterOrEqual(){
         checkCode("bool b = 1 >= 1.1;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntDecimalComparisonLess(){
         checkCode("bool b = 1 < 1.1;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntDecimalComparisonLessOrEqual(){
         checkCode("bool b = 1 <= 1.1;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntBoolComparisonGreater(){
         checkCode("bool b = 1 > true;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntBoolComparisonGreaterOrEqual(){
         checkCode("bool b = 1 >= true;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntBoolComparisonLess(){
         checkCode("bool b = 1 < true;");
     }
 
-    @Test(expected = IllegalComparison.class)
+    @Test(expected = IllegalComparisonException.class)
     public void checkIntBoolComparisonLessOrEqual(){
         checkCode("bool b = 1 <= true;");
     }
 
-    @Test(expected = IllegalAssignment.class)
+    @Test(expected = IllegalAssignmentException.class)
     public void checkAssignBoolExprToInt() {
         checkCode("int i = 7 < 8;");
     }
