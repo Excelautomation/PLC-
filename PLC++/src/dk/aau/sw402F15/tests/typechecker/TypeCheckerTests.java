@@ -1,8 +1,7 @@
 package dk.aau.sw402F15.tests.typechecker;
 
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
+import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -130,6 +129,38 @@ public class TypeCheckerTests {
     public void checkAssignBoolExprToInt() {
         checkCode("int i = 7 < 8;");
     }
+
+    @Test(expected = ReturnInVoidFunction.class)
+    public void checkReturnInVoidFunction() {
+        checkCode("void func(){return 2;}");
+    }
+
+    @Test
+    public void checkNoReturnInVoidFunction() {
+        checkCode("void func(){}");
+    }
+
+    @Test(expected = MissingReturnStatement.class)
+    public void checkMissingReturnStatement() {
+        checkCode("int func(){}");
+    }
+
+    @Test
+    public void checkNoMissingReturnStatement() {
+        checkCode("int func(){return 2;}");
+    }
+
+    @Test(expected = WrongParameter.class)
+    public void checkWrongParameterInFunction() {
+        checkCode("int func(int k, int p){ func(2.2, 2); return k + p; } ");
+    }
+
+    @Test
+    public void checkNoWrongParameterInFunction() {
+        checkCode("int func(int k, int p){ func(2, 2); return k + p; } ");
+    }
+
+
 
     private void checkCode(String code) {
         Start node = null;

@@ -3,6 +3,7 @@ package dk.aau.sw402F15.TypeChecker;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignment;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparison;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Exceptions.WrongParameter;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
 import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
@@ -62,7 +63,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
             // Check number of parameters
             if (copy.size() != func.getFormalParameters().size())
-                throw new RuntimeException();
+                throw new WrongParameter();
 
             // Check each expression
             for (int i = 0; i < copy.size(); i++) {
@@ -73,7 +74,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
 
                 SymbolType type = expressionEvaluator.getSymbol();
                 if (type != func.getFormalParameters().get(i))
-                    throw new RuntimeException();
+                    throw new WrongParameter();
             }
         }
 
@@ -85,7 +86,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
-        SymbolType arg1 = currentScope.getSymbol(node.getName().getText()).getType();
+        SymbolType arg1 = currentScope.getSymbolOrThrow(node.getName().getText()).getType();
         SymbolType arg2 = stack.pop();
 
         if (arg1 != arg2) {
@@ -97,7 +98,7 @@ public class ExpressionEvaluator extends DepthFirstAdapter {
     public void outAIdentifierExpr(AIdentifierExpr node) {
         super.outAIdentifierExpr(node);
 
-        stack.push(currentScope.getSymbol(node.getName().getText()).getType());
+        stack.push(currentScope.getSymbolOrThrow(node.getName().getText()).getType());
     }
 
     @Override
