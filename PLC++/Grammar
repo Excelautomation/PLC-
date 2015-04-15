@@ -202,7 +202,7 @@ statement {-> statement} =
   // Conditional
   | {if} if_statement																									{-> if_statement.statement}
   | {switch} switch_statement                                                                                           {-> switch_statement.statement}
-  
+
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
   | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par scope		{-> New statement.for(initilizer.expr, condition.expr, iterator.expr)} // TODO: for with declaration
@@ -212,6 +212,7 @@ statement {-> statement} =
   | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
+  | {label} label_statements                                                                                            {-> label_statements.statement}
 ;
 
 // If
