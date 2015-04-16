@@ -22,12 +22,12 @@ public class StructBuilder extends DepthFirstAdapter {
 
     @Override
     public void inAAssignmentDeclaration(AAssignmentDeclaration node){
-        scope.addSymbol(new Symbol(getSymbolType(node.getType()), node.getName().getText(), node, scope));
+        scope.addSymbol(new SymbolVariable(getSymbolType(node.getType()), node.getName().getText(), node, scope, false));
     }
 
     @Override
     public void inADeclaration(ADeclaration node){
-        scope.addSymbol(new Symbol(getSymbolType(node.getType()), node.getName().getText(), node, scope));
+        scope.addSymbol(new SymbolVariable(getSymbolType(node.getType()), node.getName().getText(), node, scope, false));
     }
 
     @Override
