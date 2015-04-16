@@ -205,7 +205,7 @@ statement {-> statement} =
   
   // Conditional
   | {if} if_statement																									{-> if_statement.statement}
-  //| {switch} switch_statement                                                                                           {-> switch_statement.statement}
+  | {switch} switch_statement                                                                                           {-> switch_statement.statement}
 
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par statement														{-> New statement.while(condition.expr, statement.statement)}
@@ -216,7 +216,6 @@ statement {-> statement} =
   | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
-  //| {label} label_statements                                                                                            {-> label_statements.statement}
 ;
 
 statement_no_short_if  {-> statement} =
@@ -229,7 +228,7 @@ statement_no_short_if  {-> statement} =
 
   // Conditional
   | {if} if_statement_short																								{-> if_statement_short.statement}
-//  | {switch} switch_statement                                                                                           {-> switch_statement.statement}
+  | {switch} switch_statement                                                                                           {-> switch_statement.statement}
 
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par statement_no_short_if											{-> New statement.while(condition.expr, statement_no_short_if.statement)}
@@ -240,7 +239,6 @@ statement_no_short_if  {-> statement} =
   | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
-  //| {label} label_statements                                                                                            {-> label_statements.statement}
 ;
 
 // If
@@ -255,12 +253,12 @@ if_statement_short {-> statement} =
 
 // Switch
 switch_statement {-> statement} =
-    {switch} switch_keyword l_par [condition]:expr r_par statement                                                      {-> New statement.switch(condition.expr, statement.statement)}
+    {switch} switch_keyword l_par [condition]:expr r_par l_brc label_statements* r_brc                                  {-> New statement.switch(condition.expr, [label_statements.statement])}
 ;
 
 label_statements {-> statement} =
-    {case} case_keyword [condition]:expr semi scope                                                                     {-> New statement.case(condition.expr, [scope.statement])}
-  | {default} default_keyword semi scope                                                                                {-> New statement.default([scope.statement])}
+    {case} case_keyword [condition]:expr colon statement                                                                {-> New statement.case(condition.expr, statement.statement)}
+  | {default} default_keyword colon statement                                                                            {-> New statement.default(statement.statement)}
 ;
 
 // Expression
@@ -452,9 +450,9 @@ statement =
   | {if_else}					[condition]:expr				[statement]:statement		[else]:statement
 
   // Switch
-  | {switch}                    [condition]:expr                [statement]:statement
-  | {case}                      [case]:expr                     [statements]:statement*
-  | {default}                                                   [statements]:statement*
+  | {switch}                    [condition]:expr                [labels]:statement*
+  | {case}                      [case]:expr                     [statement]:statement
+  | {default}                                                   [statement]:statement
 
   // Iteration
   | {while}						[condition]:expr				[statement]:statement
