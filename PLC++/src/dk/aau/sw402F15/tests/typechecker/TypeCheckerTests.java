@@ -162,8 +162,10 @@ public class TypeCheckerTests {
     }
 
     @Test(expected = RedifinitionOfReadOnly.class)
-    public void checkAssignmentOfConst() { checkCode("const int i = 7; i = 2; } "); }
+    public void checkAssignmentOfConst() { checkCode("const int i = 7; i = 2; "); }
 
+    @Test(expected = RedifinitionOfReadOnly.class)
+    public void checkAssignmentOfConstInFunction() { checkCode("int func(){const int i = 7; i = 2; } "); }
 
 
     private void checkCode(String code) {
