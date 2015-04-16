@@ -70,7 +70,7 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
         {
             boolean test = ((SymbolVariable) currentScope.getSymbolOrThrow(node.getName().getText())).isConst();
             if (((SymbolVariable) currentScope.getSymbolOrThrow(node.getName().getText())).isConst())
-                throw new RedefinitionOfReadOnly();
+                throw new RedefinitionOfReadOnlyException();
         }
 
 
