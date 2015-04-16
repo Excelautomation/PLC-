@@ -44,7 +44,7 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "void func(){}";
+        code = "int i = 3;";
 
         /*code = "int i = 1;\n" +
                 "void func(int p){\n" +

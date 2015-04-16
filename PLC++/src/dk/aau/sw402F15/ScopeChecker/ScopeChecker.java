@@ -1,10 +1,8 @@
 package dk.aau.sw402F15.ScopeChecker;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpressionException;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import sun.tools.tree.IdentifierExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +128,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         if(isArray)
             currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
         else
-            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
     }
 
     @Override
@@ -148,7 +146,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         if(isArray)
             currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
         else
-            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
     }
 
     @Override
