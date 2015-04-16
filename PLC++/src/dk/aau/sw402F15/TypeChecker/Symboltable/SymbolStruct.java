@@ -14,5 +14,7 @@ public class SymbolStruct extends  Symbol {
         this.symbolList = symbolList;
     }
 
-
+    public List<Symbol> getSymbolList() {
+        return symbolList;
+    }
 }
