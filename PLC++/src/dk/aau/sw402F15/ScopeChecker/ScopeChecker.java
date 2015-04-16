@@ -113,7 +113,7 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     private void DeclareVariable(String name, SymbolType type, Node node){
-        currentScope.addSymbol(new Symbol(type, name, node, currentScope));
+        currentScope.addSymbol(new SymbolVariable(type, name, node, currentScope, false));
     }
 
     private void DeclareArray(String name, SymbolType type, Node node){
@@ -150,11 +150,41 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     @Override
     public void inAAssignmentDeclaration(AAssignmentDeclaration node){
+        //Get children
+        TIdentifier id = node.getName();
+        boolean isArray = node.getArray() != null;
+        SymbolType type = getSymbolType(node.getType());
+
+        //Check for errors
+        if(id == null){
+            throw new NullPointerException();
+        }
+
+        //Add the symbol
+        if(isArray)
+            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
+        else
+            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
+
         DeclareVariable(node);
     }
 
     @Override
     public void inADeclaration(ADeclaration node){
+        //Get children
+        TIdentifier id = node.getName();
+        SymbolType type = getSymbolType(node.getType());
+        boolean isArray = node.getArray() != null;
+
+        //Check for errors
+        if(id == null){
+            throw new NullPointerException();
+        }
+        //Add the symbol
+        if(isArray)
+            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
+        else
+            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
         DeclareVariable(node);
     }
 
