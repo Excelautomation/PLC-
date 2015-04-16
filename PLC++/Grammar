@@ -135,8 +135,8 @@ type_specifier {-> type_specifier} =
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
   | {port} port_keyword																									{-> New type_specifier.port()}
-  | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.identifier(identifier)}
-  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier(identifier)}
+  | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.enum(identifier)}
+  | {struct} struct_keyword identifier																				    {-> New type_specifier.struct(identifier)}
 ;
 
 // Declaration in root scope
@@ -432,7 +432,8 @@ type_specifier =
   | {double}
   | {timer}
   | {port}
-  | {identifier}                identifier
+  | {enum}                      identifier
+  | {struct}                    identifier
   | {void}
 ;
 
