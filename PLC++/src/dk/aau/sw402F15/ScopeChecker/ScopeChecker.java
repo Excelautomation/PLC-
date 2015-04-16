@@ -242,7 +242,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         {
             sType = SymbolType.Timer;
         }
-        else if(type instanceof AIdentifierTypeSpecifier){
+        else if(type instanceof AStructTypeSpecifier){
             sType = SymbolType.Struct;
         }
         else if (type instanceof AEnumTypeSpecifier){
