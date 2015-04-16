@@ -152,41 +152,11 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     @Override
     public void inAAssignmentDeclaration(AAssignmentDeclaration node){
-        //Get children
-        TIdentifier id = node.getName();
-        boolean isArray = node.getArray() != null;
-        SymbolType type = getSymbolType(node.getType());
-
-        //Check for errors
-        if(id == null){
-            throw new NullPointerException();
-        }
-
-        //Add the symbol
-        if(isArray)
-            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
-        else
-            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
-
         DeclareVariable(node);
     }
 
     @Override
     public void inADeclaration(ADeclaration node){
-        //Get children
-        TIdentifier id = node.getName();
-        SymbolType type = getSymbolType(node.getType());
-        boolean isArray = node.getArray() != null;
-
-        //Check for errors
-        if(id == null){
-            throw new NullPointerException();
-        }
-        //Add the symbol
-        if(isArray)
-            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
-        else
-            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
         DeclareVariable(node);
     }
 
@@ -203,6 +173,13 @@ public class ScopeChecker extends DepthFirstAdapter {
         node.getProgram().apply(this);
         currentScope = currentScope.getParentScope();
         outAStructRootDeclaration(node);
+    }
+
+    @Override
+    public void caseADeclarationRootDeclaration(ADeclarationRootDeclaration node){
+        inADeclarationRootDeclaration(node);
+        //Do nothing the variable is already declared
+        outADeclarationRootDeclaration(node);
     }
 
     public Scope getSymbolTable() {
