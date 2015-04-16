@@ -25,6 +25,32 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
+    public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        inAFunctionRootDeclaration(node);
+
+        if (node.getReturnType() != null) {
+            node.getReturnType().apply(this);
+        }
+        if (node.getName() != null) {
+            node.getName().apply(this);
+        }
+        currentScope = currentScope.addSubScope(node);
+        List<PDeclaration> params = new ArrayList<PDeclaration>(node.getParams());
+        for (PDeclaration parameter : params) {
+            parameter.apply(this);
+        }
+
+        List<PStatement> statements = new ArrayList<PStatement>(node.getStatements());
+        for (PStatement statement : statements) {
+            statement.apply(this);
+        }
+
+        currentScope = currentScope.getParentScope();
+
+        outAFunctionRootDeclaration(node);
+    }
+
+    @Override
     public void outStart(Start node){
         // Check success of functions
         for (AFunctionCallExpr n : functions) {
@@ -66,35 +92,6 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void inADeclaration(ADeclaration node){
-        //Get children
-        TIdentifier id = node.getName();
-        PTypeSpecifier type = node.getType();
-
-        //Check for errors
-        if(id == null){
-            throw new NullPointerException();
-        }
-        //Add the symbol
-        currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
-    }
-
-    @Override
-    public void inAAssignmentDeclaration(AAssignmentDeclaration node){
-        //Get children
-        TIdentifier id = node.getName();
-        PTypeSpecifier type = node.getType();
-
-        //Check for errors
-        if(id == null){
-            throw new NullPointerException();
-        }
-
-        //Add the symbol
-        currentScope.addSymbol(new Symbol(getSymbolType(node.getType()), id.getText(), node, currentScope));
-    }
-
-    @Override
     public void inAScopeStatement(AScopeStatement node){
         currentScope = currentScope.addSubScope(node);
 
@@ -118,7 +115,45 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void caseTIdentifier(TIdentifier node){
+    public void inAAssignmentDeclaration(AAssignmentDeclaration node){
+        //Get children
+        TIdentifier id = node.getName();
+        boolean isArray = node.getArray() != null;
+        SymbolType type = getSymbolType(node.getType());
+
+        //Check for errors
+        if(id == null){
+            throw new NullPointerException();
+        }
+
+        //Add the symbol
+        if(isArray)
+            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
+        else
+            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+    }
+
+    @Override
+    public void inADeclaration(ADeclaration node){
+        //Get children
+        TIdentifier id = node.getName();
+        SymbolType type = getSymbolType(node.getType());
+        boolean isArray = node.getArray() != null;
+
+        //Check for errors
+        if(id == null){
+            throw new NullPointerException();
+        }
+        //Add the symbol
+        if(isArray)
+            currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
+        else
+            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+    }
+
+    @Override
+    public void caseTIdentifier(TIdentifier node)
+    {
         currentScope.getSymbolOrThrow(node.getText());
     }
 
@@ -127,6 +162,20 @@ public class ScopeChecker extends DepthFirstAdapter {
     {
         //Assume success of functions
         functions.add(node);
+
+        //Check parameters
+        for(PExpr expr : node.getArgs()){
+            expr.apply(this);
+        }
+    }
+
+    @Override
+    public void caseAStructRootDeclaration(AStructRootDeclaration node){
+        inAStructRootDeclaration(node);
+        currentScope = currentScope.addSubScope(node);
+        node.getProgram().apply(this);
+        currentScope = currentScope.getParentScope();
+        outAStructRootDeclaration(node);
     }
 
     @Override
@@ -213,7 +262,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         return rootScope;
     }
 
-    private SymbolType getSymbolType(Object type){
+    private SymbolType getSymbolType(PTypeSpecifier type){
 
         //Check for errors
         if(type == null){
