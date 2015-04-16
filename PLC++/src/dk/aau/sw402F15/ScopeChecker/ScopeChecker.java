@@ -46,6 +46,16 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
+    public void inAWhileStatement(AWhileStatement node){
+        currentScope = currentScope.addSubScope(node);
+    }
+
+    @Override
+    public void outAWhileStatement(AWhileStatement node){
+        currentScope = currentScope.getParentScope();
+    }
+
+    @Override
     public void caseAProgram(AProgram node){
         List<AEnumRootDeclaration> enums = new ArrayList<AEnumRootDeclaration>();
         List<AFunctionRootDeclaration> functions = new ArrayList<AFunctionRootDeclaration>();
