@@ -232,8 +232,8 @@ switch_statement {-> statement} =
 ;
 
 label_statements {-> statement} =
-    {case} case_keyword [condition]:expr semi scope                                                                     {-> New statement.case(condition.expr, [scope.statement])}
-  | {default} default_keyword semi scope                                                                                {-> New statement.default([scope.statement])}
+    {case} case_keyword [condition]:expr colon scope                                                                    {-> New statement.case(condition.expr, [scope.statement])}
+  | {default} default_keyword colon scope                                                                               {-> New statement.default([scope.statement])}
 ;
 
 // Expression
