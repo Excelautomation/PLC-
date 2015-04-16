@@ -1,7 +1,10 @@
 package dk.aau.sw402F15.ScopeChecker;
+import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpression;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.tools.tree.IdentifierExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +24,19 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = rootScope;
     }
 
-    // Root_declaration
+    @Override
+    public void outStart(Start node){
+        // Check success of functions
+        for (AFunctionCallExpr n : functions) {
+            super.caseAFunctionCallExpr(n);
+        }
+        // Check success of structs
+        for (AIdentifierTypeSpecifier n : structs) {
+            super.caseAIdentifierTypeSpecifier(n);
+        }
+    }
+
+    // Declaration
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
@@ -50,94 +65,18 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope.addSymbol(new SymbolStruct(node.getName().getText(), list, node, currentScope));
     }
 
-    // Declaration
-
-    // Assignment declaration
-
-
     @Override
-    public void outStart(Start node)
-    {
-        // Check success of functions
-        for (AFunctionCallExpr n : functions) {
-            super.caseAFunctionCallExpr(n);
+    public void inADeclaration(ADeclaration node){
+        //Get children
+        TIdentifier id = node.getName();
+        PTypeSpecifier type = node.getType();
+
+        //Check for errors
+        if(id == null){
+            throw new NullPointerException();
         }
-        // Check success of structs
-        for (AIdentifierTypeSpecifier n : structs) {
-            super.caseAIdentifierTypeSpecifier(n);
-        }
-    }
-
-    // Types
-    @Override
-    public void outABoolTypeSpecifier(ABoolTypeSpecifier node) {
-        super.outABoolTypeSpecifier(node);
-    }
-
-    @Override
-    public void outACharTypeSpecifier(ACharTypeSpecifier node) {
-        super.outACharTypeSpecifier(node);
-    }
-
-    @Override
-    public void outAIntTypeSpecifier(AIntTypeSpecifier node) {
-        super.outAIntTypeSpecifier(node);
-    }
-
-    @Override
-    public void outALongTypeSpecifier(ALongTypeSpecifier node) {
-        super.outALongTypeSpecifier(node);
-    }
-
-    @Override
-    public void outAFloatTypeSpecifier(AFloatTypeSpecifier node) {
-        super.outAFloatTypeSpecifier(node);
-
-    }
-
-    @Override
-    public void outADoubleTypeSpecifier(ADoubleTypeSpecifier node) {
-        super.outADoubleTypeSpecifier(node);
-        typeList.add(node);
-    }
-
-    @Override
-    public void outATimerTypeSpecifier(ATimerTypeSpecifier node) {
-        super.outATimerTypeSpecifier(node);
-    }
-
-    @Override
-    public void outAPortTypeSpecifier(APortTypeSpecifier node) {
-        super.outAPortTypeSpecifier(node);
-        typeList.add(node);
-    }
-
-    @Override
-    public void outAIdentifierTypeSpecifier(AIdentifierTypeSpecifier node) {
-        super.outAIdentifierTypeSpecifier(node);
-    }
-
-    @Override
-    public void inAScopeStatement(AScopeStatement node)
-    {
-        currentScope = currentScope.addSubScope(node);
-
-        /* TODO: Make sure the program functions without this code segment
-        // Import formal parameters if any
-        if(node.parent() instanceof AVoidFunctionFunctionDeclaration)
-        {
-            ((AVoidFunctionFunctionDeclaration) node.parent()).getFormalParameters().apply(this);
-        }
-        if(node.parent() instanceof AFunctionRootDeclaration)
-        {
-            ((AFunctionRootDeclaration) node.parent()).getParams().apply(this);
-        }
-        */
-    }
-
-    @Override
-    public void outAScopeStatement(AScopeStatement node){
-        currentScope = currentScope.getParentScope();
+        //Add the symbol
+        currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
     }
 
     @Override
@@ -156,22 +95,30 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void inADeclaration(ADeclaration node){
-        //Get children
-        TIdentifier id = node.getName();
-        PTypeSpecifier type = node.getType();
+    public void inAScopeStatement(AScopeStatement node){
+        currentScope = currentScope.addSubScope(node);
 
-        //Check for errors
-        if(id == null){
-            throw new NullPointerException();
+        /* TODO: Make sure the program functions without this code segment
+        // Import formal parameters if any
+        if(node.parent() instanceof AVoidFunctionFunctionDeclaration)
+        {
+            ((AVoidFunctionFunctionDeclaration) node.parent()).getFormalParameters().apply(this);
         }
-        //Add the symbol
-        currentScope.addSymbol(new Symbol(this.getSymbolType(type), id.getText(), node, currentScope));
+        if(node.parent() instanceof AFunctionRootDeclaration)
+        {
+            ((AFunctionRootDeclaration) node.parent()).getParams().apply(this);
+        }
+        */
     }
 
     @Override
-    public void caseTIdentifier(TIdentifier node)
-    {
+    public void outAScopeStatement(AScopeStatement node){
+        //TODO We dont call super here ? is that correct?
+        currentScope = currentScope.getParentScope();
+    }
+
+    @Override
+    public void caseTIdentifier(TIdentifier node){
         currentScope.getSymbolOrThrow(node.getText());
     }
 
@@ -187,6 +134,79 @@ public class ScopeChecker extends DepthFirstAdapter {
     {
         //Assume success of struct types
         structs.add(node);
+    }
+
+    @Override
+    public void inAIdentifierExpr(AIdentifierExpr node) {
+        super.inAIdentifierExpr(node);
+        currentScope.getSymbolOrThrow(node.getName().getText());
+    }
+
+    @Override
+    public void inAMemberExpr(AMemberExpr node) {
+        super.inAMemberExpr(node);
+
+        if (node.getLeft().getClass() == AIdentifierExpr.class){
+                //cast left node
+                AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
+                // check if symbol is in table
+                Symbol symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+
+                //check if returned symbol is a struct
+                if ( symbol instanceof SymbolStruct){
+                    // go to scope of left node
+
+
+                    // check right node for type. Declaration or func
+                    if (node.getRight().getClass() == AIdentifierExpr.class){
+                        // TODO Go to inner scope of struct
+
+                        AIdentifierExpr var = (AIdentifierExpr)node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    }else if (node.getRight().getClass() == AFunctionCallExpr.class){
+                        AFunctionCallExpr var = (AFunctionCallExpr)node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    } else {
+                        // right node is neigther var or func!!!
+                        throw new IllegalArgumentException();
+                    }
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
+                //cast left node
+                AFunctionCallExpr expr = (AFunctionCallExpr) node.getLeft();
+                // check if symbol is in table
+                Object symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+
+                // check if it returns a struct that have right node as field
+                //check if returned symbol is a function
+                if (symbol instanceof SymbolFunction) {
+                    SymbolFunction symbolFunction = (SymbolFunction)symbol;
+
+
+                    // check right node for type. Declaration or func
+                    if (node.getRight().getClass() == AIdentifierExpr.class) {
+                        AIdentifierExpr var = (AIdentifierExpr) node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    } else if (node.getRight().getClass() == AFunctionCallExpr.class) {
+                        AFunctionCallExpr var = (AFunctionCallExpr) node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    } else {
+                        // right node is neigther var or func!!!
+                        throw new IllegalArgumentException();
+                    }
+                } else {
+                    throw new IllegalArgumentException();
+                }
+        }
+    }
+    private void checkRightNode(Object symbol){
+
     }
 
     public Scope getSymbolTable() {
