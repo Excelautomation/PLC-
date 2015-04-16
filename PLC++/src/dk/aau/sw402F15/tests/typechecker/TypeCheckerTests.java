@@ -131,7 +131,7 @@ public class TypeCheckerTests {
         checkCode("int i = 7 < 8;");
     }
 
-    @Test(expected = ReturnInVoidFunctionException.class)
+    @Test(expected = IllegalReturnTypeException.class)
     public void checkReturnInVoidFunction() {
         checkCode("void func(){return 2;}");
     }
