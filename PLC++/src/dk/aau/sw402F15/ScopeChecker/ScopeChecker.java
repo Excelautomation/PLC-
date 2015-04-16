@@ -97,23 +97,25 @@ public class ScopeChecker extends DepthFirstAdapter {
         if(node.getClass() == ADeclaration.class){
             ADeclaration n = (ADeclaration)node;
             boolean isArray = n.getArray() != null;
+            boolean isConst = n.getQuailifer() != null;
             if(isArray)
                 DeclareArray(n.getName().getText(), getSymbolType(n.getType()), n);
             else
-                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n);
+                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n, isConst);
         }
         else if (node.getClass() == AAssignmentDeclaration.class){
             AAssignmentDeclaration n = (AAssignmentDeclaration)node;
             boolean isArray = n.getArray() != null;
+            boolean isConst = n.getQuailifer() != null;
             if(isArray)
                 DeclareArray(n.getName().getText(), getSymbolType(n.getType()), n);
             else
-                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n);
+                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n, isConst);
         }
     }
 
-    private void DeclareVariable(String name, SymbolType type, Node node){
-        currentScope.addSymbol(new SymbolVariable(type, name, node, currentScope, false));
+    private void DeclareVariable(String name, SymbolType type, Node node, boolean isConst){
+        currentScope.addSymbol(new SymbolVariable(type, name, node, currentScope, isConst));
     }
 
     private void DeclareArray(String name, SymbolType type, Node node){
