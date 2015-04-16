@@ -47,8 +47,6 @@ public class TypeChecker extends ExpressionEvaluator {
             throw new ReturnInVoidFunctionException();
     }
 
-
-
     @Override
     public void inAReturnStatement(AReturnStatement node) {
         returnFound = true;

@@ -1,9 +1,10 @@
 package dk.aau.sw402F15.ScopeChecker;
+
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,15 +14,11 @@ import java.util.List;
 public class ScopeChecker extends DepthFirstAdapter {
     private Scope rootScope = new Scope(null, null);
     private Scope currentScope;
-    private List<PTypeSpecifier> typeList = new ArrayList<PTypeSpecifier>();
-    private List<AIdentifierTypeSpecifier> structs = new ArrayList<AIdentifierTypeSpecifier>();
-    private List<AFunctionCallExpr> functions = new ArrayList<AFunctionCallExpr>();
 
     public ScopeChecker() {
         currentScope = rootScope;
     }
 
-    // Root_declaration
     @Override
     public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         inAFunctionRootDeclaration(node);
@@ -49,110 +46,107 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
-        super.outAFunctionRootDeclaration(node);
+    public void inAWhileStatement(AWhileStatement node){
+        currentScope = currentScope.addSubScope(node);
+    }
 
-        // convert parameters to SymbolType's
-        ArrayList<SymbolType> symbolTypeList = new ArrayList<SymbolType>();
-        for (Node parameter : node.getParams()) {
-            if (parameter.getClass() == ADeclaration.class) {
-                ADeclaration simpleDeclaration = (ADeclaration) parameter;
-                //add to list
-                symbolTypeList.add(this.getSymbolType(simpleDeclaration.getType()));
+    @Override
+    public void outAWhileStatement(AWhileStatement node){
+        currentScope = currentScope.getParentScope();
+    }
+
+    @Override
+    public void caseAProgram(AProgram node){
+        List<AEnumRootDeclaration> enums = new ArrayList<AEnumRootDeclaration>();
+        List<AFunctionRootDeclaration> functions = new ArrayList<AFunctionRootDeclaration>();
+        List<AStructRootDeclaration> structs = new ArrayList<AStructRootDeclaration>();
+        List<ADeclarationRootDeclaration> variables = new ArrayList<ADeclarationRootDeclaration>();
+
+        for(PRootDeclaration d : node.getRootDeclaration()){
+            if(d.getClass() == AEnumRootDeclaration.class){
+                enums.add((AEnumRootDeclaration)d);
             }
+            else if(d.getClass() == AFunctionRootDeclaration.class){
+                functions.add((AFunctionRootDeclaration)d);
+            }
+            else if(d.getClass() == AStructRootDeclaration.class){
+                structs.add((AStructRootDeclaration)d);
+            }
+            else if(d.getClass() == ADeclarationRootDeclaration.class){
+                variables.add((ADeclarationRootDeclaration) d);
+            }
+        }
+
+        for (AEnumRootDeclaration e : enums){
+            DeclareEnum(e);
+        }
+        for (AStructRootDeclaration s : structs){
+            StructBuilder builder = new StructBuilder();
+            currentScope.addSymbol(builder.BuildSymbol(s, currentScope));
+        }
+        for (ADeclarationRootDeclaration v : variables){
+            DeclareVariable(v.getDeclaration());
+        }
+        for (AFunctionRootDeclaration f : functions){
+            DeclareFunction(f);
+        }
+        super.caseAProgram(node);
+    }
+
+    private void DeclareVariable(PDeclaration node){
+        if(node.getClass() == ADeclaration.class){
+            ADeclaration n = (ADeclaration)node;
+            boolean isArray = n.getArray() != null;
+            boolean isConst = n.getQuailifer() != null;
+            if(isArray)
+                DeclareArray(n.getName().getText(), getSymbolType(n.getType()), n);
             else
-                throw new RuntimeException();
+                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n, isConst);
         }
-
-        currentScope.addSymbol(new SymbolFunction(this.getSymbolType(node.getReturnType()), symbolTypeList, node.getName().getText(), node, currentScope));
-    }
-
-    // Declaration
-
-    // Assignment declaration
-
-    @Override
-    public void outStart(Start node)
-    {
-        // Check success of functions
-        for (AFunctionCallExpr n : functions) {
-            n.getName().apply(this);
-        }
-        // Check success of structs
-        for (AIdentifierTypeSpecifier n : structs) {
-            super.caseAIdentifierTypeSpecifier(n);
+        else if (node.getClass() == AAssignmentDeclaration.class){
+            AAssignmentDeclaration n = (AAssignmentDeclaration)node;
+            boolean isArray = n.getArray() != null;
+            boolean isConst = n.getQuailifer() != null;
+            if(isArray)
+                DeclareArray(n.getName().getText(), getSymbolType(n.getType()), n);
+            else
+                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n, isConst);
         }
     }
 
-    // Types
-    @Override
-    public void outABoolTypeSpecifier(ABoolTypeSpecifier node) {
-        super.outABoolTypeSpecifier(node);
+    private void DeclareVariable(String name, SymbolType type, Node node, boolean isConst){
+        currentScope.addSymbol(new SymbolVariable(type, name, node, currentScope, isConst));
     }
 
-    @Override
-    public void outACharTypeSpecifier(ACharTypeSpecifier node) {
-        super.outACharTypeSpecifier(node);
+    private void DeclareArray(String name, SymbolType type, Node node){
+        currentScope.addSymbol(new SymbolArray(type, name, node, currentScope));
     }
 
-    @Override
-    public void outAIntTypeSpecifier(AIntTypeSpecifier node) {
-        super.outAIntTypeSpecifier(node);
+    private void DeclareEnum(AEnumRootDeclaration node){
+        currentScope.addSymbol(new SymbolEnum(node.getName().getText(), node, currentScope));
     }
 
-    @Override
-    public void outALongTypeSpecifier(ALongTypeSpecifier node) {
-        super.outALongTypeSpecifier(node);
-    }
+    private void DeclareFunction(AFunctionRootDeclaration node){
+        LinkedList<PDeclaration> params = node.getParams();
+        List<SymbolType> paramTypes = new ArrayList<SymbolType>(params.size());
 
-    @Override
-    public void outAFloatTypeSpecifier(AFloatTypeSpecifier node) {
-        super.outAFloatTypeSpecifier(node);
+        for(PDeclaration p : params){
+            ADeclaration param = (ADeclaration) p;
+            paramTypes.add(getSymbolType(param.getType()));
+        }
 
-    }
-
-    @Override
-    public void outADoubleTypeSpecifier(ADoubleTypeSpecifier node) {
-        super.outADoubleTypeSpecifier(node);
-        typeList.add(node);
-    }
-
-    @Override
-    public void outATimerTypeSpecifier(ATimerTypeSpecifier node) {
-        super.outATimerTypeSpecifier(node);
-    }
-
-    @Override
-    public void outAPortTypeSpecifier(APortTypeSpecifier node) {
-        super.outAPortTypeSpecifier(node);
-        typeList.add(node);
-    }
-
-    @Override
-    public void outAIdentifierTypeSpecifier(AIdentifierTypeSpecifier node) {
-        super.outAIdentifierTypeSpecifier(node);
+        currentScope.addSymbol(new SymbolFunction(getSymbolType(node.getReturnType()), paramTypes, node.getName().getText(), node, currentScope));
     }
 
     @Override
     public void inAScopeStatement(AScopeStatement node)
     {
         currentScope = currentScope.addSubScope(node);
-
-        /* TODO: Make sure the program functions without this code segment
-        // Import formal parameters if any
-        if(node.parent() instanceof AVoidFunctionFunctionDeclaration)
-        {
-            ((AVoidFunctionFunctionDeclaration) node.parent()).getFormalParameters().apply(this);
-        }
-        if(node.parent() instanceof AFunctionRootDeclaration)
-        {
-            ((AFunctionRootDeclaration) node.parent()).getParams().apply(this);
-        }
-        */
     }
 
     @Override
     public void outAScopeStatement(AScopeStatement node){
+        //TODO We dont call super here ? is that correct?
         currentScope = currentScope.getParentScope();
     }
 
@@ -172,7 +166,9 @@ public class ScopeChecker extends DepthFirstAdapter {
         if(isArray)
             currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
         else
-            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
+
+        DeclareVariable(node);
     }
 
     @Override
@@ -190,7 +186,8 @@ public class ScopeChecker extends DepthFirstAdapter {
         if(isArray)
             currentScope.addSymbol(new SymbolArray(type, id.getText(), node, currentScope));
         else
-            currentScope.addSymbol(new Symbol(type, id.getText(), node, currentScope));
+            currentScope.addSymbol(new SymbolVariable(type, id.getText(), node, currentScope, false));
+        DeclareVariable(node);
     }
 
     @Override
@@ -200,31 +197,12 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void caseAFunctionCallExpr(AFunctionCallExpr node)
-    {
-        //Assume success of functions
-        functions.add(node);
-
-        //Check parameters
-        for(PExpr expr : node.getArgs()){
-            expr.apply(this);
-        }
-    }
-
-    @Override
     public void caseAStructRootDeclaration(AStructRootDeclaration node){
         inAStructRootDeclaration(node);
-        currentScope = currentScope.addSubScope(node);
+        currentScope = currentScope.getSubScopeByNode(node);
         node.getProgram().apply(this);
         currentScope = currentScope.getParentScope();
         outAStructRootDeclaration(node);
-    }
-
-    @Override
-    public void caseAIdentifierTypeSpecifier(AIdentifierTypeSpecifier node)
-    {
-        //Assume success of struct types
-        structs.add(node);
     }
 
     public Scope getSymbolTable() {
@@ -266,7 +244,9 @@ public class ScopeChecker extends DepthFirstAdapter {
         }
         else if(type instanceof AIdentifierTypeSpecifier){
             sType = SymbolType.Struct;
-            structs.add((AIdentifierTypeSpecifier) type);
+        }
+        else if (type instanceof AEnumTypeSpecifier){
+            sType = SymbolType.Enum;
         }
 
         return sType;

@@ -4,7 +4,7 @@ import dk.aau.sw402F15.parser.node.Node;
 
 import java.util.List;
 
-public class Symbol {
+public abstract class Symbol {
     private SymbolType type;
     private String name;
     private Scope scope;
