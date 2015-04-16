@@ -217,8 +217,9 @@ statement {-> statement} =
 
 // If
 if_statement {-> statement} =
-    {if} if_keyword l_par [condition]:expr r_par scope																	{-> New statement.if(condition.expr, [scope.statement])}
-  | {if_else} if_keyword l_par [condition]:expr r_par scope else_statement												{-> New statement.if_else(condition.expr, [scope.statement], [else_statement.statement])}
+    {if_statement} if_keyword l_par [condition]:expr r_par statement													{-> New statement.if(condition.expr, [statement.statement])}
+  | {if_scope} if_keyword l_par [condition]:expr r_par scope															{-> New statement.if(condition.expr, [scope.statement])}
+  | {if_else_scope} if_keyword l_par [condition]:expr r_par scope else_statement										{-> New statement.if_else(condition.expr, [scope.statement], [else_statement.statement])}
 ;
 
 else_statement {-> statement} = 
