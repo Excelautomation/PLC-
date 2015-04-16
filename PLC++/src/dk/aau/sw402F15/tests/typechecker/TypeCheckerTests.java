@@ -161,6 +161,9 @@ public class TypeCheckerTests {
         checkCode("int func(int k, int p){ func(2, 2); return k + p; } ");
     }
 
+    @Test(expected = RedifinitionOfReadOnly.class)
+    public void checkAssignmentOfConst() { checkCode("const int i = 7; i = 2; } "); }
+
 
 
     private void checkCode(String code) {
