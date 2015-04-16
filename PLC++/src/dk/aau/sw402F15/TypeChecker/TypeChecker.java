@@ -32,7 +32,7 @@ public class TypeChecker extends ExpressionEvaluator {
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.inAFunctionRootDeclaration(node);
 
-        stack.push(((SymbolFunction)currentScope.getSymbol(node.getName().getText())).getReturnType());
+        stack.push(((SymbolFunction) currentScope.getSymbol(node.getName().getText())).getReturnType());
     }
 
     @Override
@@ -60,8 +60,12 @@ public class TypeChecker extends ExpressionEvaluator {
         super.outAReturnExprStatement(node);
 
         returnFound = true;
+        SymbolType arg1 = stack.pop();
         SymbolType returnType = stack.peek();
 
+        if (returnType != arg1) {
+            throw new IllegalReturnTypeException();
+        }
 
     }
 }

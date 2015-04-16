@@ -1,7 +1,10 @@
 package dk.aau.sw402F15.ScopeChecker;
+import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.tools.tree.IdentifierExpression;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -20,7 +23,6 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = rootScope;
     }
 
-    // Root_declaration
     @Override
     public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         inAFunctionRootDeclaration(node);
@@ -136,6 +138,7 @@ public class ScopeChecker extends DepthFirstAdapter {
 
     @Override
     public void outAScopeStatement(AScopeStatement node){
+        //TODO We dont call super here ? is that correct?
         currentScope = currentScope.getParentScope();
     }
 
