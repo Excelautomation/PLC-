@@ -161,11 +161,11 @@ public class TypeCheckerTests {
         checkCode("int func(int k, int p){ func(2, 2); return k + p; } ");
     }
 
-    @Test(expected = RedifinitionOfReadOnly.class)
+    @Test(expected = RedefinitionOfReadOnly.class)
     public void checkAssignmentOfConst() { checkCode("const int i = 7; i = 2; "); }
 
-    @Test(expected = RedifinitionOfReadOnly.class)
-    public void checkAssignmentOfConstInFunction() { checkCode("int func(){const int i = 7; i = 2; } "); }
+    @Test(expected = RedefinitionOfReadOnly.class)
+    public void checkAssignmentOfConstInFunction() { checkCode("int func(){const int i = 7; i = 2; return 5;} "); }
 
 
     private void checkCode(String code) {
