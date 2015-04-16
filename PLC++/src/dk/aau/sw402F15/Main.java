@@ -49,7 +49,8 @@ public class Main {
         code = "int i = 1;\n" +
                 "int func(int p){\n" +
                     "i = func(9);\n" +
-                    "return 2;\n" +
+                    "float f = 7.5;\n" +
+                    "return 6;\n" +
                 "}\n";
 
                 //"void call(){\n" +
