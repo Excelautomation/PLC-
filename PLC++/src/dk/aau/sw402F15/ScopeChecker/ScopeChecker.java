@@ -45,7 +45,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         outAFunctionRootDeclaration(node);
     }
 
-    @Override
+    /*@Override
     public void inAWhileStatement(AWhileStatement node){
         currentScope = currentScope.addSubScope(node);
     }
@@ -53,7 +53,7 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void outAWhileStatement(AWhileStatement node){
         currentScope = currentScope.getParentScope();
-    }
+    }*/
 
     @Override
     public void caseAProgram(AProgram node){
@@ -123,7 +123,21 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     private void DeclareEnum(AEnumRootDeclaration node){
-        currentScope.addSymbol(new SymbolEnum(node.getName().getText(), node, currentScope));
+        currentScope = currentScope.addSubScope(node);
+        List<PEnumFlag> list = node.getProgram();
+        for(PEnumFlag flag : list){
+            flag.apply(this);
+        }
+        List<Symbol> symbols = currentScope.toList();
+        currentScope = currentScope.getParentScope();
+        List<PEnumFlag> flags = new ArrayList<PEnumFlag>(symbols.size());
+        for (Symbol symbol : symbols){
+            if(symbol.getNode().getClass() == PEnumFlag.class){
+                PEnumFlag flag = (PEnumFlag)symbol.getNode();
+                flags.add(flag);
+            }
+        }
+        currentScope.addSymbol(new SymbolEnum(node.getName().getText(), flags, node, currentScope));
     }
 
     private void DeclareFunction(AFunctionRootDeclaration node){
