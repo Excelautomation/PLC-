@@ -185,7 +185,6 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
         else {
             throw new IllegalComparisonException();
         }
-
     }
 
     private void checkExpression(){

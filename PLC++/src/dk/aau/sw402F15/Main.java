@@ -44,14 +44,8 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int func(){const int i = 7; i = 2; return 5;}";
+        code = "int func(){const int i = 7; return 5;}";
 
-       /* code = "const int i = 1;\n" +
-                "int func(int p){\n" +
-                    "i = func(9);\n" +
-                    "float f = 7.5;\n" +
-                    "return 6;\n" +
-                "}\n";*/
 
                 //"void call(){\n" +
                     //"func(true); }";
