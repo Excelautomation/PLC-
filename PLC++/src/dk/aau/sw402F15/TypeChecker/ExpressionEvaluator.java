@@ -1,8 +1,5 @@
 package dk.aau.sw402F15.TypeChecker;
-import dk.aau.sw402F15.TypeChecker.Exceptions.WrongParameterException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalExpressionException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.node.*;
 
@@ -68,6 +65,14 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
 
         SymbolType arg1 = currentScope.getSymbolOrThrow(node.getName().getText()).getType();
         SymbolType arg2 = stack.pop();
+
+        if (currentScope.getSymbolOrThrow(node.getName().getText()).getClass() == SymbolVariable.class)
+        {
+            boolean test = ((SymbolVariable) currentScope.getSymbolOrThrow(node.getName().getText())).isConst();
+            if (((SymbolVariable) currentScope.getSymbolOrThrow(node.getName().getText())).isConst())
+                throw new RedefinitionOfReadOnlyException();
+        }
+
 
         if (arg1 != arg2) {
             throw new IllegalAssignmentException();

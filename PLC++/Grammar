@@ -135,8 +135,8 @@ type_specifier {-> type_specifier} =
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
   | {port} port_keyword																									{-> New type_specifier.port()}
-  | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.identifier(identifier)}
-  | {identifier} struct_keyword identifier																				{-> New type_specifier.identifier(identifier)}
+  | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.enum(identifier)}
+  | {struct} struct_keyword identifier																				    {-> New type_specifier.struct(identifier)}
 ;
 
 // Declaration in root scope
@@ -196,7 +196,11 @@ array_definition {-> array_definition} =
 
 // Statements
 statement {-> statement} =
-	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
+    // Scope
+    {scope} l_brc statement* r_brc																						{-> New statement.scope([statement.statement])}
+
+    // Declaration and expr
+  |	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
   |	{expr} expr	semi																									{-> New statement.expr(expr.expr)}
   
   // Conditional
@@ -204,37 +208,57 @@ statement {-> statement} =
   | {switch} switch_statement                                                                                           {-> switch_statement.statement}
 
   // Iteration
-  | {while} while_keyword l_par [condition]:expr r_par scope															{-> New statement.while(condition.expr, [scope.statement])}
-  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par scope		{-> New statement.for(initilizer.expr, condition.expr, iterator.expr)} // TODO: for with declaration
+  | {while} while_keyword l_par [condition]:expr r_par statement														{-> New statement.while(condition.expr, statement.statement)}
+  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par statement	{-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement.statement)} // TODO: for with declaration
   
   // Control
   | {return} return_keyword semi																						{-> New statement.return()}
   | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
-  | {label} label_statements                                                                                            {-> label_statements.statement}
+;
+
+statement_no_short_if  {-> statement} =
+    // Scope
+    {scope} l_brc statement* r_brc																			            {-> New statement.scope([statement.statement])}
+
+    // Declaration and expr
+  |	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
+  |	{expr} expr	semi																									{-> New statement.expr(expr.expr)}
+
+  // Conditional
+  | {if} if_statement_short																								{-> if_statement_short.statement}
+  | {switch} switch_statement                                                                                           {-> switch_statement.statement}
+
+  // Iteration
+  | {while} while_keyword l_par [condition]:expr r_par statement_no_short_if											{-> New statement.while(condition.expr, statement_no_short_if.statement)}
+  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par statement_no_short_if	{-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement_no_short_if.statement)} // TODO: for with declaration
+
+  // Control
+  | {return} return_keyword semi																						{-> New statement.return()}
+  | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
+  | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
+  | {break} break_keyword semi                                                                                          {-> New statement.break()}
 ;
 
 // If
 if_statement {-> statement} =
-    {if_statement} if_keyword l_par [condition]:expr r_par statement													{-> New statement.if(condition.expr, [statement.statement])}
-  | {if_scope} if_keyword l_par [condition]:expr r_par scope															{-> New statement.if(condition.expr, [scope.statement])}
-  | {if_else_scope} if_keyword l_par [condition]:expr r_par scope else_statement										{-> New statement.if_else(condition.expr, [scope.statement], [else_statement.statement])}
+    {if_statement} if_keyword l_par [condition]:expr r_par statement													{-> New statement.if(condition.expr, statement.statement)}
+  | {if_else} if_keyword l_par [condition]:expr r_par [if]:statement_no_short_if else_keyword [else]:statement	        {-> New statement.if_else(condition.expr, if.statement, else.statement)}
 ;
 
-else_statement {-> statement} = 
-    {else} else_keyword scope																							{-> scope.statement}
-  | {else_if} else_keyword if_statement																					{-> if_statement.statement}
+if_statement_short {-> statement} =
+    {if_else} if_keyword l_par expr r_par [if]:statement_no_short_if else_keyword [else]:statement_no_short_if	        {-> New statement.if_else(expr.expr, if.statement, else.statement)}
 ;
 
 // Switch
 switch_statement {-> statement} =
-    {switch} switch_keyword l_par [condition]:expr r_par scope                                                          {-> New statement.switch(condition.expr, [scope.statement])}
+    {switch} switch_keyword l_par [condition]:expr r_par l_brc label_statements* r_brc                                  {-> New statement.switch(condition.expr, [label_statements.statement])}
 ;
 
 label_statements {-> statement} =
-    {case} case_keyword [condition]:expr colon scope                                                                    {-> New statement.case(condition.expr, [scope.statement])}
-  | {default} default_keyword colon scope                                                                               {-> New statement.default([scope.statement])}
+    {case} case_keyword [condition]:expr colon statement                                                                {-> New statement.case(condition.expr, statement.statement)}
+  | {default} default_keyword colon statement                                                                            {-> New statement.default(statement.statement)}
 ;
 
 // Expression
@@ -408,7 +432,8 @@ type_specifier =
   | {double}
   | {timer}
   | {port}
-  | {identifier}                identifier
+  | {enum}                      identifier
+  | {struct}                    identifier
   | {void}
 ;
 
@@ -422,17 +447,17 @@ statement =
   | {scope}					    statement*
   
   // Conditional
-  | {if}						[condition]:expr				[statements]:statement*
-  | {if_else}					[condition]:expr				[statements]:statement*		[else]:statement*
+  | {if}						[condition]:expr				[statement]:statement
+  | {if_else}					[condition]:expr				[statement]:statement		[else]:statement
 
   // Switch
-  | {switch}                    [condition]:expr                [statements]:statement*
-  | {case}                      [case]:expr                     [statements]:statement*
-  | {default}                                                   [statements]:statement*
+  | {switch}                    [condition]:expr                [labels]:statement*
+  | {case}                      [case]:expr                     [statement]:statement
+  | {default}                                                   [statement]:statement
 
   // Iteration
-  | {while}						[condition]:expr				[statements]:statement*
-  | {for}						[initilizer]:expr?				[condition]:expr?			[iterator]:expr?
+  | {while}						[condition]:expr				[statement]:statement
+  | {for}						[initilizer]:expr?				[condition]:expr?			[iterator]:expr?            [statement]:statement
   
   // Control-statements
   | {return}
