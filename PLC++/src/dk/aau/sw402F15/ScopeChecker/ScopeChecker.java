@@ -254,9 +254,6 @@ public class ScopeChecker extends DepthFirstAdapter {
                 }
         }
     }
-    private void checkRightNode(Object symbol){
-
-    }
 
     public Scope getSymbolTable() {
         return rootScope;
