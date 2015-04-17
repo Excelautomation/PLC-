@@ -196,6 +196,79 @@ public class ScopeChecker extends DepthFirstAdapter {
         outADeclarationRootDeclaration(node);
     }
 
+    @Override
+    public void inAIdentifierExpr(AIdentifierExpr node) {
+        super.inAIdentifierExpr(node);
+        currentScope.getSymbolOrThrow(node.getName().getText());
+    }
+
+    @Override
+    public void inAMemberExpr(AMemberExpr node) {
+        super.inAMemberExpr(node);
+
+        if (node.getLeft().getClass() == AIdentifierExpr.class){
+                //cast left node
+                AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
+                // check if symbol is in table
+                Symbol symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+
+                //check if returned symbol is a struct
+                if ( symbol instanceof SymbolStruct){
+                    // go to scope of left node
+
+
+                    // check right node for type. Declaration or func
+                    if (node.getRight().getClass() == AIdentifierExpr.class){
+                        // TODO Go to inner scope of struct
+
+                        AIdentifierExpr var = (AIdentifierExpr)node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    }else if (node.getRight().getClass() == AFunctionCallExpr.class){
+                        AFunctionCallExpr var = (AFunctionCallExpr)node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    } else {
+                        // right node is neigther var or func!!!
+                        throw new IllegalArgumentException();
+                    }
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
+                //cast left node
+                AFunctionCallExpr expr = (AFunctionCallExpr) node.getLeft();
+                // check if symbol is in table
+                Object symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+
+                // check if it returns a struct that have right node as field
+                //check if returned symbol is a function
+                if (symbol instanceof SymbolFunction) {
+                    SymbolFunction symbolFunction = (SymbolFunction)symbol;
+
+
+                    // check right node for type. Declaration or func
+                    if (node.getRight().getClass() == AIdentifierExpr.class) {
+                        AIdentifierExpr var = (AIdentifierExpr) node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    } else if (node.getRight().getClass() == AFunctionCallExpr.class) {
+                        AFunctionCallExpr var = (AFunctionCallExpr) node.getRight();
+                        currentScope.getSymbolOrThrow(var.getName().getText());
+
+                    } else {
+                        // right node is neigther var or func!!!
+                        throw new IllegalArgumentException();
+                    }
+                } else {
+                    throw new IllegalArgumentException();
+                }
+        }
+    }
+    private void checkRightNode(Object symbol){
+
+    }
+
     public Scope getSymbolTable() {
         return rootScope;
     }
