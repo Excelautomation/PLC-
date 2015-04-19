@@ -232,7 +232,8 @@ statement_no_short_if  {-> statement} =
 
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par statement_no_short_if											{-> New statement.while(condition.expr, statement_no_short_if.statement)}
-  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par statement_no_short_if	{-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement_no_short_if.statement)} // TODO: for with declaration
+  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr?
+            r_par statement_no_short_if	                                                                                {-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement_no_short_if.statement)} // TODO: for with declaration
 
   // Control
   | {return} return_keyword semi																						{-> New statement.return()}
