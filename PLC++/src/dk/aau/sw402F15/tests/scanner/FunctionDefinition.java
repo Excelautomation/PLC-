@@ -27,23 +27,23 @@ public class FunctionDefinition extends ScannerTest {
     }
 
     @Test
-    public void TestFunctionDefinition() throws ParserException, IOException, LexerException {
+    public void testFunctionDefinition() throws ParserException, IOException, LexerException {
         checkCode(type + " func() { }");
     }
 
     @Test
-    public void TestFunctionWithSingleFormalParameter() throws ParserException, IOException, LexerException {
+    public void testFunctionWithSingleFormalParameter() throws ParserException, IOException, LexerException {
         checkCode(type + " func(int i) { }");
     }
 
     @Test
-    public void TestFunctionWithMultipleFormalParameters() throws ParserException, IOException, LexerException {
+    public void testFunctionWithMultipleFormalParameters() throws ParserException, IOException, LexerException {
         checkCode(type + " func(int i, float j) { }");
         checkCode(type + " func(int i, float j, char k) { }");
     }
 
     @Test(expected = ParserException.class)
-    public void TestFunctionWithVoidFormalParameter() throws ParserException, IOException, LexerException {
+    public void testFunctionWithVoidFormalParameter() throws ParserException, IOException, LexerException {
         checkCode(type + " func(void v) { }");
     }
 }

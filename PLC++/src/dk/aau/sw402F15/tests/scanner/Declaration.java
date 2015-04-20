@@ -27,12 +27,12 @@ public class Declaration extends ScannerTest {
     }
 
     @Test
-    public void Declaration() throws ParserException, IOException, LexerException {
+    public void declaration() throws ParserException, IOException, LexerException {
         checkCode(type + " variable;");
     }
 
     @Test
-    public void DeclarationAssignment() throws ParserException, IOException, LexerException {
+    public void declarationAssignment() throws ParserException, IOException, LexerException {
         checkCode(type + " variable = 1;");
     }
 }

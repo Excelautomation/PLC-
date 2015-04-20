@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class SwitchStatement extends ScannerTest {
     @Test
-    public void SwitchStatement() throws ParserException, IOException, LexerException {
+    public void switchStatement() throws ParserException, IOException, LexerException {
         checkCode("void run() { switch ( expr ) { case expr : { break; } default : { break; } } }");
     }
 
