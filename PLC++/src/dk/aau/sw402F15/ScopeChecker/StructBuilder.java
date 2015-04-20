@@ -12,22 +12,35 @@ import java.util.List;
  * Created by Claus on 16-04-2015.
  */
 public class StructBuilder extends DepthFirstAdapter {
-    Scope scope;
+    private Scope rootScope;
+    private Scope returnScope;
 
-    public Symbol BuildSymbol(AStructRootDeclaration struct, Scope scope){
-        this.scope = new Scope(null, struct);
-        struct.getProgram().apply(this);
-        return new SymbolStruct(struct.getName().getText(), scope.toList(), struct, scope);
+    public StructBuilder(Scope rootScope) {
+        this.rootScope = rootScope;
+    }
+
+    @Override
+    public void inAStructRootDeclaration(AStructRootDeclaration node) {
+        super.inAStructRootDeclaration(node);
+
+        this.returnScope = this.rootScope.addSubScope(node);
+    }
+
+    @Override
+    public void outAStructRootDeclaration(AStructRootDeclaration node) {
+        super.outAStructRootDeclaration(node);
+
+        this.rootScope.addSymbol(new SymbolStruct(node.getName().getText(), returnScope.toList(), node, this.rootScope));
     }
 
     @Override
     public void inAAssignmentDeclaration(AAssignmentDeclaration node){
-        scope.addSymbol(new SymbolVariable(getSymbolType(node.getType()), node.getName().getText(), node, scope, false));
+        returnScope.addSymbol(new SymbolVariable(getSymbolType(node.getType()), node.getName().getText(), node, returnScope, false));
     }
 
     @Override
     public void inADeclaration(ADeclaration node){
-        scope.addSymbol(new SymbolVariable(getSymbolType(node.getType()), node.getName().getText(), node, scope, false));
+        returnScope.addSymbol(new SymbolVariable(getSymbolType(node.getType()), node.getName().getText(), node, returnScope, false));
     }
 
     @Override
@@ -40,7 +53,7 @@ public class StructBuilder extends DepthFirstAdapter {
             paramTypes.add(getSymbolType(param.getType()));
         }
 
-        scope.addSymbol(new SymbolFunction(getSymbolType(node.getReturnType()), paramTypes, node.getName().getText(), node, scope));
+        returnScope.addSymbol(new SymbolFunction(getSymbolType(node.getReturnType()), paramTypes, node.getName().getText(), node, returnScope));
     }
 
     private SymbolType getSymbolType(PTypeSpecifier type){

@@ -85,8 +85,8 @@ public class ScopeChecker extends DepthFirstAdapter {
             DeclareEnum(e);
         }
         for (AStructRootDeclaration s : structs){
-            StructBuilder builder = new StructBuilder();
-            currentScope.addSymbol(builder.BuildSymbol(s, currentScope));
+            StructBuilder builder = new StructBuilder(rootScope);
+            s.apply(builder);
         }
         for (ADeclarationRootDeclaration v : variables){
             DeclareVariable(v.getDeclaration());
@@ -187,8 +187,9 @@ public class ScopeChecker extends DepthFirstAdapter {
     @Override
     public void caseAStructRootDeclaration(AStructRootDeclaration node){
         inAStructRootDeclaration(node);
-        currentScope = currentScope.getSubScopeByNode(node);
-        node.getProgram().apply(this);
+        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
+        // Already applied in struct builder
+        //node.getProgram().apply(this);
         currentScope = currentScope.getParentScope();
         outAStructRootDeclaration(node);
     }
