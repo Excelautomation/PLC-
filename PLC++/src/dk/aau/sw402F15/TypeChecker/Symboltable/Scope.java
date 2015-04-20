@@ -8,8 +8,8 @@ import dk.aau.sw402F15.parser.node.Node;
 import java.util.*;
 
 public class Scope {
-    private Dictionary<String, Symbol> symbols;
-    private List<Scope> scopes;
+    private Hashtable<String, Symbol> symbols;
+    private ArrayList<Scope> scopes;
     private Scope parentScope;
     private Node node;
 
@@ -90,5 +90,9 @@ public class Scope {
 
     public Node getNode() {
         return node;
+    }
+
+    public void clearSymbols() {
+        this.symbols.clear();
     }
 }
