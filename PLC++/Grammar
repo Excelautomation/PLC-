@@ -161,7 +161,12 @@ formal_parameter {-> declaration*} =
 
 // Struct
 struct_definition {-> root_declaration} =
-	struct_keyword identifier l_brc program r_brc																		{-> New root_declaration.struct(identifier, program)}
+	struct_keyword identifier l_brc struct_body* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_body.root_declaration]))}
+;
+
+struct_body {-> root_declaration} =
+    {variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
+  |	{function} function_definition																						{-> function_definition.root_declaration}
 ;
 
 // Enum
