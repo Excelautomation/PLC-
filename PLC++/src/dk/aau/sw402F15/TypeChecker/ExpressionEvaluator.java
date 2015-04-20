@@ -60,19 +60,28 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
     }
 
     @Override
+    public void caseAAssignmentExpr(AAssignmentExpr node) {
+        inAAssignmentExpr(node);
+        if(node.getLeft() != null)
+        {
+            ExpressionEvaluatorWithConst evaluator = new ExpressionEvaluatorWithConst(rootScope, currentScope);
+            node.getLeft().apply(evaluator);
+
+            stack.push(evaluator.getSymbol());
+        }
+        if(node.getRight() != null)
+        {
+            node.getRight().apply(this);
+        }
+        outAAssignmentExpr(node);
+    }
+
+    @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
-        SymbolType arg1 = currentScope.getSymbolOrThrow(node.getName().getText()).getType();
+        SymbolType arg1 = stack.pop();
         SymbolType arg2 = stack.pop();
-
-        if (currentScope.getSymbolOrThrow(node.getName().getText()).getClass() == SymbolVariable.class)
-        {
-            boolean test = ((SymbolVariable) currentScope.getSymbolOrThrow(node.getName().getText())).isConst();
-            if (((SymbolVariable) currentScope.getSymbolOrThrow(node.getName().getText())).isConst())
-                throw new RedefinitionOfReadOnlyException();
-        }
-
 
         if (arg1 != arg2) {
             throw new IllegalAssignmentException();

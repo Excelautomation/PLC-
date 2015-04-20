@@ -29,6 +29,13 @@ public class TypeChecker extends ExpressionEvaluator {
     }
 
     @Override
+    public void outAWhileStatement(AWhileStatement node) {
+        super.outAWhileStatement(node);
+        if (stack.pop() != SymbolType.Boolean)
+            throw new RuntimeException(); // TODO New Exception
+    }
+
+    @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.inAFunctionRootDeclaration(node);
 

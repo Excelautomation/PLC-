@@ -161,7 +161,12 @@ formal_parameter {-> declaration*} =
 
 // Struct
 struct_definition {-> root_declaration} =
-	struct_keyword identifier l_brc program r_brc																		{-> New root_declaration.struct(identifier, program)}
+	struct_keyword identifier l_brc struct_body* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_body.root_declaration]))}
+;
+
+struct_body {-> root_declaration} =
+    {variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
+  |	{function} function_definition																						{-> function_definition.root_declaration}
 ;
 
 // Enum
@@ -232,7 +237,8 @@ statement_no_short_if  {-> statement} =
 
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par statement_no_short_if											{-> New statement.while(condition.expr, statement_no_short_if.statement)}
-  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par statement_no_short_if	{-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement_no_short_if.statement)} // TODO: for with declaration
+  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr?
+            r_par statement_no_short_if	                                                                                {-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement_no_short_if.statement)} // TODO: for with declaration
 
   // Control
   | {return} return_keyword semi																						{-> New statement.return()}
@@ -266,14 +272,14 @@ label_statements {-> statement} =
 // Precedence 14
 expr {-> expr} =
 	// Assignment
-	{assignment} identifier assignment_operator expr																	{-> New expr.assignment(identifier, expr.expr)}
+	{assignment} [left]:expr assignment_operator [right]:expr13															{-> New expr.assignment(left.expr, right.expr)}
 	
 	// Compound
-  |	{compound_add} identifier add_assignment_operator expr																{-> New expr.compound_add(identifier, expr.expr)}
-  | {compound_sub} identifier sub_assignment_operator expr																{-> New expr.compound_sub(identifier, expr.expr)}
-  | {compound_mult} identifier mult_assignment_operator expr															{-> New expr.compound_mult(identifier, expr.expr)}
-  | {compound_div} identifier div_assignment_operator expr																{-> New expr.compound_div(identifier, expr.expr)}
-  | {compound_mod} identifier mod_assignment_operator expr																{-> New expr.compound_mod(identifier, expr.expr)}
+  |	{compound_add} [left]:expr add_assignment_operator [right]:expr13													{-> New expr.compound_add(left.expr, right.expr)}
+  | {compound_sub} [left]:expr sub_assignment_operator [right]:expr13													{-> New expr.compound_sub(left.expr, right.expr)}
+  | {compound_mult} [left]:expr mult_assignment_operator [right]:expr13													{-> New expr.compound_mult(left.expr, right.expr)}
+  | {compound_div} [left]:expr div_assignment_operator [right]:expr13													{-> New expr.compound_div(left.expr, right.expr)}
+  | {compound_mod} [left]:expr mod_assignment_operator [right]:expr13													{-> New expr.compound_mod(left.expr, right.expr)}
   | {factor} [expr]:expr13																								{-> expr.expr}
 ;
 
@@ -497,12 +503,12 @@ expr =
   
   | {compare_and}				[left]:expr						[right]:expr
   | {compare_or}				[left]:expr						[right]:expr
-  | {assignment}				[name]:identifier				expr
-  | {compound_add}				[name]:identifier				expr
-  | {compound_sub}				[name]:identifier				expr
-  | {compound_mult}				[name]:identifier				expr
-  | {compound_div}				[name]:identifier				expr
-  | {compound_mod}				[name]:identifier				expr
+  | {assignment}				[left]:expr				        [right]:expr
+  | {compound_add}				[left]:expr				        [right]:expr
+  | {compound_sub}				[left]:expr				        [right]:expr
+  | {compound_mult}				[left]:expr				        [right]:expr
+  | {compound_div}				[left]:expr				        [right]:expr
+  | {compound_mod}				[left]:expr				        [right]:expr
 
   | {ternary}                   [condition]:expr                [left]:expr             [right]:expr
 

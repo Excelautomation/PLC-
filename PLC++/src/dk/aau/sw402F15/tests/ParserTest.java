@@ -1,7 +1,5 @@
 package dk.aau.sw402F15.tests;
 
-
-import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
 import dk.aau.sw402F15.parser.node.Node;
@@ -13,11 +11,8 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
 
-/**
- * Created by sahb on 13/04/15.
- */
-public abstract class ScopeCheckerTest {
-    protected void checkCode(String code) {
+public abstract class ParserTest {
+    protected Node getNode(String code) {
         Start node = null;
         try {
             node = getParser(code).parse();
@@ -32,13 +27,10 @@ public abstract class ScopeCheckerTest {
             throw new RuntimeException(e);
         }
 
-        // Apply scopechecker
-        ScopeChecker scopeChecker = new ScopeChecker();
-        node.apply(scopeChecker);
+        return node.getPProgram();
     }
 
     protected Parser getParser(String code) {
         return new Parser(new Lexer(new PushbackReader(new StringReader(code), 1024)));
     }
 }
-

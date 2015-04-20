@@ -12,12 +12,12 @@ import java.io.IOException;
  */
 public class EnumDefinition extends ScannerTest {
     @Test
-    public void EnumTest() throws ParserException, IOException, LexerException {
+    public void enumTest() throws ParserException, IOException, LexerException {
         checkCode("enum weekday { Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6, Sunday = 7 }");
     }
 
     @Test(expected = ParserException.class)
-    public void EnumWithError() throws ParserException, IOException, LexerException {
+    public void enumWithError() throws ParserException, IOException, LexerException {
         checkCode("enum weekday { Monday = 1, Tuesday = 2: Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6, Sunday = 7 }");
     }
 }

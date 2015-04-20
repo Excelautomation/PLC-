@@ -12,7 +12,12 @@ import java.io.IOException;
  */
 public class StructDefinition extends ScannerTest {
     @Test
-    public void StructTest() throws ParserException, IOException, LexerException {
+    public void structTest() throws ParserException, IOException, LexerException {
         checkCode("struct str { int i; int j; float k; }");
+    }
+
+    @Test(expected = ParserException.class)
+    public void structInStruct() throws ParserException, IOException, LexerException {
+        checkCode("struct str { struct str2 { int i; } }");
     }
 }
