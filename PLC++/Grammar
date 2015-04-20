@@ -272,14 +272,14 @@ label_statements {-> statement} =
 // Precedence 14
 expr {-> expr} =
 	// Assignment
-	{assignment} identifier assignment_operator expr																	{-> New expr.assignment(identifier, expr.expr)}
+	{assignment} [left]:expr assignment_operator [right]:expr13															{-> New expr.assignment(left.expr, right.expr)}
 	
 	// Compound
-  |	{compound_add} identifier add_assignment_operator expr																{-> New expr.compound_add(identifier, expr.expr)}
-  | {compound_sub} identifier sub_assignment_operator expr																{-> New expr.compound_sub(identifier, expr.expr)}
-  | {compound_mult} identifier mult_assignment_operator expr															{-> New expr.compound_mult(identifier, expr.expr)}
-  | {compound_div} identifier div_assignment_operator expr																{-> New expr.compound_div(identifier, expr.expr)}
-  | {compound_mod} identifier mod_assignment_operator expr																{-> New expr.compound_mod(identifier, expr.expr)}
+  |	{compound_add} [left]:expr add_assignment_operator [right]:expr13													{-> New expr.compound_add(left.expr, right.expr)}
+  | {compound_sub} [left]:expr sub_assignment_operator [right]:expr13													{-> New expr.compound_sub(left.expr, right.expr)}
+  | {compound_mult} [left]:expr mult_assignment_operator [right]:expr13													{-> New expr.compound_mult(left.expr, right.expr)}
+  | {compound_div} [left]:expr div_assignment_operator [right]:expr13													{-> New expr.compound_div(left.expr, right.expr)}
+  | {compound_mod} [left]:expr mod_assignment_operator [right]:expr13													{-> New expr.compound_mod(left.expr, right.expr)}
   | {factor} [expr]:expr13																								{-> expr.expr}
 ;
 
@@ -503,12 +503,12 @@ expr =
   
   | {compare_and}				[left]:expr						[right]:expr
   | {compare_or}				[left]:expr						[right]:expr
-  | {assignment}				[name]:identifier				expr
-  | {compound_add}				[name]:identifier				expr
-  | {compound_sub}				[name]:identifier				expr
-  | {compound_mult}				[name]:identifier				expr
-  | {compound_div}				[name]:identifier				expr
-  | {compound_mod}				[name]:identifier				expr
+  | {assignment}				[left]:expr				        [right]:expr
+  | {compound_add}				[left]:expr				        [right]:expr
+  | {compound_sub}				[left]:expr				        [right]:expr
+  | {compound_mult}				[left]:expr				        [right]:expr
+  | {compound_div}				[left]:expr				        [right]:expr
+  | {compound_mod}				[left]:expr				        [right]:expr
 
   | {ternary}                   [condition]:expr                [left]:expr             [right]:expr
 
