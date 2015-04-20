@@ -44,11 +44,14 @@ public class Main {
                                 "a().a().b().a.a.b();\n" +
                                 "struct b { void b() { return; } int a() { return 1; } } ";
 
-        code = "int func(){const int i = 7; return 5;}";
-
-
-                //"void call(){\n" +
-                    //"func(true); }";
+        code = "struct car{\n" +
+                "int nrOfWheels;\n" +
+                "bool isTruck;\n" +
+                "}\n" +
+                "int func(){\n" +
+                "struct car bmw;\n" +
+                "bmw.nrOfWheels = 4;\n" +
+                "}\n";
 
         System.out.println(code);
 

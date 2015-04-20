@@ -1,8 +1,12 @@
 package dk.aau.sw402F15.ScopeChecker;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
+import sun.org.mozilla.javascript.internal.ObjToIntMap;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -193,62 +197,68 @@ public class ScopeChecker extends DepthFirstAdapter {
         super.inAMemberExpr(node);
 
         if (node.getLeft().getClass() == AIdentifierExpr.class){
-                //cast left node
-                AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
-                // check if symbol is in table
-                Symbol symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+            //cast left node
+            AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
+            // check if symbol is in table
+            Symbol symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
 
-                //check if returned symbol is a struct
-                if ( symbol instanceof SymbolStruct){
-                    // go to scope of left node
+            //check if returned symbol is a struct
+            if ( symbol.getClass() == SymbolStruct.class){
 
+                List<Symbol> symbolList = ((SymbolStruct) symbol).getSymbolList();
 
-                    // check right node for type. Declaration or func
-                    if (node.getRight().getClass() == AIdentifierExpr.class){
-                        // TODO Go to inner scope of struct
+                // check list for field
 
-                        AIdentifierExpr var = (AIdentifierExpr)node.getRight();
-                        currentScope.getSymbolOrThrow(var.getName().getText());
+                // check right node for type. Declaration or func
+                if (node.getRight().getClass() == AIdentifierExpr.class){
+                    // TODO Check if struct's scope contains right node
+                    AIdentifierExpr var = (AIdentifierExpr)node.getRight();
 
-                    }else if (node.getRight().getClass() == AFunctionCallExpr.class){
-                        AFunctionCallExpr var = (AFunctionCallExpr)node.getRight();
-                        currentScope.getSymbolOrThrow(var.getName().getText());
+                    boolean okBit = false;
+                    for(Symbol sym : symbolList)
+                        if (sym.getName().equals(var.getName().getText()))
+                            okBit = true;
+                    if (okBit == false)
+                        throw new SymbolNotFoundException();
 
-                    } else {
-                        // right node is neigther var or func!!!
-                        throw new IllegalArgumentException();
-                    }
+                }else if (node.getRight().getClass() == AFunctionCallExpr.class){
+                    AFunctionCallExpr var = (AFunctionCallExpr)node.getRight();
+                    currentScope.getSymbolOrThrow(var.getName().getText());
                 } else {
+                    // right node is neigther var or func!!!
                     throw new IllegalArgumentException();
                 }
-            } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
-                //cast left node
-                AFunctionCallExpr expr = (AFunctionCallExpr) node.getLeft();
-                // check if symbol is in table
-                Object symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+            } else {
+                throw new IllegalArgumentException();
+            }
+        } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
+            //cast left node
+            AFunctionCallExpr expr = (AFunctionCallExpr) node.getLeft();
+            // check if symbol is in table
+            Object symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
 
-                // check if it returns a struct that have right node as field
-                //check if returned symbol is a function
-                if (symbol instanceof SymbolFunction) {
-                    SymbolFunction symbolFunction = (SymbolFunction)symbol;
+            // check if it returns a struct that have right node as field
+            //check if returned symbol is a function
+            if (symbol instanceof SymbolFunction) {
+                SymbolFunction symbolFunction = (SymbolFunction)symbol;
 
 
-                    // check right node for type. Declaration or func
-                    if (node.getRight().getClass() == AIdentifierExpr.class) {
-                        AIdentifierExpr var = (AIdentifierExpr) node.getRight();
-                        currentScope.getSymbolOrThrow(var.getName().getText());
+                // check right node for type. Declaration or func
+                if (node.getRight().getClass() == AIdentifierExpr.class) {
+                    AIdentifierExpr var = (AIdentifierExpr) node.getRight();
+                    currentScope.getSymbolOrThrow(var.getName().getText());
 
-                    } else if (node.getRight().getClass() == AFunctionCallExpr.class) {
-                        AFunctionCallExpr var = (AFunctionCallExpr) node.getRight();
-                        currentScope.getSymbolOrThrow(var.getName().getText());
+                } else if (node.getRight().getClass() == AFunctionCallExpr.class) {
+                    AFunctionCallExpr var = (AFunctionCallExpr) node.getRight();
+                    currentScope.getSymbolOrThrow(var.getName().getText());
 
-                    } else {
-                        // right node is neigther var or func!!!
-                        throw new IllegalArgumentException();
-                    }
                 } else {
+                    // right node is neigther var or func!!!
                     throw new IllegalArgumentException();
                 }
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
     }
     private void checkRightNode(Object symbol){
