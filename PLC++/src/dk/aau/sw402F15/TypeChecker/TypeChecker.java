@@ -33,7 +33,7 @@ public class TypeChecker extends ExpressionEvaluator {
     public void outAWhileStatement(AWhileStatement node) {
         super.outAWhileStatement(node);
 
-        // Checking that the while loop's condition is a boolen
+        // Checking that the while loop's condition is a boolean
         if (stack.pop() != SymbolType.Boolean)
             throw new IllegalLoopConditionException();
     }
@@ -42,9 +42,16 @@ public class TypeChecker extends ExpressionEvaluator {
     public void caseAForStatement(AForStatement node) {
         super.caseAForStatement(node);
 
-        // Checking that the for loop's condition is a boolen
+        // Checking that the for loop's condition is a boolean
         if (stack.pop() != SymbolType.Boolean)
             throw new IllegalLoopConditionException();
+    }
+
+    @Override
+    public void outAArrayDefinition(AArrayDefinition node) {
+        super.outAArrayDefinition(node);
+        stack.peek();
+        int i = 3;
     }
 
     @Override
