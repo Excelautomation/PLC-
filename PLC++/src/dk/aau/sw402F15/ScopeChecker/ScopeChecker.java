@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Created by Mads on 08/04/15.
+ *
  */
 
 public class ScopeChecker extends DepthFirstAdapter {
@@ -234,7 +235,7 @@ public class ScopeChecker extends DepthFirstAdapter {
                             okBit = true;
                         }
                     }
-                    if (okBit == false) {
+                    if (!okBit) {
                         throw new SymbolNotFoundException();
                     }
 
@@ -251,7 +252,7 @@ public class ScopeChecker extends DepthFirstAdapter {
                             okBit = true;
                         }
                     }
-                    if (okBit == false) {
+                    if (!okBit) {
                         throw new SymbolNotFoundException();
                     }
 
@@ -264,20 +265,19 @@ public class ScopeChecker extends DepthFirstAdapter {
                 throw new SymbolFoundWrongTypeException();
             }
 
-
-        // check if Left node is a function call
+        // check if Left node is a functionCallExpr
         } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
             //cast left node
-            AFunctionCallExpr expr = (AFunctionCallExpr) node.getLeft();
-            // check if symbol is in table
-            Object symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+            AFunctionCallExpr functionCallExpr = (AFunctionCallExpr)node.getLeft();
+            // Get FunctionCallExpr from symboltable
+            Object symbol = currentScope.getSymbolOrThrow(functionCallExpr.getName().getText());
 
-            // check if it returns a struct that have right node as field
-            //check if returned symbol is a function
-            if (symbol instanceof SymbolFunction) {
+            //check if returned symbol is a SymbolFunction
+            if (symbol.getClass() == SymbolFunction.class) {
                 SymbolFunction symbolFunction = (SymbolFunction)symbol;
 
 
+                /*
                 // check right node for type. Declaration or func
                 if (node.getRight().getClass() == AIdentifierExpr.class) {
                     AIdentifierExpr var = (AIdentifierExpr) node.getRight();
@@ -291,9 +291,12 @@ public class ScopeChecker extends DepthFirstAdapter {
                     // right node is neigther var or func!!!
                     throw new IllegalArgumentException();
                 }
+                */
             } else {
-                throw new IllegalArgumentException();
+                throw new SymbolFoundWrongTypeException();
             }
+        } else {
+            throw new SymbolFoundWrongTypeException();
         }
     }
 
