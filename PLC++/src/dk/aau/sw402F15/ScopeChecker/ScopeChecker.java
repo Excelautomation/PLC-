@@ -182,30 +182,27 @@ public class ScopeChecker extends DepthFirstAdapter {
         DeclareVariable(node);
     }
 
-    // Override normal visiting behaviour as root declarations already have been visited in the caseAProgram(...)
-    // method.
+    @Override
+    public void caseTIdentifier(TIdentifier node)
+    {
+        currentScope.getSymbolOrThrow(node.getText());
+    }
+
     @Override
     public void caseAStructRootDeclaration(AStructRootDeclaration node){
         inAStructRootDeclaration(node);
-        // Make sure that the struct is in the symbol table
-        currentScope.getSubScopeByNodeOrThrow(node);
-        // Already visited in struct builder so there is no need to visit again
+        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
+        // Already applied in struct builder
+        //node.getProgram().apply(this);
+        currentScope = currentScope.getParentScope();
         outAStructRootDeclaration(node);
     }
 
-    // Override normal visiting behaviour as root declarations already have been visited in the caseAProgram(...)
-    // method.
     @Override
     public void caseADeclarationRootDeclaration(ADeclarationRootDeclaration node){
         inADeclarationRootDeclaration(node);
-        // Do nothing the variable is already declared
+        //Do nothing the variable is already declared
         outADeclarationRootDeclaration(node);
-    }
-
-    @Override
-    public void inAIdentifierExpr(AIdentifierExpr node) {
-        super.inAIdentifierExpr(node);
-        currentScope.getSymbolOrThrow(node.getName().getText());
     }
 
     @Override
