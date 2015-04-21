@@ -1,11 +1,13 @@
 package dk.aau.sw402F15.ScopeChecker;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolFoundWrongTypeException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.org.mozilla.javascript.internal.ObjToIntMap;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -208,44 +210,66 @@ public class ScopeChecker extends DepthFirstAdapter {
     }
 
     @Override
-    public void inAMemberExpr(AMemberExpr node) {
+    public void inAMemberExpr(AMemberExpr node) {     
         super.inAMemberExpr(node);
 
+        // check if Left node is an identifierExpr
         if (node.getLeft().getClass() == AIdentifierExpr.class){
             //cast left node
-            AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
-            // check if symbol is in table
-            Symbol symbol = currentScope.getSymbolOrThrow(expr.getName().getText());
+            AIdentifierExpr IdentifierExpr = (AIdentifierExpr)node.getLeft();
+            // Get indentifierExpr from symbolTable
+            Symbol symbol = currentScope.getSymbolOrThrow(IdentifierExpr.getName().getText());
 
-            //check if returned symbol is a struct
+            //check if returned symbol is a symbolStruct
             if ( symbol.getClass() == SymbolStruct.class){
+                SymbolStruct struct = (SymbolStruct)symbol;
+                Scope structScope = currentScope.getSubScopeByNode(struct);
 
-                List<Symbol> symbolList = ((SymbolStruct) symbol).getSymbolList();
-
-                // check list for field
-
-                // check right node for type. Declaration or func
+                // Check if right node is an identifier-----------------------------------------------------
                 if (node.getRight().getClass() == AIdentifierExpr.class){
-                    // TODO Check if struct's scope contains right node
-                    AIdentifierExpr var = (AIdentifierExpr)node.getRight();
+                    AIdentifierExpr rightNodeExpr = (AIdentifierExpr)node.getRight();
+                    Symbol rightNodeSymbol = structScope.getSymbolOrThrow(rightNodeExpr.getName().getText());
 
+                    // check if the rightNode is in struct's scope
+                    List<Symbol> symbolList = struct.getSymbolList();
                     boolean okBit = false;
-                    for(Symbol sym : symbolList)
-                        if (sym.getName().equals(var.getName().getText()))
+                    for(Symbol sym : symbolList) {
+                        if (sym.getName().equals(rightNodeSymbol.getName())) {
                             okBit = true;
-                    if (okBit == false)
+                        }
+                    }
+                    if (okBit == false) {
                         throw new SymbolNotFoundException();
+                    }
 
+                // Check if right node is a functionCall---------------------------------------------------
                 }else if (node.getRight().getClass() == AFunctionCallExpr.class){
-                    AFunctionCallExpr var = (AFunctionCallExpr)node.getRight();
-                    currentScope.getSymbolOrThrow(var.getName().getText());
+                    AFunctionCallExpr rightNodeExpr = (AFunctionCallExpr)node.getRight();
+                    Symbol rightNodeSymbol = structScope.getSymbolOrThrow(rightNodeExpr.getName().getText());
+
+                    // / check if the rightNode is in struct's scope
+                    List<Symbol> symbolList = struct.getSymbolList();
+                    boolean okBit = false;
+                    for(Symbol sym : symbolList) {
+                        if (sym.getName().equals(rightNodeSymbol.getName())) {
+                            okBit = true;
+                        }
+                    }
+                    if (okBit == false) {
+                        throw new SymbolNotFoundException();
+                    }
+
+                // Right node is neigther variable or functionCall ----------------------------------------
                 } else {
-                    // right node is neigther var or func!!!
-                    throw new IllegalArgumentException();
+                    throw new SymbolFoundWrongTypeException();
                 }
+            // Left Node is not a struct!!
             } else {
-                throw new IllegalArgumentException();
+                throw new SymbolFoundWrongTypeException();
             }
+
+
+        // check if Left node is a function call
         } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
             //cast left node
             AFunctionCallExpr expr = (AFunctionCallExpr) node.getLeft();
