@@ -62,7 +62,15 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
     @Override
     public void caseAAssignmentExpr(AAssignmentExpr node) {
         inAAssignmentExpr(node);
-        if(node.getLeft() != null)
+
+        if (node.getLeft().getClass() == AArrayExpr.class)
+        {
+            Symbol symbol = currentScope.getSymbolOrThrow(((AArrayExpr)node.getLeft()).getName().getText());
+            stack.push(((SymbolArray) symbol).getContainedType());
+        }
+        stack.peek();
+
+        if(node.getLeft() != null && !(node.getLeft().getClass() == AArrayExpr.class))
         {
             ExpressionEvaluatorWithConst evaluator = new ExpressionEvaluatorWithConst(rootScope, currentScope);
             node.getLeft().apply(evaluator);
@@ -72,6 +80,7 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            stack.push(this.getSymbol());
         }
         outAAssignmentExpr(node);
     }
@@ -83,6 +92,7 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
         SymbolType arg1 = stack.pop();
         SymbolType arg2 = stack.pop();
 
+        stack.peek();
         if (arg1 != arg2) {
             throw new IllegalAssignmentException();
         }
