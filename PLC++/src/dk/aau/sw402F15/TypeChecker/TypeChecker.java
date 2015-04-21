@@ -14,6 +14,7 @@ public class TypeChecker extends ExpressionEvaluator {
         super(rootScope, rootScope);
     }
 
+    // When we enter a function, we need to know if we've encountered a return statement
     private boolean returnFound = false;
 
     @Override
@@ -31,14 +32,33 @@ public class TypeChecker extends ExpressionEvaluator {
     @Override
     public void outAWhileStatement(AWhileStatement node) {
         super.outAWhileStatement(node);
+
+        // Checking that the while loop's condition is a boolean
         if (stack.pop() != SymbolType.Boolean)
-            throw new RuntimeException(); // TODO New Exception
+            throw new IllegalLoopConditionException();
+    }
+
+    @Override
+    public void caseAForStatement(AForStatement node) {
+        super.caseAForStatement(node);
+
+        // Checking that the for loop's condition is a boolean
+        if (stack.pop() != SymbolType.Boolean)
+            throw new IllegalLoopConditionException();
+    }
+
+    @Override
+    public void outAArrayDefinition(AArrayDefinition node) {
+        super.outAArrayDefinition(node);
+        stack.peek();
+        int i = 3;
     }
 
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.inAFunctionRootDeclaration(node);
 
+        // Pushing a function's return type to the stack
         stack.push(((SymbolFunction) currentScope.getSymbol(node.getName().getText())).getReturnType());
     }
 
@@ -48,6 +68,7 @@ public class TypeChecker extends ExpressionEvaluator {
 
         stack.pop();
 
+        // Making sure void doesn't contain return, and that non-void function does contain return
         if (node.getReturnType().getClass() != AVoidTypeSpecifier.class && !returnFound)
             throw new MissingReturnStatementException();
         if (node.getReturnType().getClass() == AVoidTypeSpecifier.class && returnFound)
@@ -68,6 +89,7 @@ public class TypeChecker extends ExpressionEvaluator {
         SymbolType arg1 = stack.pop();
         SymbolType returnType = stack.peek();
 
+        // Checking that function's returntype matches what we're returning
         if (returnType != arg1) {
             throw new IllegalReturnTypeException();
         }

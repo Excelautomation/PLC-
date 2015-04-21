@@ -24,7 +24,7 @@ public class Main {
                 "bmw.nrOfWheels = 4;\n" +
                 "}\n";
 
-        System.out.println(code);
+        //System.out.println(code);
 
         try {
             Reader reader;
@@ -42,8 +42,6 @@ public class Main {
             tree.apply(checker);
 
             tree.apply(new TypeChecker(checker.getSymbolTable()));
-            //tree.apply(new ExpressionEvaluator());
-
         } catch (ParserException e) {
             e.printStackTrace();
         } catch (LexerException e) {

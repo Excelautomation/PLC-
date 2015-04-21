@@ -25,6 +25,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         currentScope = rootScope;
     }
 
+    // When a functions is entered this makes sure that the scope is changed as well
     @Override
     public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         inAFunctionRootDeclaration(node);
@@ -35,32 +36,26 @@ public class ScopeChecker extends DepthFirstAdapter {
         if (node.getName() != null) {
             node.getName().apply(this);
         }
+        // Open subscope before visiting the inner statements
         currentScope = currentScope.addSubScope(node);
+        // Import parameters so that they are accessible from within the function.
         List<PDeclaration> params = new ArrayList<PDeclaration>(node.getParams());
         for (PDeclaration parameter : params) {
             parameter.apply(this);
         }
-
+        // Visit the inner statements
         List<PStatement> statements = new ArrayList<PStatement>(node.getStatements());
         for (PStatement statement : statements) {
             statement.apply(this);
         }
-
+        // Leave the subscope
         currentScope = currentScope.getParentScope();
 
         outAFunctionRootDeclaration(node);
     }
 
-    /*@Override
-    public void inAWhileStatement(AWhileStatement node){
-        currentScope = currentScope.addSubScope(node);
-    }
-
-    @Override
-    public void outAWhileStatement(AWhileStatement node){
-        currentScope = currentScope.getParentScope();
-    }*/
-
+    // Runs a small preprocessor which makes sure that global variables, structs, enum and functions are declared
+    // before continuing on with the compiling of the program
     @Override
     public void caseAProgram(AProgram node){
         List<AEnumRootDeclaration> enums = new ArrayList<AEnumRootDeclaration>();
@@ -68,6 +63,7 @@ public class ScopeChecker extends DepthFirstAdapter {
         List<AStructRootDeclaration> structs = new ArrayList<AStructRootDeclaration>();
         List<ADeclarationRootDeclaration> variables = new ArrayList<ADeclarationRootDeclaration>();
 
+        // Separate the different root decelerations into different lists.
         for(PRootDeclaration d : node.getRootDeclaration()){
             if(d.getClass() == AEnumRootDeclaration.class){
                 enums.add((AEnumRootDeclaration)d);
@@ -82,7 +78,7 @@ public class ScopeChecker extends DepthFirstAdapter {
                 variables.add((ADeclarationRootDeclaration) d);
             }
         }
-
+        // Declare the different elements in the order in which they are likely to need each other
         for (AEnumRootDeclaration e : enums){
             DeclareEnum(e);
         }
@@ -96,28 +92,34 @@ public class ScopeChecker extends DepthFirstAdapter {
         for (AFunctionRootDeclaration f : functions){
             DeclareFunction(f);
         }
+        // Runs the normal processor
         super.caseAProgram(node);
     }
 
     private void DeclareVariable(PDeclaration node){
+        boolean isArray = false;
+        boolean isConst = false;
+        String name = null;
+        SymbolType type = null;
+
         if(node.getClass() == ADeclaration.class){
             ADeclaration n = (ADeclaration)node;
-            boolean isArray = n.getArray() != null;
-            boolean isConst = n.getQuailifer() != null;
-            if(isArray)
-                DeclareArray(n.getName().getText(), getSymbolType(n.getType()), n);
-            else
-                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n, isConst);
+            isArray = n.getArray() != null;
+            isConst = n.getQuailifer() != null;
+            name = n.getName().getText();
+            type = getSymbolType(n.getType());
         }
         else if (node.getClass() == AAssignmentDeclaration.class){
             AAssignmentDeclaration n = (AAssignmentDeclaration)node;
-            boolean isArray = n.getArray() != null;
-            boolean isConst = n.getQuailifer() != null;
-            if(isArray)
-                DeclareArray(n.getName().getText(), getSymbolType(n.getType()), n);
-            else
-                DeclareVariable(n.getName().getText(), getSymbolType(n.getType()), n, isConst);
+            isArray = n.getArray() != null;
+            isConst = n.getQuailifer() != null;
+            name = n.getName().getText();
+            type = getSymbolType(n.getType());
         }
+        if(isArray)
+            DeclareArray(name, type, node);
+        else
+            DeclareVariable(name, type, node, isConst);
     }
 
     private void DeclareVariable(String name, SymbolType type, Node node, boolean isConst){
@@ -180,26 +182,23 @@ public class ScopeChecker extends DepthFirstAdapter {
         DeclareVariable(node);
     }
 
-    @Override
-    public void caseTIdentifier(TIdentifier node)
-    {
-        currentScope.getSymbolOrThrow(node.getText());
-    }
-
+    // Override normal visiting behaviour as root declarations already have been visited in the caseAProgram(...)
+    // method.
     @Override
     public void caseAStructRootDeclaration(AStructRootDeclaration node){
         inAStructRootDeclaration(node);
-        currentScope = currentScope.getSubScopeByNodeOrThrow(node);
-        // Already applied in struct builder
-        //node.getProgram().apply(this);
-        currentScope = currentScope.getParentScope();
+        // Make sure that the struct is in the symbol table
+        currentScope.getSubScopeByNodeOrThrow(node);
+        // Already visited in struct builder so there is no need to visit again
         outAStructRootDeclaration(node);
     }
 
+    // Override normal visiting behaviour as root declarations already have been visited in the caseAProgram(...)
+    // method.
     @Override
     public void caseADeclarationRootDeclaration(ADeclarationRootDeclaration node){
         inADeclarationRootDeclaration(node);
-        //Do nothing the variable is already declared
+        // Do nothing the variable is already declared
         outADeclarationRootDeclaration(node);
     }
 
@@ -300,10 +299,12 @@ public class ScopeChecker extends DepthFirstAdapter {
             }
         }
     }
+
     private void checkRightNode(Object symbol){
 
     }
 
+    // Returns the outermost scope as the symbol table.
     public Scope getSymbolTable() {
         return rootScope;
     }

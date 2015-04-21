@@ -263,8 +263,8 @@ switch_statement {-> statement} =
 ;
 
 label_statements {-> statement} =
-    {case} case_keyword [condition]:expr colon statement                                                                {-> New statement.case(condition.expr, statement.statement)}
-  | {default} default_keyword colon statement                                                                            {-> New statement.default(statement.statement)}
+    {case} case_keyword [condition]:expr colon statement*                                                               {-> New statement.case(condition.expr, [statement.statement])}
+  | {default} default_keyword colon statement*                                                                          {-> New statement.default([statement.statement])}
 ;
 
 // Expression
@@ -458,8 +458,8 @@ statement =
 
   // Switch
   | {switch}                    [condition]:expr                [labels]:statement*
-  | {case}                      [case]:expr                     [statement]:statement
-  | {default}                                                   [statement]:statement
+  | {case}                      [case]:expr                     [statement]:statement*
+  | {default}                                                   [statement]:statement*
 
   // Iteration
   | {while}						[condition]:expr				[statement]:statement

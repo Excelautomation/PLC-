@@ -177,6 +177,18 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
     public void outADivExpr(ADivExpr node) {
         super.outADivExpr(node);
         checkExpression();
+
+        // Checking that we don't divide by zero
+        if (node.getRight() instanceof AIntegerExpr)
+        {
+            if (Integer.parseInt(((AIntegerExpr) node.getRight()).getIntegerLiteral().getText()) == 0)
+                throw new DivisionByZeroException();
+        }
+        else if (node.getRight() instanceof ADecimalExpr)
+        {
+            if (Float.parseFloat(((ADecimalExpr) node.getRight()).getDecimalLiteral().getText()) == 0.0)
+                throw new DivisionByZeroException();
+        }
     }
 
     @Override

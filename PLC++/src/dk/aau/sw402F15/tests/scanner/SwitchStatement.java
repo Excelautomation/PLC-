@@ -21,4 +21,9 @@ public class SwitchStatement extends ScannerTest {
         checkCode("void run() { switch ( expr ) { case : } }");
     }
 
+    @Test
+    public void switchWithMultipleCases() throws ParserException, IOException, LexerException {
+        checkCode("void run() { switch ( expr ) { case expr: break; case expr: break; default: break; } }");
+    }
+
 }
