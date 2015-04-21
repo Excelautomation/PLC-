@@ -255,16 +255,12 @@ public class ScopeChecker extends DepthFirstAdapter {
                     if (!okBit) {
                         throw new SymbolNotFoundException();
                     }
-
-                // Right node is neigther variable or functionCall ----------------------------------------
                 } else {
                     throw new SymbolFoundWrongTypeException();
                 }
-            // Left Node is not a struct!!
             } else {
                 throw new SymbolFoundWrongTypeException();
             }
-
         // check if Left node is a functionCallExpr
         } else if ((node.getLeft().getClass() == AFunctionCallExpr.class)) {
             //cast left node
@@ -326,37 +322,19 @@ public class ScopeChecker extends DepthFirstAdapter {
                                 if (!okBit) {
                                     throw new SymbolNotFoundException();
                                 }
-                                // Right node is neigther variable or functionCall ----------------------------------------
+                            // Right node is neigther variable or functionCall ----------------------------------------
                             } else {
                                 throw new SymbolFoundWrongTypeException();
                             }
+                        } else {
+                            throw new SymbolFoundWrongTypeException();
                         }
+                    } else {
+                        throw new SymbolFoundWrongTypeException();
                     }
-                    else
-                    {
-                        throw new RuntimeException();
-                    }
-                }
-                else
-                {
-                    throw new RuntimeException();
-                }
-
-                /*
-                // check right node for type. Declaration or func
-                if (node.getRight().getClass() == AIdentifierExpr.class) {
-                    AIdentifierExpr var = (AIdentifierExpr) node.getRight();
-                    currentScope.getSymbolOrThrow(var.getName().getText());
-
-                } else if (node.getRight().getClass() == AFunctionCallExpr.class) {
-                    AFunctionCallExpr var = (AFunctionCallExpr) node.getRight();
-                    currentScope.getSymbolOrThrow(var.getName().getText());
-
                 } else {
-                    // right node is neigther var or func!!!
-                    throw new IllegalArgumentException();
+                    throw new SymbolFoundWrongTypeException();
                 }
-                */
             } else {
                 throw new SymbolFoundWrongTypeException();
             }
