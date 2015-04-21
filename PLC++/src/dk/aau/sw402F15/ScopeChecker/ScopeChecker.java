@@ -276,7 +276,7 @@ public class ScopeChecker extends DepthFirstAdapter {
             if (symbol.getClass() == SymbolFunction.class) {
                 SymbolFunction symbolFunction = (SymbolFunction)symbol;
 
-
+                throw new NotImplementedException();
                 /*
                 // check right node for type. Declaration or func
                 if (node.getRight().getClass() == AIdentifierExpr.class) {
