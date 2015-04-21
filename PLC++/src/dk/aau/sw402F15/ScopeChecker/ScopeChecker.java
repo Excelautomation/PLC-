@@ -285,20 +285,52 @@ public class ScopeChecker extends DepthFirstAdapter {
                     if (function.getReturnType().getClass() == AStructTypeSpecifier.class) {
                         AStructTypeSpecifier struct = (AStructTypeSpecifier) function.getReturnType();
 
-                        Symbol structSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        // TODO Fix det her Gadeberg
-                        throw new NotImplementedException();
+                        // get structTypeSpecifier from symboltable
+                        Symbol structTypeSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
 
+
+                        if (structTypeSymbol.getClass() == SymbolStruct.class){
+                            SymbolStruct symbolStruct = (SymbolStruct)structTypeSymbol;
+
+                            Scope structScope = currentScope.getSubScopeByNode(symbolStruct.getNode());
+
+                            // Check if right node is an identifier-----------------------------------------------------
+                            if (node.getRight().getClass() == AIdentifierExpr.class){
+                                AIdentifierExpr rightNodeExpr = (AIdentifierExpr)node.getRight();
+                                Symbol rightNodeSymbol = structScope.getSymbolOrThrow(rightNodeExpr.getName().getText());
+
+                                // check if the rightNode is in struct's scope
+                                List<Symbol> symbolList = symbolStruct.getSymbolList();
+                                boolean okBit = false;
+                                for(Symbol sym : symbolList) {
+                                    if (sym.getName().equals(rightNodeSymbol.getName())) {
+                                        okBit = true;
+                                    }
+                                }
+                                if (!okBit) {
+                                    throw new SymbolNotFoundException();
+                                }
+                                // Check if right node is a functionCall---------------------------------------------------
+                            }else if (node.getRight().getClass() == AFunctionCallExpr.class){
+                                AFunctionCallExpr rightNodeExpr = (AFunctionCallExpr)node.getRight();
+                                Symbol rightNodeSymbol = structScope.getSymbolOrThrow(rightNodeExpr.getName().getText());
+
+                                // / check if the rightNode is in struct's scope
+                                List<Symbol> symbolList = symbolStruct.getSymbolList();
+                                boolean okBit = false;
+                                for(Symbol sym : symbolList) {
+                                    if (sym.getName().equals(rightNodeSymbol.getName())) {
+                                        okBit = true;
+                                    }
+                                }
+                                if (!okBit) {
+                                    throw new SymbolNotFoundException();
+                                }
+                                // Right node is neigther variable or functionCall ----------------------------------------
+                            } else {
+                                throw new SymbolFoundWrongTypeException();
+                            }
+                        }
                     }
                     else
                     {
