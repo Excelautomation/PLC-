@@ -39,6 +39,15 @@ public class TypeChecker extends ExpressionEvaluator {
     }
 
     @Override
+    public void caseAForStatement(AForStatement node) {
+        super.caseAForStatement(node);
+
+        // Checking that the for loop's condition is a boolen
+        if (stack.pop() != SymbolType.Boolean)
+            throw new IllegalLoopConditionException();
+    }
+
+    @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.inAFunctionRootDeclaration(node);
 
