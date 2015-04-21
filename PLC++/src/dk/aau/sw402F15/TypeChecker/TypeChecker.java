@@ -1,9 +1,7 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolFunction;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
+import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.node.*;
 
 /**
@@ -50,8 +48,6 @@ public class TypeChecker extends ExpressionEvaluator {
     @Override
     public void outAArrayDefinition(AArrayDefinition node) {
         super.outAArrayDefinition(node);
-        stack.peek();
-        int i = 3;
     }
 
     @Override
@@ -85,8 +81,15 @@ public class TypeChecker extends ExpressionEvaluator {
     public void outAReturnExprStatement(AReturnExprStatement node) {
         super.outAReturnExprStatement(node);
 
-        returnFound = true;
         SymbolType arg1 = stack.pop();
+
+        if (node.getExpr() instanceof AArrayExpr)
+        {
+            arg1 = ((SymbolArray) currentScope.getSymbolOrThrow(((AArrayExpr)node.getExpr()).getName().getText())).getContainedType();
+        }
+
+        returnFound = true;
+
         SymbolType returnType = stack.peek();
 
         // Checking that function's returntype matches what we're returning
