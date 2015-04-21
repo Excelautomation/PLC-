@@ -23,7 +23,7 @@ public class Main {
                 "bmw.nrOfWheels = 4;\n" +
                 "}\n";
 
-        System.out.println(code);
+        //System.out.println(code);
 
         try {
             Reader reader;
