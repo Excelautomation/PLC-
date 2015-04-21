@@ -1,11 +1,9 @@
 package dk.aau.sw402F15.ScopeChecker;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
 import dk.aau.sw402F15.TypeChecker.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-import sun.org.mozilla.javascript.internal.ObjToIntMap;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -49,15 +47,6 @@ public class ScopeChecker extends DepthFirstAdapter {
         outAFunctionRootDeclaration(node);
     }
 
-    /*@Override
-    public void inAWhileStatement(AWhileStatement node){
-        currentScope = currentScope.addSubScope(node);
-    }
-
-    @Override
-    public void outAWhileStatement(AWhileStatement node){
-        currentScope = currentScope.getParentScope();
-    }*/
 
     @Override
     public void caseAProgram(AProgram node){
@@ -276,6 +265,7 @@ public class ScopeChecker extends DepthFirstAdapter {
             }
         }
     }
+
     private void checkRightNode(Object symbol){
 
     }
