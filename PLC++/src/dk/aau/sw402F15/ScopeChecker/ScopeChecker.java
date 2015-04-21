@@ -222,7 +222,7 @@ public class ScopeChecker extends DepthFirstAdapter {
             //check if returned symbol is a symbolStruct
             if ( symbol.getClass() == SymbolStruct.class){
                 SymbolStruct struct = (SymbolStruct)symbol;
-                Scope structScope = currentScope.getSubScopeByNode(struct);
+                Scope structScope = currentScope.getSubScopeByNode(struct.getNode());
 
                 // Check if right node is an identifier-----------------------------------------------------
                 if (node.getRight().getClass() == AIdentifierExpr.class){
