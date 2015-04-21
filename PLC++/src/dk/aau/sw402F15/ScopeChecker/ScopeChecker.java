@@ -270,13 +270,46 @@ public class ScopeChecker extends DepthFirstAdapter {
             //cast left node
             AFunctionCallExpr functionCallExpr = (AFunctionCallExpr)node.getLeft();
             // Get FunctionCallExpr from symboltable
-            Object symbol = currentScope.getSymbolOrThrow(functionCallExpr.getName().getText());
+            Symbol symbol = currentScope.getSymbolOrThrow(functionCallExpr.getName().getText());
 
             //check if returned symbol is a SymbolFunction
             if (symbol.getClass() == SymbolFunction.class) {
                 SymbolFunction symbolFunction = (SymbolFunction)symbol;
 
-                throw new NotImplementedException();
+                // Check if symbolfunction has correct return type and..
+                // Check if symbolfunction has correct node
+                if (symbolFunction.getReturnType() == SymbolType.Struct && symbolFunction.getNode().getClass() == AFunctionRootDeclaration.class) {
+                    AFunctionRootDeclaration function = (AFunctionRootDeclaration) symbolFunction.getNode();
+
+                    // Check if returntype is AStructTypeSpecifier
+                    if (function.getReturnType().getClass() == AStructTypeSpecifier.class) {
+                        AStructTypeSpecifier struct = (AStructTypeSpecifier) function.getReturnType();
+
+                        Symbol structSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        // TODO Fix det her Gadeberg
+                        throw new NotImplementedException();
+
+                    }
+                    else
+                    {
+                        throw new RuntimeException();
+                    }
+                }
+                else
+                {
+                    throw new RuntimeException();
+                }
+
                 /*
                 // check right node for type. Declaration or func
                 if (node.getRight().getClass() == AIdentifierExpr.class) {
