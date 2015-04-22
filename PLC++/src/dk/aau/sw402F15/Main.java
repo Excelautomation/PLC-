@@ -42,6 +42,9 @@ public class Main {
             tree.apply(checker);
 
             tree.apply(new TypeChecker(checker.getSymbolTable()));
+
+            tree.apply(new ASTSimplify());
+
         } catch (ParserException e) {
             e.printStackTrace();
         } catch (LexerException e) {
