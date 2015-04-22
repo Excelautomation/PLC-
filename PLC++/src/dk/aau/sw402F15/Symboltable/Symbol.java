@@ -1,8 +1,6 @@
-package dk.aau.sw402F15.TypeChecker.Symboltable;
+package dk.aau.sw402F15.Symboltable;
 
 import dk.aau.sw402F15.parser.node.Node;
-
-import java.util.List;
 
 public abstract class Symbol {
     private SymbolType type;

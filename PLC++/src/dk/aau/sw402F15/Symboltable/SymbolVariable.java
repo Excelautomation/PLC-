@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.TypeChecker.Symboltable;
+package dk.aau.sw402F15.Symboltable;
 
 import dk.aau.sw402F15.parser.node.Node;
 

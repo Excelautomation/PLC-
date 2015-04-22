@@ -1,8 +1,6 @@
 package dk.aau.sw402F15;
 
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
-import dk.aau.sw402F15.ScopeChecker.StructBuilder;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;

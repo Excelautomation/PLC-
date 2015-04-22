@@ -1,7 +1,7 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
-import dk.aau.sw402F15.TypeChecker.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.parser.node.*;
 
 /**
