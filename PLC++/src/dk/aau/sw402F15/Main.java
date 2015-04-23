@@ -33,15 +33,17 @@ public class Main {
             Parser parser = new Parser(new Lexer(new PushbackReader(reader, 1024)));
             Start tree = parser.parse();
 
-            // Print tree
-            tree.apply(new PrettyPrinter());
-
             ScopeChecker checker = new ScopeChecker();
             tree.apply(checker);
 
+            // Applying typechecker
             tree.apply(new TypeChecker(checker.getSymbolTable()));
 
+            // Simplifying the AST for easier codegen
             tree.apply(new ASTSimplify());
+
+            // Print tree
+            tree.apply(new PrettyPrinter());
 
         } catch (ParserException e) {
             e.printStackTrace();

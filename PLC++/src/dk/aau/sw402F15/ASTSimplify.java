@@ -23,6 +23,8 @@ public class ASTSimplify extends DepthFirstAdapter {
         statementList.add(new AExprStatement(node.getInitilizer()));
         statementList.add(new AWhileStatement(node.getCondition(), new AScopeStatement(statements)));
 
+        node.replaceBy(new AScopeStatement(statementList));
+
         super.outAForStatement(node);
     }
 }
