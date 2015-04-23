@@ -1,0 +1,25 @@
+int func() {
+    int i = 3;
+    int j;
+    
+    switch(i) 
+    {
+        case 1: 
+        {
+           j = 1;
+           break; 
+        }
+        
+        case 2: 
+        {
+           j = 2;
+           break; 
+        }
+        
+        default:
+           j = -1;
+    }
+
+    return j;
+
+}

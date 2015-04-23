@@ -1,12 +1,8 @@
-package dk.aau.sw402F15.TypeChecker.Symboltable;
+package dk.aau.sw402F15.Symboltable;
 
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.AFunctionRootDeclaration;
 import dk.aau.sw402F15.parser.node.AScopeStatement;
-
-import java.util.Stack;
 
 /**
  * Created by sahb on 15/04/15.

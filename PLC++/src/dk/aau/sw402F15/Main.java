@@ -1,8 +1,6 @@
 package dk.aau.sw402F15;
 
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
-import dk.aau.sw402F15.ScopeChecker.StructBuilder;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
@@ -35,13 +33,18 @@ public class Main {
             Parser parser = new Parser(new Lexer(new PushbackReader(reader, 1024)));
             Start tree = parser.parse();
 
-            // Print tree
-            tree.apply(new PrettyPrinter());
-
             ScopeChecker checker = new ScopeChecker();
             tree.apply(checker);
 
+            // Applying typechecker
             tree.apply(new TypeChecker(checker.getSymbolTable()));
+
+            // Simplifying the AST for easier codegen
+            tree.apply(new ASTSimplify());
+
+            // Print tree
+            tree.apply(new PrettyPrinter());
+
         } catch (ParserException e) {
             e.printStackTrace();
         } catch (LexerException e) {

@@ -1,13 +1,10 @@
 package dk.aau.sw402F15.ScopeChecker;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolFoundWrongTypeException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
-import dk.aau.sw402F15.TypeChecker.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-import sun.org.mozilla.javascript.internal.ObjToIntMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

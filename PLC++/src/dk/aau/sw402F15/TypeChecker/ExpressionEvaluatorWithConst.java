@@ -1,10 +1,9 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.RedefinitionOfReadOnlyException;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Symboltable.Symbol;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolType;
-import dk.aau.sw402F15.TypeChecker.Symboltable.SymbolVariable;
+import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolVariable;
 import dk.aau.sw402F15.parser.node.AIdentifierExpr;
 
 /**

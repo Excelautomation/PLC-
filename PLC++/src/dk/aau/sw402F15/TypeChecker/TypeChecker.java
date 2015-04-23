@@ -1,8 +1,11 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
-import dk.aau.sw402F15.TypeChecker.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.parser.node.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Mikkel on 08-04-2015.
@@ -98,4 +101,5 @@ public class TypeChecker extends ExpressionEvaluator {
         }
 
     }
+
 }
