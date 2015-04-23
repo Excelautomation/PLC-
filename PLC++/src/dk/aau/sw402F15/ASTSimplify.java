@@ -1,6 +1,5 @@
 package dk.aau.sw402F15;
 
-import com.sun.media.jfxmedia.events.PlayerStateEvent;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 
@@ -51,7 +50,7 @@ public class ASTSimplify extends DepthFirstAdapter {
             AIfElseStatement lulz = new AIfElseStatement(new ACompareEqualExpr(node.getCondition(), ((ACaseStatement)firstStatement).getCase()), new AScopeStatement(statementList),  ((ACaseStatement) node.getLabels().getLast()).getStatement());
             node.replaceBy(lulz);*/
 
-            AIfElseStatement lulz = new AIfElseStatement(new ACompareEqualExpr(node.getCondition(), ((ACaseStatement)node.getLabels().getFirst()).getCase()), ((ACaseStatement)node.getLabels().getFirst()).getStatement(), ((ACaseStatement)node.getLabels().get(1)).getStatement());
+            //AIfElseStatement lulz = new AIfElseStatement(new ACompareEqualExpr(node.getCondition(), ((ACaseStatement)node.getLabels().getFirst()).getCase()), ((ACaseStatement)node.getLabels().getFirst()).getStatement(), ((ACaseStatement)node.getLabels().get(1)).getStatement());
             int i = 3;
         }
         else

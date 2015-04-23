@@ -24,7 +24,7 @@ public class Main {
 
         //System.out.println(code);
 
-        try { 
+        try {
             Reader reader;
             if(args.length != 0)
                 reader = new FileReader(args[0]);
