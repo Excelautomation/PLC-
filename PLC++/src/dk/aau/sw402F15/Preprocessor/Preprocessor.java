@@ -49,7 +49,7 @@ public class Preprocessor extends DepthFirstAdapter {
 
     @Override
     public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
-        throw new NotImplementedException();
+        throw new CompilerInternalException("Not implemented");
     }
 
     @Override
