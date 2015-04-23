@@ -4,8 +4,8 @@ import dk.aau.sw402F15.Exception.CompilerException;
 import dk.aau.sw402F15.Exception.CompilerInternalException;
 import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.AIdentifierExpr;
-import dk.aau.sw402F15.parser.node.AMemberExpr;
+import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by sahb on 23/04/15.
@@ -34,17 +34,16 @@ public class MemberChecker extends DepthFirstAdapter {
             SymbolStruct struct = (SymbolStruct) currentSymbol;
 
             // Check if symbol exists
-            boolean foundSymbol = false;
             for (Symbol symbol : struct.getSymbolList()) {
-                if (symbol.getName().equals(node.getName().getText()))
-                    foundSymbol = true;
+                if (symbol.getName().equals(node.getName().getText())) {
+                    currentSymbol = symbol;
+                    currentScope = symbol.getScope();
+                    return;
+                }
             }
 
             // If symbol exists update symbol if not throw exception
-            if (foundSymbol)
-                updateSymbol(node);
-            else
-                throw new CompilerInternalException("Fejl");
+            throw new CompilerInternalException("Fejl");
         }
 
     }
@@ -55,9 +54,34 @@ public class MemberChecker extends DepthFirstAdapter {
 
         if (currentSymbol.getClass() == SymbolVariable.class) {
             SymbolVariable variable = (SymbolVariable) currentSymbol;
-            //variable.
-        } else if (currentSymbol.getClass() == SymbolFunction.class) {
+            if (variable.getNode().getClass() == ADeclaration.class) {
+                ADeclaration declaration = (ADeclaration) variable.getNode();
 
+                if (declaration.getType().getClass() != AStructTypeSpecifier.class) {
+                    throw new NotImplementedException();
+                }
+
+                AStructTypeSpecifier struct = (AStructTypeSpecifier) declaration.getType();
+                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
+
+                // Update currentScope
+                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+            } else if (variable.getNode().getClass() == AAssignmentDeclaration.class) {
+                AAssignmentDeclaration declaration = (AAssignmentDeclaration) variable.getNode();
+
+                if (declaration.getType().getClass() != AStructTypeSpecifier.class) {
+                    throw new NotImplementedException();
+                }
+
+                AStructTypeSpecifier struct = (AStructTypeSpecifier) declaration.getType();
+                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
+
+                // Update currentScope
+                currentScope = currentScope.getSubScopeByNodeOrThrow(currentSymbol.getNode());
+            }
+            else throw new NotImplementedException();
+        } else if (currentSymbol.getClass() == SymbolFunction.class) {
+            throw new NotImplementedException();
         }
     }
 
