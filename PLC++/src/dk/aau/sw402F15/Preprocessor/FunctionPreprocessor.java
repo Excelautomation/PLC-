@@ -34,11 +34,15 @@ public class FunctionPreprocessor extends DepthFirstAdapter {
             {
                 ADeclaration declaration = (ADeclaration)e;
                 formalParameters.add(Helper.getSymbolTypeFromTypeSpecifier(declaration.getType()));
+
+                // Apply preprocessor to currentScope
+                Preprocessor preprocessor = new Preprocessor(functionScope);
+                node.apply(preprocessor);
             }
         }
 
         functionScope.getParentScope().addSymbol(new SymbolFunction(returnType, formalParameters, node.getName().getText(), node, functionScope));
 
-        super.caseAFunctionRootDeclaration(node);
+
     }
 }
