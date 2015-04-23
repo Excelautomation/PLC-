@@ -1,5 +1,6 @@
-package dk.aau.sw402F15.Preprocessor;
+package dk.aau.sw402F15.Preprocessor.Helpers;
 
+import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.SymbolStruct;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;

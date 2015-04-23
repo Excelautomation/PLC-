@@ -1,5 +1,6 @@
-package dk.aau.sw402F15.Preprocessor;
+package dk.aau.sw402F15.Preprocessor.Helpers;
 
+import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.SymbolType;

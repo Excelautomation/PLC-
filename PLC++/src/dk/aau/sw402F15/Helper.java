@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.Preprocessor;
+package dk.aau.sw402F15;
 
 import dk.aau.sw402F15.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.node.*;

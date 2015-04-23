@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.tests;
 
 
+import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -33,8 +34,12 @@ public abstract class ScopeCheckerTest {
             throw new RuntimeException(e);
         }
 
+        // Apply preprocessor
+        Preprocessor preprocessor = new Preprocessor();
+        node.apply(preprocessor);
+
         // Apply scopechecker
-        ScopeChecker scopeChecker = new ScopeChecker(new Scope(null, null));
+        ScopeChecker scopeChecker = new ScopeChecker(preprocessor.getScope());
         node.apply(scopeChecker);
     }
 
