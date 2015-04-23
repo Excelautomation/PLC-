@@ -34,6 +34,9 @@ public class ScopeChecker extends ScopeDepthFirstAdapter {
     public void inAMemberExpr(AMemberExpr node) {     
         super.inAMemberExpr(node);
 
+        MemberChecker memberChecker = new MemberChecker(currentScope);
+        node.apply(memberChecker);
+
         return;
 
         // check if Left node is an identifierExpr
