@@ -1,7 +1,15 @@
 package dk.aau.sw402F15.Preprocessor;
 
 import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.SymbolFunction;
+import dk.aau.sw402F15.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
+import dk.aau.sw402F15.parser.node.ADeclaration;
+import dk.aau.sw402F15.parser.node.AFunctionRootDeclaration;
+import dk.aau.sw402F15.parser.node.PDeclaration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by sahb on 22/04/15.
@@ -13,4 +21,24 @@ public class FunctionPreprocessor extends DepthFirstAdapter {
         this.functionScope = functionScope;
     }
 
+    @Override
+    public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        // Get returntype
+        SymbolType returnType = Helper.getSymbolTypeFromTypeSpecifier(node.getReturnType());
+
+        // Get formalParameters
+        List<SymbolType> formalParameters = new ArrayList<SymbolType>();
+
+        {
+            for(PDeclaration e : node.getParams())
+            {
+                ADeclaration declaration = (ADeclaration)e;
+                formalParameters.add(Helper.getSymbolTypeFromTypeSpecifier(declaration.getType()));
+            }
+        }
+
+        functionScope.getParentScope().addSymbol(new SymbolFunction(returnType, formalParameters, node.getName().getText(), node, functionScope));
+
+        super.caseAFunctionRootDeclaration(node);
+    }
 }

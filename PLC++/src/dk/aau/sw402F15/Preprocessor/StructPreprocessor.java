@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.Preprocessor;
 
 import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.SymbolStruct;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.AStructRootDeclaration;
 
@@ -16,17 +17,18 @@ public class StructPreprocessor extends DepthFirstAdapter {
 
     @Override
     public void caseAStructRootDeclaration(AStructRootDeclaration node) {
-        String structName = node.getName().getText();
+        Preprocessor preprocessor = new Preprocessor(structScope);
 
-        if(node.getName() != null)
-        {
-            node.getName().apply(this);
-        }
         if(node.getProgram() != null)
         {
-            node.getProgram().apply(this);
+            node.getProgram().apply(preprocessor);
         }
 
-        Preprocessor preprocessor = new Preprocessor(structScope);
+        String structName = node.getName().getText();
+        Scope structScope = preprocessor.getScope();
+
+        // Add symbol to structScope
+        Scope rootScope = this.structScope.getParentScope();
+        rootScope.addSymbol(new SymbolStruct(structName, structScope.toList(), node, rootScope));
     }
 }

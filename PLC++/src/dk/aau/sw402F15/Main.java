@@ -1,5 +1,6 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -36,7 +37,11 @@ public class Main {
             // Print tree
             tree.apply(new PrettyPrinter());
 
-            ScopeChecker checker = new ScopeChecker();
+            // Apply preprocessor
+            Preprocessor preprocessor = new Preprocessor();
+            tree.apply(preprocessor);
+
+            ScopeChecker checker = new ScopeChecker(preprocessor.getScope());
             tree.apply(checker);
 
             tree.apply(new TypeChecker(checker.getSymbolTable()));

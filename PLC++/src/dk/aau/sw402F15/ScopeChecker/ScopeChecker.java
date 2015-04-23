@@ -16,11 +16,12 @@ import java.util.List;
  */
 
 public class ScopeChecker extends DepthFirstAdapter {
-    private Scope rootScope = new Scope(null, null);
+    private Scope rootScope;
     private Scope currentScope;
 
-    public ScopeChecker() {
-        currentScope = rootScope;
+    public ScopeChecker(Scope rootScope) {
+        this.rootScope = rootScope;
+        this.currentScope = rootScope;
     }
 
     // When a functions is entered this makes sure that the scope is changed as well
