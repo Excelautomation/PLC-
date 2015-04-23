@@ -2,6 +2,7 @@ package dk.aau.sw402F15.tests;
 
 
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
+import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
 import dk.aau.sw402F15.parser.node.Node;
@@ -33,7 +34,7 @@ public abstract class ScopeCheckerTest {
         }
 
         // Apply scopechecker
-        ScopeChecker scopeChecker = new ScopeChecker();
+        ScopeChecker scopeChecker = new ScopeChecker(new Scope(null, null));
         node.apply(scopeChecker);
     }
 

@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.tests.typechecker;
 
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
+import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
@@ -184,7 +185,7 @@ public class TypeCheckerTests {
         }
 
         // Apply scopechecker
-        ScopeChecker scopeChecker = new ScopeChecker();
+        ScopeChecker scopeChecker = new ScopeChecker(new Scope(null, null));
         node.apply(scopeChecker);
 
         // Apply typechecker
