@@ -161,10 +161,10 @@ formal_parameter {-> declaration*} =
 
 // Struct
 struct_definition {-> root_declaration} =
-	struct_keyword identifier l_brc struct_body* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_body.root_declaration]))}
+	struct_keyword identifier l_brc struct_declaration* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_body.root_declaration]))}
 ;
 
-struct_body {-> root_declaration} =
+struct_declaration {-> root_declaration} =
     {variable} declaration																								{-> New root_declaration.declaration(declaration.declaration)}
   |	{function} function_definition																						{-> function_definition.root_declaration}
 ;
@@ -272,96 +272,96 @@ label_statements {-> statement} =
 // Precedence 14
 expr {-> expr} =
 	// Assignment
-	{assignment} [left]:expr assignment_operator [right]:expr13															{-> New expr.assignment(left.expr, right.expr)}
+	{assignment} [left]:expr assignment_operator [right]:ternary_expr															{-> New expr.assignment(left.expr, right.expr)}
 	
 	// Compound
-  |	{compound_add} [left]:expr add_assignment_operator [right]:expr13													{-> New expr.compound_add(left.expr, right.expr)}
-  | {compound_sub} [left]:expr sub_assignment_operator [right]:expr13													{-> New expr.compound_sub(left.expr, right.expr)}
-  | {compound_mult} [left]:expr mult_assignment_operator [right]:expr13													{-> New expr.compound_mult(left.expr, right.expr)}
-  | {compound_div} [left]:expr div_assignment_operator [right]:expr13													{-> New expr.compound_div(left.expr, right.expr)}
-  | {compound_mod} [left]:expr mod_assignment_operator [right]:expr13													{-> New expr.compound_mod(left.expr, right.expr)}
-  | {factor} [expr]:expr13																								{-> expr.expr}
+  |	{compound_add} [left]:expr add_assignment_operator [right]:ternary_expr													{-> New expr.compound_add(left.expr, right.expr)}
+  | {compound_sub} [left]:expr sub_assignment_operator [right]:ternary_expr													{-> New expr.compound_sub(left.expr, right.expr)}
+  | {compound_mult} [left]:expr mult_assignment_operator [right]:ternary_expr													{-> New expr.compound_mult(left.expr, right.expr)}
+  | {compound_div} [left]:expr div_assignment_operator [right]:ternary_expr													{-> New expr.compound_div(left.expr, right.expr)}
+  | {compound_mod} [left]:expr mod_assignment_operator [right]:ternary_expr													{-> New expr.compound_mod(left.expr, right.expr)}
+  | {factor} [expr]:ternary_expr																								{-> expr.expr}
 ;
 
 // Precedence 13 (Ternary conditional)
-expr13 {-> expr} =
-    {ternary} [condition]:expr13 ternary_operator [left]:expr12 colon [right]:expr12                                    {-> New expr.ternary(condition.expr, left.expr, right.expr)}
-  | {factor} [expr]:expr12                                                                                              {-> expr.expr}
+ternary_expr {-> expr} =
+    {ternary} [condition]:ternary_expr ternary_operator [left]:or_expr colon [right]:or_expr                                    {-> New expr.ternary(condition.expr, left.expr, right.expr)}
+  | {factor} [expr]:or_expr                                                                                              {-> expr.expr}
 ;
 
 // Precedence 12 (Logical OR)
-expr12 {-> expr} =
-	{or} [left]:expr12 or_operator [right]:expr11																		{-> New expr.compare_or(left.expr, right.expr)}
-  | {factor} [expr]:expr11																								{-> expr.expr}
+or_expr {-> expr} =
+	{or} [left]:or_expr or_operator [right]:and_expr																		{-> New expr.compare_or(left.expr, right.expr)}
+  | {factor} [expr]:and_expr																								{-> expr.expr}
 ;
 
 // Precedence 11 (Logical AND)
-expr11 {-> expr} =
-	{and} [left]:expr11 and_operator [right]:expr7																		{-> New expr.compare_and(left.expr, right.expr)}
-  | {factor} [expr]:expr7																								{-> expr.expr}
+and_expr {-> expr} =
+	{and} [left]:and_expr and_operator [right]:equality_expr																		{-> New expr.compare_and(left.expr, right.expr)}
+  | {factor} [expr]:equality_expr																								{-> expr.expr}
 ;
 
 // Precedence 7 (For relational and respectively)
-expr7 {-> expr} =
-	{equal} [left]:expr7 equal_operator [right]:expr6																	{-> New expr.compare_equal(left.expr, right.expr)}
-  |	{not_equal} [left]:expr7 not_equal_operator [right]:expr6															{-> New expr.compare_not_equal(left.expr, right.expr)}
-  | {factor} [expr]:expr6																								{-> expr.expr}
+equality_expr {-> expr} =
+	{equal} [left]:equality_expr equal_operator [right]:greater_less_expr																	{-> New expr.compare_equal(left.expr, right.expr)}
+  |	{not_equal} [left]:equality_expr not_equal_operator [right]:greater_less_expr															{-> New expr.compare_not_equal(left.expr, right.expr)}
+  | {factor} [expr]:greater_less_expr																								{-> expr.expr}
 ;
 
 // Precedence 6 (For relational operators and respectively)
-expr6 {-> expr} =
-	{less} [left]:expr6 less_than_operator [right]:expr4																{-> New expr.compare_less(left.expr, right.expr)}
-  |	{less_or_equal} [left]:expr6 less_than_or_equal_operator [right]:expr4												{-> New expr.compare_less_or_equal(left.expr, right.expr)}
-  |	{greater} [left]:expr6 greater_than_operator [right]:expr4															{-> New expr.compare_greater(left.expr, right.expr)}
-  |	{greater_or_equal} [left]:expr6 greater_than_or_equal_operator [right]:expr4										{-> New expr.compare_greater_or_equal(left.expr, right.expr)}
-  | {factor} [expr]:expr4																								{-> expr.expr}
+greater_less_expr {-> expr} =
+	{less} [left]:greater_less_expr less_than_operator [right]:add_sub_expr																{-> New expr.compare_less(left.expr, right.expr)}
+  |	{less_or_equal} [left]:greater_less_expr less_than_or_equal_operator [right]:add_sub_expr												{-> New expr.compare_less_or_equal(left.expr, right.expr)}
+  |	{greater} [left]:greater_less_expr greater_than_operator [right]:add_sub_expr															{-> New expr.compare_greater(left.expr, right.expr)}
+  |	{greater_or_equal} [left]:greater_less_expr greater_than_or_equal_operator [right]:add_sub_expr										{-> New expr.compare_greater_or_equal(left.expr, right.expr)}
+  | {factor} [expr]:add_sub_expr																								{-> expr.expr}
 ;
 
 // Precedence 4 (Addition and subtraction)
-expr4 {-> expr} =
-	{add} [left]:expr4 add_operator [right]:expr3																		{-> New expr.add(left.expr, right.expr)}
-  |	{sub} [left]:expr4 sub_operator [right]:expr3																		{-> New expr.sub(left.expr, right.expr)}
-  | {factor} [expr]:expr3																								{-> expr.expr}
+add_sub_expr {-> expr} =
+	{add} [left]:add_sub_expr add_operator [right]:mult_div_mod_expr																		{-> New expr.add(left.expr, right.expr)}
+  |	{sub} [left]:add_sub_expr sub_operator [right]:mult_div_mod_expr																		{-> New expr.sub(left.expr, right.expr)}
+  | {factor} [expr]:mult_div_mod_expr																								{-> expr.expr}
 ;
 
 // Precedence 3 (Multiplication, division, and remainder)
-expr3 {-> expr} =
-	{multi} [left]:expr3 mult_operator [right]:expr2																	{-> New expr.multi(left.expr, right.expr)}
-  |	{div} [left]:expr3 div_operator [right]:expr2																		{-> New expr.div(left.expr, right.expr)}
-  |	{mod} [left]:expr3 mod_operator [right]:expr2																		{-> New expr.mod(left.expr, right.expr)}
-  | {factor} [expr]:expr2																								{-> expr.expr}
+mult_div_mod_expr {-> expr} =
+	{multi} [left]:mult_div_mod_expr mult_operator [right]:unary_prefix_expr																	{-> New expr.multi(left.expr, right.expr)}
+  |	{div} [left]:mult_div_mod_expr div_operator [right]:unary_prefix_expr																		{-> New expr.div(left.expr, right.expr)}
+  |	{mod} [left]:mult_div_mod_expr mod_operator [right]:unary_prefix_expr																		{-> New expr.mod(left.expr, right.expr)}
+  | {factor} [expr]:unary_prefix_expr																								{-> expr.expr}
 ;
 
 // Precedence 2
-expr2 {-> expr} =
+unary_prefix_expr {-> expr} =
 	// Prefix increment / decrement
 	{increment} increment_operator identifier																			{-> New expr.increment(identifier)}
   |	{decrement} decrement_operator identifier																			{-> New expr.decrement(identifier)}
 	
 	// Unary plus and minus
-  |	{unary_plus} add_operator [expr]:expr2																				{-> New expr.unary_plus(expr.expr)}
-  |	{unary_minus} sub_operator [expr]:expr2																				{-> New expr.unary_minus(expr.expr)}
+  |	{unary_plus} add_operator [expr]:unary_prefix_expr																				{-> New expr.unary_plus(expr.expr)}
+  |	{unary_minus} sub_operator [expr]:unary_prefix_expr																				{-> New expr.unary_minus(expr.expr)}
 
 	// Negation
-  | {negate} negate_operator [expr]:expr2																				{-> New expr.negation(expr.expr)}
+  | {negate} negate_operator [expr]:unary_prefix_expr																				{-> New expr.negation(expr.expr)}
   
 	// Type cast
-  | {cast} l_par [type]:type_specifier r_par [expr]:expr2																{-> New expr.type_cast(type.type_specifier, expr.expr)}
+  | {cast} l_par [type]:type_specifier r_par [expr]:unary_prefix_expr																{-> New expr.type_cast(type.type_specifier, expr.expr)}
   
-  | {factor} [expr]:expr1																								{-> expr.expr}
+  | {factor} [expr]:post_and_infix_expr																								{-> expr.expr}
 ;
 
 // Precedence 1
-expr1 {-> expr} =
+post_and_infix_expr {-> expr} =
   	// Postfix increment / decrement
 	{increment} identifier increment_operator																			{-> New expr.increment(identifier)}
   |	{decrement} identifier decrement_operator																			{-> New expr.decrement(identifier)}
   
 	// Array
-  | {array_subscript} identifier l_bkt [expr]:expr1 r_bkt																{-> New expr.array(identifier, expr.expr)}
+  | {array_subscript} identifier l_bkt [expr]:post_and_infix_expr r_bkt																{-> New expr.array(identifier, expr.expr)}
   
 	// Dot
-  | {member} [left]:expr1 dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
+  | {member} [left]:post_and_infix_expr dot [right]:expr_value																		{-> New expr.member(left.expr, right.expr)}
   
 	// Parenthesis
   | {par} l_par expr r_par																								{-> expr.expr}
