@@ -161,7 +161,7 @@ formal_parameter {-> declaration*} =
 
 // Struct
 struct_definition {-> root_declaration} =
-	struct_keyword identifier l_brc struct_declaration* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_body.root_declaration]))}
+	struct_keyword identifier l_brc struct_declaration* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_declaration.root_declaration]))}
 ;
 
 struct_declaration {-> root_declaration} =
