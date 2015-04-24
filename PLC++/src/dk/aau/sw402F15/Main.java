@@ -1,5 +1,6 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -13,13 +14,17 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
-        String code = "struct car{\n" +
+        String code = "struct car func() {" +
+                "struct car bmw;" +
+                "return bmw;" +
+                "}" +
+                "struct car{\n" +
                 "int nrOfWheels;\n" +
                 "bool isTruck;\n" +
                 "}\n" +
-                "int func(){\n" +
+                "int main(){\n" +
                 "struct car bmw;\n" +
-                "bmw.nrOfWheels = 4;\n" +
+                "func().nrOfWheels = 4;\n" +
                 "}\n";
 
         //System.out.println(code);
@@ -33,7 +38,15 @@ public class Main {
             Parser parser = new Parser(new Lexer(new PushbackReader(reader, 1024)));
             Start tree = parser.parse();
 
-            ScopeChecker checker = new ScopeChecker();
+            // Print tree
+            tree.apply(new PrettyPrinter());
+
+            // Apply preprocessor
+            Preprocessor preprocessor = new Preprocessor();
+            tree.apply(preprocessor);
+
+            // Apply scopechecker
+            ScopeChecker checker = new ScopeChecker(preprocessor.getScope());
             tree.apply(checker);
 
             // Applying typechecker
