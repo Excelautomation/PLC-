@@ -24,10 +24,10 @@ public class DanglingElse extends ParserTest {
         AFunctionRootDeclaration function = getFunction(node);
 
         // Find if statement
-        AIfStatement ifStatement = (AIfStatement) function.getStatements().getFirst();
+        ABranchStatement ifStatement = (ABranchStatement) function.getStatements().getFirst();
 
         // Get if-else statement
-        AIfElseStatement ifElseStatement = (AIfElseStatement) ifStatement.getStatement();
+        ABranchStatement ifElseStatement = (ABranchStatement) ifStatement.getLeft();
     }
 
     private AFunctionRootDeclaration getFunction(Node node) {

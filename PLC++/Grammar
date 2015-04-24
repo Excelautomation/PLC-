@@ -120,11 +120,6 @@ program {-> program} =
 	root_declaration*																									{-> New program([root_declaration])}
 ;
 
-// Scope
-scope {-> statement} = 
-    l_brc statement* r_brc																								{-> New statement.scope([statement.statement])}
-;
-
 // Types
 type_specifier {-> type_specifier} = 
     {char} char_keyword																									{-> New type_specifier.char()}
@@ -155,13 +150,13 @@ function_definition {-> root_declaration} =
 
 // Formal parameters
 formal_parameter {-> declaration*} =
-    {single} type_qualifier? type_specifier identifier array_definition?											    {-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)]}
-  | {multiple} type_qualifier? type_specifier identifier array_definition? comma formal_parameter						{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition), formal_parameter.declaration]}
+    {single} type_qualifier? type_specifier identifier array_definition?											    {-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, Null)]}
+  | {multiple} type_qualifier? type_specifier identifier array_definition? comma formal_parameter						{-> [New declaration(type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, Null), formal_parameter.declaration]}
 ;
 
 // Struct
 struct_definition {-> root_declaration} =
-	struct_keyword identifier l_brc struct_declaration* r_brc																    {-> New root_declaration.struct(identifier, New program([struct_declaration.root_declaration]))}
+	struct_keyword identifier l_brc struct_declaration* r_brc														    {-> New root_declaration.struct(identifier, New program([struct_declaration.root_declaration]))}
 ;
 
 struct_declaration {-> root_declaration} =
@@ -191,8 +186,8 @@ type_qualifier {-> type_qualifier} =
 
 // Declaration
 declaration {-> declaration} =
-	{simple} type_qualifier? type_specifier identifier array_definition? semi											{-> New declaration(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition)}
-  | {assignment} type_qualifier? type_specifier identifier array_definition? assignment_operator expr semi				{-> New declaration.assignment(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, expr)}
+	{simple} type_qualifier? type_specifier identifier array_definition? semi											{-> New declaration(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, Null)}
+  | {assignment} type_qualifier? type_specifier identifier array_definition? assignment_operator expr semi				{-> New declaration(type_specifier.type_specifier, identifier, type_qualifier.type_qualifier, array_definition.array_definition, expr)}
 ;
 
 array_definition {-> array_definition} =
@@ -249,12 +244,12 @@ statement_no_short_if  {-> statement} =
 
 // If
 if_statement {-> statement} =
-    {if_statement} if_keyword l_par [condition]:expr r_par statement													{-> New statement.if(condition.expr, statement.statement)}
-  | {if_else} if_keyword l_par [condition]:expr r_par [if]:statement_no_short_if else_keyword [else]:statement	        {-> New statement.if_else(condition.expr, if.statement, else.statement)}
+    {if_statement} if_keyword l_par [condition]:expr r_par statement													{-> New statement.branch(condition.expr, statement.statement, Null)}
+  | {if_else} if_keyword l_par [condition]:expr r_par [if]:statement_no_short_if else_keyword [else]:statement	        {-> New statement.branch(condition.expr, if.statement, else.statement)}
 ;
 
 if_statement_short {-> statement} =
-    {if_else} if_keyword l_par expr r_par [if]:statement_no_short_if else_keyword [else]:statement_no_short_if	        {-> New statement.if_else(expr.expr, if.statement, else.statement)}
+    {if_else} if_keyword l_par expr r_par [if]:statement_no_short_if else_keyword [else]:statement_no_short_if	        {-> New statement.branch(expr.expr, if.statement, else.statement)}
 ;
 
 // Switch
@@ -421,8 +416,7 @@ enum_flag =
 ;
   
 declaration =
-						        [type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier? [array]:array_definition?
-  |	{assignment}				[type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier?	[array]:array_definition?  [expr]:expr
+						        [type]:type_specifier			[name]:identifier           [quailifer]:type_qualifier? [array]:array_definition?   [expr]:expr?
 ;
 
 array_definition =
@@ -453,8 +447,7 @@ statement =
   | {scope}					    statement*
   
   // Conditional
-  | {if}						[condition]:expr				[statement]:statement
-  | {if_else}					[condition]:expr				[statement]:statement		[else]:statement
+  | {branch}					[condition]:expr				[left]:statement?		    [right]:statement?
 
   // Switch
   | {switch}                    [condition]:expr                [labels]:statement*

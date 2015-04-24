@@ -53,12 +53,6 @@ public class Preprocessor extends DepthFirstAdapter {
         node.apply(declarationPreprocessor);
     }
 
-    @Override
-    public void caseAAssignmentDeclaration(AAssignmentDeclaration node) {
-        DeclarationPreprocessor declarationPreprocessor = new DeclarationPreprocessor(currentScope);
-        node.apply(declarationPreprocessor);
-    }
-
     // Scope builder
     @Override
     public void inAScopeStatement(AScopeStatement node)

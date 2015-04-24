@@ -90,14 +90,6 @@ public class MemberChecker extends DepthFirstAdapter {
                 }
 
                 updateSymbolFromStructSpecifier((AStructTypeSpecifier) declaration.getType());
-            } else if (variable.getNode().getClass() == AAssignmentDeclaration.class) {
-                AAssignmentDeclaration declaration = (AAssignmentDeclaration) variable.getNode();
-
-                if (declaration.getType().getClass() != AStructTypeSpecifier.class) {
-                    throw new NotImplementedException();
-                }
-
-                updateSymbolFromStructSpecifier((AStructTypeSpecifier) declaration.getType());
             }
             else throw new NotImplementedException();
         } else if (currentSymbol.getClass() == SymbolFunction.class) {

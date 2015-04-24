@@ -19,14 +19,17 @@ public class TypeChecker extends ExpressionEvaluator {
     private boolean returnFound = false;
 
     @Override
-    public void outAAssignmentDeclaration(AAssignmentDeclaration node) {
-        super.outAAssignmentDeclaration(node);
+    public void outADeclaration(ADeclaration node) {
+        super.outADeclaration(node);
 
-        SymbolType arg1 = currentScope.getSymbol(node.getName().getText()).getType();
-        SymbolType arg2 = stack.pop();
+        // Check if declaration contains an assignment
+        if (node.getExpr() != null) {
+            SymbolType arg1 = currentScope.getSymbol(node.getName().getText()).getType();
+            SymbolType arg2 = stack.pop();
 
-        if (arg1 != arg2) {
-            throw new IllegalAssignmentException();
+            if (arg1 != arg2) {
+                throw new IllegalAssignmentException();
+            }
         }
     }
 

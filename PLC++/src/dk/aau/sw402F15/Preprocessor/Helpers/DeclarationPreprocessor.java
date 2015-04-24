@@ -40,24 +40,6 @@ public class DeclarationPreprocessor extends DepthFirstAdapter {
     }
 
     @Override
-    public void caseAAssignmentDeclaration(AAssignmentDeclaration node) {
-        // Apply qualifier and array
-        if(node.getQuailifer() != null)
-        {
-            node.getQuailifer().apply(this);
-        }
-        if(node.getArray() != null)
-        {
-            node.getArray().apply(this);
-        }
-
-        // Get type
-        SymbolType variableType = Helper.getSymbolTypeFromTypeSpecifier(node.getType());
-
-        declareVariable(node, node.getName().getText(), variableType, variableIsConst, variableIsArray);
-    }
-
-    @Override
     public void outAConstTypeQualifier(AConstTypeQualifier node) {
         super.outAConstTypeQualifier(node);
 
