@@ -25,7 +25,7 @@ public class MemberChecker extends DepthFirstAdapter {
 
         // If current symbol is not set we should just update
         if (currentSymbol == null) {
-            updateSymbol(node);
+            updateSymbol(node.getName());
             return;
         }
 
@@ -53,30 +53,32 @@ public class MemberChecker extends DepthFirstAdapter {
         super.outAFunctionCallExpr(node);
 
         if (currentSymbol == null) {
-            Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
-
-            if (symbol.getClass() == SymbolFunction.class) {
-                SymbolFunction function = (SymbolFunction) symbol;
-
-                AFunctionRootDeclaration funcnode = (AFunctionRootDeclaration)function.getNode();
-
-                if (funcnode.getReturnType().getClass() != AStructTypeSpecifier.class) {
-                    throw new NotImplementedException();
-                }
-
-                AStructTypeSpecifier struct = (AStructTypeSpecifier) funcnode.getReturnType();
-                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
-
-                // Update currentScope
-                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
-            } else throw new CompilerInternalException("Fejl");
+            updateSymbol(node.getName());
 
             return;
         }
+
+        // Check currentSymbol
+        if (currentSymbol.getClass() == SymbolStruct.class) {
+            SymbolStruct struct = (SymbolStruct) currentSymbol;
+
+            // Check if symbol exists
+            for (Symbol symbol : struct.getSymbolList()) {
+                if (symbol.getName().equals(node.getName().getText())) {
+                    currentSymbol = symbol;
+                    currentScope = symbol.getScope();
+                    return;
+                }
+            }
+
+            // If symbol exists update symbol if not throw exception
+            throw new CompilerInternalException("Fejl");
+        } else
+            throw new CompilerInternalException("Fejl");
     }
 
-    private void updateSymbol(AIdentifierExpr node) {
-        currentSymbol = currentScope.getSymbolOrThrow(node.getName().getText());
+    private void updateSymbol(TIdentifier node) {
+        currentSymbol = currentScope.getSymbolOrThrow(node.getText());
 
         if (currentSymbol.getClass() == SymbolVariable.class) {
             SymbolVariable variable = (SymbolVariable) currentSymbol;
@@ -87,11 +89,7 @@ public class MemberChecker extends DepthFirstAdapter {
                     throw new NotImplementedException();
                 }
 
-                AStructTypeSpecifier struct = (AStructTypeSpecifier) declaration.getType();
-                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
-
-                // Update currentScope
-                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+                updateSymbolFromStructSpecifier((AStructTypeSpecifier) declaration.getType());
             } else if (variable.getNode().getClass() == AAssignmentDeclaration.class) {
                 AAssignmentDeclaration declaration = (AAssignmentDeclaration) variable.getNode();
 
@@ -99,11 +97,7 @@ public class MemberChecker extends DepthFirstAdapter {
                     throw new NotImplementedException();
                 }
 
-                AStructTypeSpecifier struct = (AStructTypeSpecifier) declaration.getType();
-                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
-
-                // Update currentScope
-                currentScope = currentScope.getSubScopeByNodeOrThrow(currentSymbol.getNode());
+                updateSymbolFromStructSpecifier((AStructTypeSpecifier) declaration.getType());
             }
             else throw new NotImplementedException();
         } else if (currentSymbol.getClass() == SymbolFunction.class) {
@@ -115,17 +109,20 @@ public class MemberChecker extends DepthFirstAdapter {
                     throw new NotImplementedException();
                 }
 
-                AStructTypeSpecifier struct = (AStructTypeSpecifier) functionNode.getReturnType();
-                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
-
-                // Update currentScope
-                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+                updateSymbolFromStructSpecifier((AStructTypeSpecifier) functionNode.getReturnType());
             }
             else throw new NotImplementedException();
         }
         else {
             throw new NotImplementedException();
         }
+    }
+
+    private void updateSymbolFromStructSpecifier(AStructTypeSpecifier struct) {
+        currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
+
+        // Update currentScope
+        currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
     }
 
 }

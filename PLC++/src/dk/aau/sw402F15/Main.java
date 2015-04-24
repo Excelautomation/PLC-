@@ -15,7 +15,8 @@ public class Main {
 
     public static void main(String[] args) {
         String code = "struct car func() {" +
-                "" +
+                "struct car bmw;" +
+                "return bmw;" +
                 "}" +
                 "struct car{\n" +
                 "int nrOfWheels;\n" +
