@@ -44,10 +44,36 @@ public class MemberChecker extends DepthFirstAdapter {
 
             // If symbol exists update symbol if not throw exception
             throw new CompilerInternalException("Fejl");
-        }
-
+        } else
+            throw new CompilerInternalException("Fejl");
     }
 
+    @Override
+    public void outAFunctionCallExpr(AFunctionCallExpr node) {
+        super.outAFunctionCallExpr(node);
+
+        if (currentSymbol == null) {
+            Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
+
+            if (symbol.getClass() == SymbolFunction.class) {
+                SymbolFunction function = (SymbolFunction) symbol;
+
+                AFunctionRootDeclaration funcnode = (AFunctionRootDeclaration)function.getNode();
+
+                if (funcnode.getReturnType().getClass() != AStructTypeSpecifier.class) {
+                    throw new NotImplementedException();
+                }
+
+                AStructTypeSpecifier struct = (AStructTypeSpecifier) funcnode.getReturnType();
+                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
+
+                // Update currentScope
+                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+            } else throw new CompilerInternalException("Fejl");
+
+            return;
+        }
+    }
 
     private void updateSymbol(AIdentifierExpr node) {
         currentSymbol = currentScope.getSymbolOrThrow(node.getName().getText());
@@ -81,6 +107,23 @@ public class MemberChecker extends DepthFirstAdapter {
             }
             else throw new NotImplementedException();
         } else if (currentSymbol.getClass() == SymbolFunction.class) {
+            SymbolFunction function = (SymbolFunction)currentSymbol;
+            if (function.getNode().getClass() == AFunctionRootDeclaration.class) {
+                AFunctionRootDeclaration functionNode = (AFunctionRootDeclaration) function.getNode();
+
+                if (functionNode.getReturnType().getClass() != AStructTypeSpecifier.class) {
+                    throw new NotImplementedException();
+                }
+
+                AStructTypeSpecifier struct = (AStructTypeSpecifier) functionNode.getReturnType();
+                currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
+
+                // Update currentScope
+                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+            }
+            else throw new NotImplementedException();
+        }
+        else {
             throw new NotImplementedException();
         }
     }

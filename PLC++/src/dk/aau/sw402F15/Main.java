@@ -14,13 +14,16 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
-        String code = "struct car{\n" +
+        String code = "struct car func() {" +
+                "" +
+                "}" +
+                "struct car{\n" +
                 "int nrOfWheels;\n" +
                 "bool isTruck;\n" +
                 "}\n" +
-                "int func(){\n" +
+                "int main(){\n" +
                 "struct car bmw;\n" +
-                "bmw.nrOfWheels = 4;\n" +
+                "func().nrOfWheels = 4;\n" +
                 "}\n";
 
         //System.out.println(code);
