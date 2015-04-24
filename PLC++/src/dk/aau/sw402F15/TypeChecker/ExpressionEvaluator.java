@@ -68,7 +68,6 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
             Symbol symbol = currentScope.getSymbolOrThrow(((AArrayExpr)node.getLeft()).getName().getText());
             stack.push(((SymbolArray) symbol).getContainedType());
         }
-        stack.peek();
 
         if(node.getLeft() != null && !(node.getLeft().getClass() == AArrayExpr.class))
         {
@@ -92,7 +91,6 @@ public class ExpressionEvaluator extends ScopeDepthFirstAdapter {
         SymbolType arg1 = stack.pop();
         SymbolType arg2 = stack.pop();
 
-        stack.peek();
         if (arg1 != arg2) {
             throw new IllegalAssignmentException();
         }
