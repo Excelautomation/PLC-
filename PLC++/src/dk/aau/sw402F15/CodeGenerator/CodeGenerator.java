@@ -24,11 +24,6 @@ public class CodeGenerator extends DepthFirstAdapter {
         throw new NotImplementedException();
     }
 
-    @Override
-    public void caseAArrayExpr(AAssignmentDeclaration node){
-        throw new NotImplementedException();
-    }
-
     private void Emit(String string){
         // Writes to file
         throw new NotImplementedException();
