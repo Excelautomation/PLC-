@@ -2,6 +2,7 @@ package dk.aau.sw402F15.ScopeChecker;
 
 import dk.aau.sw402F15.Exception.CompilerException;
 import dk.aau.sw402F15.Exception.CompilerInternalException;
+import dk.aau.sw402F15.Exception.MemberExpressionNotValidScopeCheckerException;
 import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -43,9 +44,9 @@ public class MemberChecker extends DepthFirstAdapter {
             }
 
             // If symbol exists update symbol if not throw exception
-            throw new CompilerInternalException("Fejl");
+            throw new MemberExpressionNotValidScopeCheckerException("Symbol does not exists");
         } else
-            throw new CompilerInternalException("Fejl");
+            throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
     }
 
     @Override
@@ -72,45 +73,50 @@ public class MemberChecker extends DepthFirstAdapter {
             }
 
             // If symbol exists update symbol if not throw exception
-            throw new CompilerInternalException("Fejl");
+            throw new MemberExpressionNotValidScopeCheckerException("Symbol does not exists");
         } else
-            throw new CompilerInternalException("Fejl");
+            throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
     }
 
     private void updateSymbol(TIdentifier node) {
         currentSymbol = currentScope.getSymbolOrThrow(node.getText());
 
+        // Check if symbol if a variable - if it is - find the type
         if (currentSymbol.getClass() == SymbolVariable.class) {
             SymbolVariable variable = (SymbolVariable) currentSymbol;
             if (variable.getNode().getClass() == ADeclaration.class) {
                 ADeclaration declaration = (ADeclaration) variable.getNode();
 
+                // Check if the variable is declared as a struct
                 if (declaration.getType().getClass() != AStructTypeSpecifier.class) {
-                    throw new NotImplementedException();
+                    throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
                 }
 
+                // Update currentSymbol and currentStruct to the found struct
                 updateSymbolFromStructSpecifier((AStructTypeSpecifier) declaration.getType());
+
+                return;
             }
-            else throw new NotImplementedException();
         } else if (currentSymbol.getClass() == SymbolFunction.class) {
             SymbolFunction function = (SymbolFunction)currentSymbol;
             if (function.getNode().getClass() == AFunctionRootDeclaration.class) {
                 AFunctionRootDeclaration functionNode = (AFunctionRootDeclaration) function.getNode();
 
                 if (functionNode.getReturnType().getClass() != AStructTypeSpecifier.class) {
-                    throw new NotImplementedException();
+                    throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
                 }
 
                 updateSymbolFromStructSpecifier((AStructTypeSpecifier) functionNode.getReturnType());
+
+                return;
             }
-            else throw new NotImplementedException();
         }
-        else {
-            throw new NotImplementedException();
-        }
+
+        throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
     }
 
     private void updateSymbolFromStructSpecifier(AStructTypeSpecifier struct) {
+        // Update currentSymbol
         currentSymbol = currentScope.getSymbolOrThrow(struct.getIdentifier().getText());
 
         // Update currentScope

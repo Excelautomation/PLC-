@@ -1,12 +1,12 @@
 package dk.aau.sw402F15.Preprocessor;
 
-import dk.aau.sw402F15.Exception.CompilerInternalException;
-import dk.aau.sw402F15.Preprocessor.Helpers.DeclarationPreprocessor;
-import dk.aau.sw402F15.Preprocessor.Helpers.FunctionPreprocessor;
-import dk.aau.sw402F15.Preprocessor.Helpers.StructPreprocessor;
+import dk.aau.sw402F15.SymbolProcessor.DeclarationSymbolProcessor;
+import dk.aau.sw402F15.SymbolProcessor.FunctionPreprocessor;
+import dk.aau.sw402F15.SymbolProcessor.StructPreprocessor;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by sahb on 22/04/15.
@@ -43,13 +43,13 @@ public class Preprocessor extends DepthFirstAdapter {
     // Enum declaration
     @Override
     public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
-        throw new CompilerInternalException("Not implemented");
+        throw new NotImplementedException();
     }
 
-    // Variable declaration
+    // RootDeclaration
     @Override
-    public void caseADeclaration(ADeclaration node) {
-        DeclarationPreprocessor declarationPreprocessor = new DeclarationPreprocessor(currentScope);
+    public void caseADeclarationRootDeclaration(ADeclarationRootDeclaration node) {
+        DeclarationSymbolProcessor declarationPreprocessor = new DeclarationSymbolProcessor(currentScope);
         node.apply(declarationPreprocessor);
     }
 

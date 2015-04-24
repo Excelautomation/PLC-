@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.Preprocessor.Helpers;
+package dk.aau.sw402F15.SymbolProcessor;
 
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
@@ -11,12 +11,12 @@ import dk.aau.sw402F15.parser.node.*;
 /**
  * Created by sahb on 22/04/15.
  */
-public class DeclarationPreprocessor extends DepthFirstAdapter {
+public class DeclarationSymbolProcessor extends DepthFirstAdapter {
     private Scope currentScope;
     private boolean variableIsConst;
     private boolean variableIsArray;
 
-    public DeclarationPreprocessor(Scope currentScope) {
+    public DeclarationSymbolProcessor(Scope currentScope) {
         this.currentScope = currentScope;
     }
 

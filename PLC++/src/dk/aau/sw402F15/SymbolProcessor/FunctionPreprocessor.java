@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.Preprocessor.Helpers;
+package dk.aau.sw402F15.SymbolProcessor;
 
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
