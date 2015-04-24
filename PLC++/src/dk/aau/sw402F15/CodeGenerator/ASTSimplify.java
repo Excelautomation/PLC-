@@ -1,4 +1,4 @@
-package dk.aau.sw402F15;
+package dk.aau.sw402F15.CodeGenerator;
 
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;

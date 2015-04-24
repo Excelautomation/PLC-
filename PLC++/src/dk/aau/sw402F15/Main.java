@@ -1,5 +1,6 @@
 package dk.aau.sw402F15;
 
+import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
