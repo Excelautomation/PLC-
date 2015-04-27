@@ -213,8 +213,8 @@ statement {-> statement} =
             [iterator]:expr_multiple? r_par statement	                                                                {-> New statement.for([initilizer.expr], condition.expr, [iterator.expr], statement.statement)} // TODO: for with declaration
   
   // Control
-  | {return} return_keyword semi																						{-> New statement.return()}
-  | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
+  | {return} return_keyword semi																						{-> New statement.return(Null)}
+  | {return_expr} return_keyword expr semi																				{-> New statement.return(expr.expr)}
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
 ;
@@ -237,8 +237,8 @@ statement_no_short_if  {-> statement} =
             r_par statement_no_short_if	                                                                                {-> New statement.for([initilizer.expr], condition.expr, [iterator.expr], statement_no_short_if.statement)} // TODO: for with declaration
 
   // Control
-  | {return} return_keyword semi																						{-> New statement.return()}
-  | {return_expr} return_keyword expr semi																				{-> New statement.return_expr(expr.expr)}
+  | {return} return_keyword semi																						{-> New statement.return(Null)}
+  | {return_expr} return_keyword expr semi																				{-> New statement.return(expr.expr)}
   | {continue} continue_keyword semi                                                                                    {-> New statement.continue()}
   | {break} break_keyword semi                                                                                          {-> New statement.break()}
 ;
@@ -466,8 +466,7 @@ statement =
   | {for}						[initilizer]:expr*				[condition]:expr?			[iterator]:expr*            [statement]:statement
   
   // Control-statements
-  | {return}
-  | {return_expr}				expr
+  | {return}				    expr?
   | {continue}
   | {break}
 ;

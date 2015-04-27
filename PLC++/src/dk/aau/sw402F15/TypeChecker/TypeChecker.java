@@ -84,25 +84,31 @@ public class TypeChecker extends ExpressionEvaluator {
     }
 
     @Override
-    public void outAReturnExprStatement(AReturnExprStatement node) {
-        super.outAReturnExprStatement(node);
+    public void outAReturnStatement(AReturnStatement node) {
+        super.outAReturnStatement(node);
 
-        SymbolType arg1 = stack.pop();
-
-        if (node.getExpr() instanceof AArrayExpr)
-        {
-            arg1 = ((SymbolArray) currentScope.getSymbolOrThrow(((AArrayExpr)node.getExpr()).getName().getText())).getContainedType();
+        if (node.getExpr() == null) {
+            // Return;
+            returnFound = true;
         }
+        else {
+            // Return expr;
+            SymbolType arg1 = stack.pop();
 
-        returnFound = true;
+            if (node.getExpr() instanceof AArrayExpr)
+            {
+                arg1 = ((SymbolArray) currentScope.getSymbolOrThrow(((AArrayExpr)node.getExpr()).getName().getText())).getContainedType();
+            }
 
-        SymbolType returnType = stack.peek();
+            returnFound = true;
 
-        // Checking that function's returntype matches what we're returning
-        if (returnType != arg1) {
-            throw new IllegalReturnTypeException();
+            SymbolType returnType = stack.peek();
+
+            // Checking that function's returntype matches what we're returning
+            if (returnType != arg1) {
+                throw new IllegalReturnTypeException();
+            }
         }
-
     }
 
 }
