@@ -10,7 +10,6 @@ import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.AAssignmentExpr;
 import dk.aau.sw402F15.parser.node.AIdentifierExpr;
 import dk.aau.sw402F15.parser.node.AMemberExpr;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by sahb on 27/04/15.

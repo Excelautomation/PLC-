@@ -3,13 +3,8 @@ package dk.aau.sw402F15.TypeChecker;
 import dk.aau.sw402F15.ScopeChecker.MemberChecker;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Symbol;
-import dk.aau.sw402F15.Symboltable.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.AFunctionCallExpr;
-import dk.aau.sw402F15.parser.node.AIdentifierExpr;
 import dk.aau.sw402F15.parser.node.AMemberExpr;
-import dk.aau.sw402F15.parser.node.Node;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by sahb on 27/04/15.
