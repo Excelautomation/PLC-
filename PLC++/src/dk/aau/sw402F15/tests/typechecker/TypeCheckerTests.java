@@ -164,7 +164,7 @@ public class TypeCheckerTests {
     }
 
     @Test(expected = RedefinitionOfReadOnlyException.class)
-    public void checkAssignmentOfConst() { checkCode("const int i = 7; int func() { i = 2; } "); }
+    public void checkAssignmentOfConst() { checkCode("const int i = 7; int func() { i = 2; return 1; } "); }
 
     @Test(expected = RedefinitionOfReadOnlyException.class)
     public void checkAssignmentOfConstInFunction() { checkCode("int func(){const int i = 7; i = 2; return 5;} "); }

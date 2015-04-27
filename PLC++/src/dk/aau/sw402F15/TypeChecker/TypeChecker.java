@@ -1,114 +1,48 @@
 package dk.aau.sw402F15.TypeChecker;
 
-import dk.aau.sw402F15.TypeChecker.Exceptions.*;
-import dk.aau.sw402F15.Symboltable.*;
+import dk.aau.sw402F15.Helper;
+import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
- * Created by Mikkel on 08-04-2015.
+ * Created by sahb on 27/04/15.
  */
-public class TypeChecker extends ExpressionEvaluator {
+public class TypeChecker extends ScopeDepthFirstAdapter {
+
     public TypeChecker(Scope rootScope) {
-        super(rootScope, rootScope);
+        this(rootScope, rootScope);
     }
 
-    // When we enter a function, we need to know if we've encountered a return statement
-    private boolean returnFound = false;
-
-    @Override
-    public void outADeclaration(ADeclaration node) {
-        super.outADeclaration(node);
-
-        // Check if declaration contains an assignment
-        if (node.getExpr() != null) {
-            SymbolType arg1 = currentScope.getSymbol(node.getName().getText()).getType();
-            SymbolType arg2 = stack.pop();
-
-            if (arg1 != arg2) {
-                throw new IllegalAssignmentException();
-            }
-        }
+    public TypeChecker(Scope rootScope, Scope currentScope) {
+        super(rootScope, currentScope);
     }
 
     @Override
-    public void outAWhileStatement(AWhileStatement node) {
-        super.outAWhileStatement(node);
-
-        // Checking that the while loop's condition is a boolean
-        if (stack.pop() != SymbolType.Boolean)
-            throw new IllegalLoopConditionException();
+    public void caseAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        FunctionTypeChecker functionTypeChecker = new FunctionTypeChecker(
+                rootScope,
+                currentScope,
+                node.getReturnType().getClass() != AVoidTypeSpecifier.class,
+                Helper.getSymbolTypeFromTypeSpecifier(node.getReturnType())
+        );
+        node.apply(functionTypeChecker);
     }
 
     @Override
-    public void caseAForStatement(AForStatement node) {
-        super.caseAForStatement(node);
-
-        // Checking that the for loop's condition is a boolean
-        if (stack.pop() != SymbolType.Boolean)
-            throw new IllegalLoopConditionException();
+    public void caseAStructRootDeclaration(AStructRootDeclaration node) {
+        super.caseAStructRootDeclaration(node);
     }
 
     @Override
-    public void outAArrayDefinition(AArrayDefinition node) {
-        super.outAArrayDefinition(node);
+    public void caseADeclarationRootDeclaration(ADeclarationRootDeclaration node) {
+        DeclarationTypeChecker declarationTypeChecker = new DeclarationTypeChecker(currentScope);
+        node.apply(declarationTypeChecker);
     }
 
     @Override
-    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
-        super.inAFunctionRootDeclaration(node);
-
-        // Pushing a function's return type to the stack
-        stack.push(((SymbolFunction) currentScope.getSymbol(node.getName().getText())).getReturnType());
+    public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
+        throw new NotImplementedException();
     }
-
-    @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
-        super.outAFunctionRootDeclaration(node);
-
-        stack.pop();
-
-        // Making sure void doesn't contain return, and that non-void function does contain return
-        if (node.getReturnType().getClass() != AVoidTypeSpecifier.class && !returnFound)
-            throw new MissingReturnStatementException();
-        if (node.getReturnType().getClass() == AVoidTypeSpecifier.class && returnFound)
-            throw new ReturnInVoidFunctionException();
-    }
-
-    @Override
-    public void inAReturnStatement(AReturnStatement node) {
-        returnFound = true;
-        super.outAReturnStatement(node);
-    }
-
-    @Override
-    public void outAReturnStatement(AReturnStatement node) {
-        super.outAReturnStatement(node);
-
-        if (node.getExpr() == null) {
-            // Return;
-            returnFound = true;
-        }
-        else {
-            // Return expr;
-            SymbolType arg1 = stack.pop();
-
-            if (node.getExpr() instanceof AArrayExpr)
-            {
-                arg1 = ((SymbolArray) currentScope.getSymbolOrThrow(((AArrayExpr)node.getExpr()).getName().getText())).getContainedType();
-            }
-
-            returnFound = true;
-
-            SymbolType returnType = stack.peek();
-
-            // Checking that function's returntype matches what we're returning
-            if (returnType != arg1) {
-                throw new IllegalReturnTypeException();
-            }
-        }
-    }
-
 }

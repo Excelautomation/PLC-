@@ -25,7 +25,8 @@ public class Main {
                 "}\n" +
                 "int main(){\n" +
                 "struct car bmw;\n" +
-                "func().nrOfWheels = 4;\n" +
+                "func().nrOfWheels = 4;" +
+                "return 1;\n" +
                 "}\n";
 
         //System.out.println(code);

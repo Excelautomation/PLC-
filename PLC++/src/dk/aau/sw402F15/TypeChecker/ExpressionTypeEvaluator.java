@@ -33,15 +33,32 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
 
     // Assignment
     @Override
+    public void caseAAssignmentExpr(AAssignmentExpr node) {
+        AssignmentChecker assignmentChecker = new AssignmentChecker(scope);
+        node.apply(assignmentChecker);
+
+        stack.push(assignmentChecker.getResult());
+    }
+
+    @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
         SymbolType arg1 = stack.pop();
-        SymbolType arg2 = stack.pop();
+        SymbolType arg2 = stack.peek(); // Assignment is an expression (needs to have a returntype)
 
         if (arg1 != arg2) {
             throw new IllegalAssignmentException();
         }
+    }
+
+    // Member expression
+    @Override
+    public void caseAMemberExpr(AMemberExpr node) {
+        MemberExpressionEvaluator memberExpressionEvaluator = new MemberExpressionEvaluator(scope);
+        node.apply(memberExpressionEvaluator);
+
+        stack.push(memberExpressionEvaluator.getSymbol().getType());
     }
 
     // Function call

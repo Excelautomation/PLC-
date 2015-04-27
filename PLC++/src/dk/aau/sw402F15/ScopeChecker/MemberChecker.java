@@ -20,6 +20,10 @@ public class MemberChecker extends DepthFirstAdapter {
         this.currentScope = currentScope;
     }
 
+    public Symbol getSymbol() {
+        return currentSymbol;
+    }
+
     @Override
     public void outAIdentifierExpr(AIdentifierExpr node) {
         super.outAIdentifierExpr(node);
