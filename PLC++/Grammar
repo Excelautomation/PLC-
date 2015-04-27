@@ -209,7 +209,8 @@ statement {-> statement} =
 
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par statement														{-> New statement.while(condition.expr, statement.statement)}
-  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr? r_par statement	{-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement.statement)} // TODO: for with declaration
+  | {for} for_keyword l_par [initilizer]:expr_multiple? [s1]:semi [condition]:expr? [s2]:semi
+            [iterator]:expr_multiple? r_par statement	                                                                {-> New statement.for([initilizer.expr], condition.expr, [iterator.expr], statement.statement)} // TODO: for with declaration
   
   // Control
   | {return} return_keyword semi																						{-> New statement.return()}
@@ -232,8 +233,8 @@ statement_no_short_if  {-> statement} =
 
   // Iteration
   | {while} while_keyword l_par [condition]:expr r_par statement_no_short_if											{-> New statement.while(condition.expr, statement_no_short_if.statement)}
-  | {for} for_keyword l_par [initilizer]:expr? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr?
-            r_par statement_no_short_if	                                                                                {-> New statement.for(initilizer.expr, condition.expr, iterator.expr, statement_no_short_if.statement)} // TODO: for with declaration
+  | {for} for_keyword l_par [initilizer]:expr_multiple? [s1]:semi [condition]:expr? [s2]:semi [iterator]:expr_multiple?
+            r_par statement_no_short_if	                                                                                {-> New statement.for([initilizer.expr], condition.expr, [iterator.expr], statement_no_short_if.statement)} // TODO: for with declaration
 
   // Control
   | {return} return_keyword semi																						{-> New statement.return()}
@@ -260,6 +261,12 @@ switch_statement {-> statement} =
 label_statements {-> statement} =
     {case} case_keyword [condition]:expr colon statement*                                                               {-> New statement.case(condition.expr, [statement.statement])}
   | {default} default_keyword colon statement*                                                                          {-> New statement.default([statement.statement])}
+;
+
+// Multiple expressions
+expr_multiple {-> expr*} =
+    {single} expr                                                                                                       {-> [expr.expr]}
+  | {multiple} expr comma expr_multiple                                                                                 {-> [expr.expr, expr_multiple.expr]}
 ;
 
 // Expression
@@ -456,7 +463,7 @@ statement =
 
   // Iteration
   | {while}						[condition]:expr				[statement]:statement
-  | {for}						[initilizer]:expr?				[condition]:expr?			[iterator]:expr?            [statement]:statement
+  | {for}						[initilizer]:expr*				[condition]:expr?			[iterator]:expr*            [statement]:statement
   
   // Control-statements
   | {return}

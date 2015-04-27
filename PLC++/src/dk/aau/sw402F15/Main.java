@@ -56,9 +56,6 @@ public class Main {
             // Simplifying the AST for easier codegen
             tree.apply(new ASTSimplify());
 
-            // Print tree
-            tree.apply(new PrettyPrinter());
-
         } catch (ParserException e) {
             e.printStackTrace();
         } catch (LexerException e) {

@@ -4,6 +4,9 @@ import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Claus on 24-04-2015.
  */
@@ -68,11 +71,23 @@ public class CodeGenerator extends DepthFirstAdapter {
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
-        node.getInitilizer().apply(this);
+        {
+            List<PExpr> copy = new ArrayList<PExpr>(node.getInitilizer());
+            for(PExpr e : copy)
+            {
+                e.apply(this);
+            }
+        }
         Emit("JMP " + jumpLabel);
         Emit("JME " + loopLabel);
         node.getStatement().apply(this);
-        node.getIterator().apply(this);
+        {
+            List<PExpr> copy = new ArrayList<PExpr>(node.getIterator());
+            for(PExpr e : copy)
+            {
+                e.apply(this);
+            }
+        }
         Emit("JME " + jumpLabel);
         node.getCondition().apply(this);
         Emit("CJP " + loopLabel);

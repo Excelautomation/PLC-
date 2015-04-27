@@ -18,9 +18,11 @@ public class ASTSimplify extends DepthFirstAdapter {
         List<PStatement> statements = new ArrayList<PStatement>();
 
         statements.add(node.getStatement());
-        statements.add(new AExprStatement(node.getIterator()));
+        for (PExpr expr : node.getIterator())
+            statements.add(new AExprStatement(expr));
 
-        statementList.add(new AExprStatement(node.getInitilizer()));
+        for (PExpr expr : node.getInitilizer())
+            statements.add(new AExprStatement(expr));
         statementList.add(new AWhileStatement(node.getCondition(), new AScopeStatement(statements)));
 
         node.replaceBy(new AScopeStatement(statementList));
