@@ -22,8 +22,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         try {
             writer = new PrintWriter("InstructionList.txt", "UTF-8");
 
-            Emit("LD P_First_Cycle");
-            Emit("SSET(630) W0 #5");
+            Emit("SSET(630) W0 5");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -49,6 +48,156 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void caseADeclaration(ADeclaration node) {
         super.caseADeclaration(node);
+    }
+
+    @Override
+    public void outABreakStatement(ABreakStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACaseStatement(ACaseStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareAndExpr(ACompareAndExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareEqualExpr(ACompareEqualExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareGreaterExpr(ACompareGreaterExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareLessExpr(ACompareLessExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareNotEqualExpr(ACompareNotEqualExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outACompareOrExpr(ACompareOrExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAContinueStatement(AContinueStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outADeclaration(ADeclaration node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outADefaultStatement(ADefaultStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAFalseExpr(AFalseExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAFunctionCallExpr(AFunctionCallExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAIdentifierExpr(AIdentifierExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAMemberExpr(AMemberExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outANegationExpr(ANegationExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortAnalogInputExpr(APortAnalogInputExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortAnalogOutputExpr(APortAnalogOutputExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortInputExpr(APortInputExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortMemoryExpr(APortMemoryExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortOutputExpr(APortOutputExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAReturnStatement(AReturnStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outASwitchStatement(ASwitchStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outATrueExpr(ATrueExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outATypeCastExpr(ATypeCastExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAWhileStatement(AWhileStatement node) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outStart(Start node) {
+        writer.close();
     }
 
     @Override
