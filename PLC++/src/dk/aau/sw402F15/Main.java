@@ -1,6 +1,7 @@
 package dk.aau.sw402F15;
 
 import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
+import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
@@ -15,7 +16,7 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
-        String code = "struct car func() {" +
+/*        String code = "struct car func() {" +
                 "struct car bmw;" +
                 "return bmw;" +
                 "}" +
@@ -27,7 +28,12 @@ public class Main {
                 "struct car bmw;\n" +
                 "func().nrOfWheels = 4;" +
                 "return 1;\n" +
-                "}\n";
+                "}\n";*/
+            String code = "int main() {" +
+                    "int a = 1; " +
+                    "a = 1 + 1;" +
+                    "return a;" +
+                    "}";
 
         //System.out.println(code);
 
@@ -56,6 +62,8 @@ public class Main {
 
             // Simplifying the AST for easier codegen
             tree.apply(new ASTSimplify());
+
+            tree.apply(new CodeGenerator());
 
         } catch (ParserException e) {
             e.printStackTrace();

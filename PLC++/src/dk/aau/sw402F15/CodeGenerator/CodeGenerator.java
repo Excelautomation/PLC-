@@ -4,6 +4,9 @@ import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +16,16 @@ import java.util.List;
 public class CodeGenerator extends DepthFirstAdapter {
     int jumpLabel = 0;
 
-    @Override
-    public void caseAAddExpr(AAddExpr node){
-        throw new NotImplementedException();
+    PrintWriter writer;
+
+    public CodeGenerator() {
+        try {
+            writer = new PrintWriter("InstructionList.txt", "UTF-8");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -31,11 +41,12 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void caseADeclaration(ADeclaration node) {
         super.caseADeclaration(node);
+    }
 
-        // AssignmentDeclaration
-        if (node.getExpr() != null) {
-            throw new NotImplementedException();
-        }
+    @Override
+    public void caseAExpr(AExpr node) {
+        ExprCodeEvaluator exprCodeEvaluator = new ExprCodeEvaluator();
+        node.apply(exprCodeEvaluator);
     }
 
     @Override
@@ -118,8 +129,62 @@ public class CodeGenerator extends DepthFirstAdapter {
         return jumpLabel;
     }
 
-    private void Emit(String string){
-        // Writes to file
-        throw new NotImplementedException();
+    @Override
+    public void outAIntegerExpr(AIntegerExpr node) {
+        super.outAIntegerExpr(node);
+
+        Emit("PUSH(632) W0 " + node.getIntegerLiteral().getText());
+    }
+
+    @Override
+    public void outADecimalExpr(ADecimalExpr node) {
+        super.outADecimalExpr(node);
+
+        Emit("PUSH(632) W0 " + node.getDecimalLiteral().getText());
+    }
+
+    @Override
+    public void outAAddExpr(AAddExpr node) {
+        super.outAAddExpr(node);
+
+        PopFromStack();
+        Emit("+(400) r1 r2 r1");
+    }
+
+    @Override
+    public void outADivExpr(ADivExpr node) {
+        super.outADivExpr(node);
+
+        PopFromStack();
+        Emit("/(430) r1 r2 r1");
+    }
+
+    @Override
+    public void outAMultiExpr(AMultiExpr node) {
+        super.outAMultiExpr(node);
+        PopFromStack();
+        Emit("*(420) r1 r2 r1");
+    }
+
+    @Override
+    public void outASubExpr(ASubExpr node) {
+        super.outASubExpr(node);
+
+        PopFromStack();
+        Emit("-(410) r1 r2 r1");
+    }
+
+    private void PopFromStack(){
+        Emit("r1 INT W4 0");
+        Emit("r2 INT W5 0");
+
+        Emit("LIFO(634) W0 r1");
+        Emit("LIFO(634) W0 r2");
+    }
+
+    protected void Emit(String inst){
+
+        writer.println(inst);
+
     }
 }
