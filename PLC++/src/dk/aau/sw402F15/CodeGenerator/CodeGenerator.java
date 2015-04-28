@@ -39,6 +39,12 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
+    public void caseAExpr(AExpr node) {
+        ExprCodeEvaluator exprCodeEvaluator = new ExprCodeEvaluator();
+        node.apply(exprCodeEvaluator);
+    }
+
+    @Override
     public void caseABranchStatement(ABranchStatement node) {
         super.caseABranchStatement(node);
 
@@ -118,7 +124,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         return jumpLabel;
     }
 
-    private void Emit(String string){
+    protected void Emit(String string){
         // Writes to file
         throw new NotImplementedException();
     }
