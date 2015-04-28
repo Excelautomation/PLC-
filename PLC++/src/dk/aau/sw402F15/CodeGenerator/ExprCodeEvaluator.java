@@ -28,7 +28,7 @@ public class ExprCodeEvaluator extends CodeGenerator {
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
-        pushToStack();
+        PopFromStack();
         Emit("+(400) r1 r2 r1");
     }
 
@@ -36,14 +36,14 @@ public class ExprCodeEvaluator extends CodeGenerator {
     public void outADivExpr(ADivExpr node) {
         super.outADivExpr(node);
 
-        pushToStack();
+        PopFromStack();
         Emit("/(430) r1 r2 r1");
     }
 
     @Override
     public void outAMultiExpr(AMultiExpr node) {
         super.outAMultiExpr(node);
-        pushToStack();
+        PopFromStack();
         Emit("*(420) r1 r2 r1");
     }
 
@@ -51,11 +51,11 @@ public class ExprCodeEvaluator extends CodeGenerator {
     public void outASubExpr(ASubExpr node) {
         super.outASubExpr(node);
 
-        pushToStack();
+        PopFromStack();
         Emit("-(410) r1 r2 r1");
     }
 
-    private void pushToStack(){
+    private void PopFromStack(){
         Emit("r1 INT W4 0");
         Emit("r2 INT W5 0");
 
