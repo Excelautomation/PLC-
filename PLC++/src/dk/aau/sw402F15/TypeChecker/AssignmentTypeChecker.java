@@ -2,8 +2,8 @@ package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Symbol;
-import dk.aau.sw402F15.Symboltable.SymbolType;
 import dk.aau.sw402F15.Symboltable.SymbolVariable;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.RedefinitionOfReadOnlyException;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
@@ -33,7 +33,7 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(scope);
         node.getRight().apply(expressionTypeEvaluator);
 
-        if (expressionTypeEvaluator.getResult() != symbolType) {
+        if (expressionTypeEvaluator.getResult().getType() != symbolType.getType()) {
             throw new IllegalAssignmentException();
         }
     }

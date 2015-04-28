@@ -4,6 +4,7 @@ import dk.aau.sw402F15.Exception.CompilerException;
 import dk.aau.sw402F15.Exception.CompilerInternalException;
 import dk.aau.sw402F15.Exception.MemberExpressionNotValidScopeCheckerException;
 import dk.aau.sw402F15.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -24,6 +25,69 @@ public class MemberChecker extends DepthFirstAdapter {
         return currentSymbol;
     }
 
+    @Override
+    public void caseTIdentifier(TIdentifier node) {
+        super.caseTIdentifier(node);
+
+        if (currentSymbol == null)
+        {
+            currentSymbol = currentScope.getSymbolOrThrow(node.getText());
+
+            // TODO arrays not handled
+            if (currentSymbol.getType().getType() == SymbolType.Type.Function) {
+                SymbolFunction symbolFunction = (SymbolFunction)currentSymbol;
+
+                // Check if returntype is correct
+                if (symbolFunction.getReturnType().getType() != SymbolType.Type.Struct) {
+                    throw new NotImplementedException();
+                }
+
+                currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName());
+            }
+            else if (currentSymbol.getClass() == SymbolVariable.class) {
+                SymbolVariable symbolVariable = (SymbolVariable)currentSymbol;
+
+                // Check if decltype is correct
+                if (symbolVariable.getType().getType() != SymbolType.Type.Struct) {
+                    throw new NotImplementedException();
+                }
+
+                currentSymbol = currentScope.getSymbolOrThrow(symbolVariable.getType().getName());
+            }
+
+            // Update scope if symbol is a struct
+            if (currentSymbol.getType().getType() == SymbolType.Type.Struct) {
+                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+                return;
+            }
+            else
+                throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
+        }
+
+        currentSymbol = currentScope.getSymbolOrThrow(node.getText());
+
+        // Check if it's a function
+        if (currentSymbol.getType().getType() == SymbolType.Type.Function) {
+            SymbolFunction symbolFunction = (SymbolFunction)currentSymbol;
+
+            // Check if returntype is correct
+            if (symbolFunction.getReturnType().getType() == SymbolType.Type.Struct) {
+                currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName());
+            }
+        }
+
+        // Update scope if symbol is a struct
+        if (currentSymbol.getType().getType() == SymbolType.Type.Struct) {
+            currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+            return;
+        }
+        else {
+            System.out.println("PANIC! : "  + currentSymbol.getName());
+            //throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
+        }
+    }
+
+    /*
     @Override
     public void outAIdentifierExpr(AIdentifierExpr node) {
         super.outAIdentifierExpr(node);
@@ -49,8 +113,21 @@ public class MemberChecker extends DepthFirstAdapter {
 
             // If symbol exists update symbol if not throw exception
             throw new MemberExpressionNotValidScopeCheckerException("Symbol does not exists");
-        } else
-            throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
+        } else if (currentSymbol.getClass() == SymbolVariable.class) {
+            SymbolVariable variable = (SymbolVariable) currentSymbol;
+
+            if (variable.getType().getType() != SymbolType.Type.Struct) {
+                currentSymbol = variable;
+                return;
+            }
+
+            // If variable is a struct
+            ADeclaration declaration = (ADeclaration)variable.getNode();
+            //updateSymbol(declaration.getType());
+            throw new NotImplementedException();
+        }
+
+        throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
     }
 
     @Override
@@ -80,7 +157,7 @@ public class MemberChecker extends DepthFirstAdapter {
             throw new MemberExpressionNotValidScopeCheckerException("Symbol does not exists");
         } else
             throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
-    }
+    }*/
 
     private void updateSymbol(TIdentifier node) {
         currentSymbol = currentScope.getSymbolOrThrow(node.getText());

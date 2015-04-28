@@ -3,8 +3,8 @@ package dk.aau.sw402F15.SymbolProcessor;
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.SymbolArray;
-import dk.aau.sw402F15.Symboltable.SymbolType;
 import dk.aau.sw402F15.Symboltable.SymbolVariable;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 

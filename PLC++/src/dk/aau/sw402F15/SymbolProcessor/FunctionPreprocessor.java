@@ -4,7 +4,7 @@ import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.SymbolFunction;
-import dk.aau.sw402F15.Symboltable.SymbolType;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.ADeclaration;
 import dk.aau.sw402F15.parser.node.AFunctionRootDeclaration;
