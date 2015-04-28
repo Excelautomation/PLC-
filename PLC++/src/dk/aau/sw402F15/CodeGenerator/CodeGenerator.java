@@ -27,7 +27,7 @@ public class CodeGenerator extends DepthFirstAdapter {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
         throw new NotImplementedException();
@@ -41,11 +41,6 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void caseADeclaration(ADeclaration node) {
         super.caseADeclaration(node);
-
-        // AssignmentDeclaration
-        if (node.getExpr() != null) {
-            throw new NotImplementedException();
-        }
     }
 
     @Override
@@ -132,6 +127,59 @@ public class CodeGenerator extends DepthFirstAdapter {
         if(jumpLabel > 255)
             throw new IndexOutOfBoundsException();
         return jumpLabel;
+    }
+
+    @Override
+    public void outAIntegerExpr(AIntegerExpr node) {
+        super.outAIntegerExpr(node);
+
+        Emit("PUSH(632) W0 " + node.getIntegerLiteral().getText());
+    }
+
+    @Override
+    public void outADecimalExpr(ADecimalExpr node) {
+        super.outADecimalExpr(node);
+
+        Emit("PUSH(632) W0 " + node.getDecimalLiteral().getText());
+    }
+
+    @Override
+    public void outAAddExpr(AAddExpr node) {
+        super.outAAddExpr(node);
+
+        PopFromStack();
+        Emit("+(400) r1 r2 r1");
+    }
+
+    @Override
+    public void outADivExpr(ADivExpr node) {
+        super.outADivExpr(node);
+
+        PopFromStack();
+        Emit("/(430) r1 r2 r1");
+    }
+
+    @Override
+    public void outAMultiExpr(AMultiExpr node) {
+        super.outAMultiExpr(node);
+        PopFromStack();
+        Emit("*(420) r1 r2 r1");
+    }
+
+    @Override
+    public void outASubExpr(ASubExpr node) {
+        super.outASubExpr(node);
+
+        PopFromStack();
+        Emit("-(410) r1 r2 r1");
+    }
+
+    private void PopFromStack(){
+        Emit("r1 INT W4 0");
+        Emit("r2 INT W5 0");
+
+        Emit("LIFO(634) W0 r1");
+        Emit("LIFO(634) W0 r2");
     }
 
     protected void Emit(String inst){
