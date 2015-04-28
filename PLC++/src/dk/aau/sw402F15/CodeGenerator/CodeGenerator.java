@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Claus on 24-04-2015.
+ * Created by Claus & Jimmi on 24-04-2015.
  */
 public class CodeGenerator extends DepthFirstAdapter {
     int jumpLabel = 0;
@@ -21,7 +21,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     public CodeGenerator() {
         try {
             writer = new PrintWriter("InstructionList.txt", "UTF-8");
-
+            Emit("LD P_First_Cycle");
             Emit("SSET(630) W0 5");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -193,11 +193,6 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outAWhileStatement(AWhileStatement node) {
         throw new NotImplementedException();
-    }
-
-    @Override
-    public void outStart(Start node) {
-        writer.close();
     }
 
     @Override
