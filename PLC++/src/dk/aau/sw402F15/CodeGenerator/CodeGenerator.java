@@ -31,6 +31,11 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
+    public void outStart(Start node) {
+        writer.close();
+    }
+
+    @Override
     public void caseAArrayDefinition(AArrayDefinition node){
         throw new NotImplementedException();
     }
@@ -44,11 +49,6 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void caseADeclaration(ADeclaration node) {
         super.caseADeclaration(node);
     }
-
-/*    public void caseAExpr(AExpr node) {
-        ExprCodeEvaluator exprCodeEvaluator = new ExprCodeEvaluator();
-        node.apply(exprCodeEvaluator);
-    }*/
 
     @Override
     public void caseABranchStatement(ABranchStatement node) {
@@ -184,8 +184,6 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     protected void Emit(String inst){
-
         writer.println(inst);
-
     }
 }
