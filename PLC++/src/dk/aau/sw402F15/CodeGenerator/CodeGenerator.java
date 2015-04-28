@@ -210,21 +210,21 @@ public class CodeGenerator extends DepthFirstAdapter {
             int elseLabel = getNextJump();
 
             node.getCondition().apply(this);
-            Emit("CJP " + ifLabel);
+            Emit("CJP #" + ifLabel);
             node.getRight().apply(this);
-            Emit("JMP " + elseLabel);
-            Emit("JME " + ifLabel);
+            Emit("JMP #" + elseLabel);
+            Emit("JME #" + ifLabel);
             node.getLeft().apply(this);
-            Emit("JME " + elseLabel);
+            Emit("JME #" + elseLabel);
         }
         else {
             // If statement
             int label = getNextJump();
 
             node.getCondition().apply(this);
-            Emit("CJPN " + label);
+            Emit("CJPN #" + label);
             node.getLeft().apply(this);
-            Emit("JME " + label);
+            Emit("JME #" + label);
         }
     }
 
@@ -240,8 +240,8 @@ public class CodeGenerator extends DepthFirstAdapter {
                 e.apply(this);
             }
         }
-        Emit("JMP " + jumpLabel);
-        Emit("JME " + loopLabel);
+        Emit("JMP #" + jumpLabel);
+        Emit("JME #" + loopLabel);
         node.getStatement().apply(this);
         {
             List<PExpr> copy = new ArrayList<PExpr>(node.getIterator());
@@ -250,9 +250,9 @@ public class CodeGenerator extends DepthFirstAdapter {
                 e.apply(this);
             }
         }
-        Emit("JME " + jumpLabel);
+        Emit("JME #" + jumpLabel);
         node.getCondition().apply(this);
-        Emit("CJP " + loopLabel);
+        Emit("CJP #" + loopLabel);
     }
 
     @Override
@@ -265,12 +265,12 @@ public class CodeGenerator extends DepthFirstAdapter {
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
-        Emit("JMP " + jumpLabel);
-        Emit("JME " + loopLabel);
+        Emit("JMP #" + jumpLabel);
+        Emit("JME #" + loopLabel);
         node.getStatement().apply(this);
-        Emit("JME " + jumpLabel);
+        Emit("JME #" + jumpLabel);
         node.getCondition().apply(this);
-        Emit("CJP " + loopLabel);
+        Emit("CJP #" + loopLabel);
     }
 
     private int getNextJump(){
