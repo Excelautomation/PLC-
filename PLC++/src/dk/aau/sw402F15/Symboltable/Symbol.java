@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.Symboltable;
 
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.Node;
 
 public abstract class Symbol {

@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -47,7 +48,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         SymbolType arg1 = stack.pop();
         SymbolType arg2 = stack.peek(); // Assignment is an expression (needs to have a returntype)
 
-        if (arg1 != arg2) {
+        if (arg1.getType() != arg2.getType()) {
             throw new IllegalAssignmentException();
         }
     }
@@ -91,7 +92,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
                 e.apply(expressionEvaluator);
 
                 SymbolType type = expressionEvaluator.getResult();
-                if (type != func.getFormalParameters().get(i))
+                if (type.getType() != func.getFormalParameters().get(i).getType())
                     throw new WrongParameterException();
             }
         }
@@ -112,25 +113,25 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     @Override
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
-        stack.push(SymbolType.Int);
+        stack.push(SymbolType.Int());
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
-        stack.push(SymbolType.Decimal);
+        stack.push(SymbolType.Decimal());
     }
 
     @Override
     public void outATrueExpr(ATrueExpr node) {
         super.outATrueExpr(node);
-        stack.push(SymbolType.Boolean);
+        stack.push(SymbolType.Boolean());
     }
 
     @Override
     public void outAFalseExpr(AFalseExpr node) {
         super.outAFalseExpr(node);
-        stack.push(SymbolType.Boolean);
+        stack.push(SymbolType.Boolean());
     }
 
     // Comparison
@@ -217,8 +218,8 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if ((arg1 == SymbolType.Int && arg2 == SymbolType.Int) || (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal)) {
-            stack.push(SymbolType.Boolean);
+        if ((arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int) || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal)) {
+            stack.push(SymbolType.Boolean());
         }
         else {
             throw new IllegalComparisonException();
@@ -228,11 +229,11 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     private void checkExpression(){
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1 == SymbolType.Int && arg2 == SymbolType.Int){
-            stack.push(SymbolType.Int);
+        if (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int){
+            stack.push(SymbolType.Int());
         }
-        else if (arg1 == SymbolType.Decimal && arg2 == SymbolType.Decimal){
-            stack.push(SymbolType.Decimal);
+        else if (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal){
+            stack.push(SymbolType.Decimal());
         }
         else{
             throw new IllegalExpressionException();

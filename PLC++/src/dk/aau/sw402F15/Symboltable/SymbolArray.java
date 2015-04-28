@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.Symboltable;
 
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.Node;
 
 /**
@@ -9,7 +10,7 @@ public class SymbolArray extends Symbol {
     SymbolType containedType;
 
     public SymbolArray(SymbolType containedType, String name, Node node, Scope scope){
-        super(SymbolType.Array, name, node, scope);
+        super(SymbolType.Array(), name, node, scope);
         this.containedType = containedType;
     }
 

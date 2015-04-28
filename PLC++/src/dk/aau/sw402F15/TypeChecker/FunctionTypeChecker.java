@@ -3,7 +3,7 @@ package dk.aau.sw402F15.TypeChecker;
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
-import dk.aau.sw402F15.Symboltable.SymbolType;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalReturnTypeException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.MissingReturnStatementException;
@@ -51,7 +51,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
         SymbolType declarationType = Helper.getSymbolTypeFromTypeSpecifier(node.getType());
 
         // Check if types matches
-        if (exprType != declarationType) {
+        if (exprType.getType() != declarationType.getType()) {
             throw new IllegalAssignmentException();
         }
     }
@@ -83,7 +83,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
             node.getExpr().apply(expressionTypeEvaluator);
 
-            if (returnType != expressionTypeEvaluator.getResult())
+            if (returnType.getType() != expressionTypeEvaluator.getResult().getType())
                 throw new IllegalReturnTypeException();
         }
 
