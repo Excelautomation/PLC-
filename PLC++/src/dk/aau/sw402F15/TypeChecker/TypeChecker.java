@@ -31,18 +31,8 @@ public class TypeChecker extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void caseAStructRootDeclaration(AStructRootDeclaration node) {
-        super.caseAStructRootDeclaration(node);
-    }
-
-    @Override
     public void caseADeclarationRootDeclaration(ADeclarationRootDeclaration node) {
         DeclarationTypeChecker declarationTypeChecker = new DeclarationTypeChecker(currentScope);
         node.apply(declarationTypeChecker);
-    }
-
-    @Override
-    public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
-        throw new NotImplementedException();
     }
 }

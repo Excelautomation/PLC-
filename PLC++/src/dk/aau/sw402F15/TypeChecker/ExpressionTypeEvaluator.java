@@ -34,7 +34,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     // Assignment
     @Override
     public void caseAAssignmentExpr(AAssignmentExpr node) {
-        AssignmentChecker assignmentChecker = new AssignmentChecker(scope);
+        AssignmentTypeChecker assignmentChecker = new AssignmentTypeChecker(scope);
         node.apply(assignmentChecker);
 
         stack.push(assignmentChecker.getResult());

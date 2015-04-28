@@ -14,12 +14,11 @@ import dk.aau.sw402F15.parser.node.AMemberExpr;
 /**
  * Created by sahb on 27/04/15.
  */
-public class AssignmentChecker extends DepthFirstAdapter {
+public class AssignmentTypeChecker extends DepthFirstAdapter {
     private Scope scope;
     private SymbolType symbolType;
 
-    public AssignmentChecker(Scope scope) {
-
+    public AssignmentTypeChecker(Scope scope) {
         this.scope = scope;
     }
 

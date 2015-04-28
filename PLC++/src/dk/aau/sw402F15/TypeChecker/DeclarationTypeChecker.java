@@ -14,7 +14,6 @@ public class DeclarationTypeChecker extends DepthFirstAdapter {
     private Scope scope;
 
     public DeclarationTypeChecker(Scope scope) {
-
         this.scope = scope;
     }
 
