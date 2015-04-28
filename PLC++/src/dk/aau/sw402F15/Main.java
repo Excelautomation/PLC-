@@ -1,6 +1,7 @@
 package dk.aau.sw402F15;
 
 import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
+import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
@@ -56,6 +57,8 @@ public class Main {
 
             // Simplifying the AST for easier codegen
             tree.apply(new ASTSimplify());
+
+            tree.apply(new CodeGenerator());
 
         } catch (ParserException e) {
             e.printStackTrace();

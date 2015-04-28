@@ -4,6 +4,9 @@ import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,12 @@ import java.util.List;
  */
 public class CodeGenerator extends DepthFirstAdapter {
     int jumpLabel = 0;
+
+    PrintWriter writer;
+
+    public CodeGenerator() throws FileNotFoundException, UnsupportedEncodingException {
+        writer = new PrintWriter("InstructionList.txt", "UTF-8");
+    }
 
     @Override
     public void caseAAddExpr(AAddExpr node){
@@ -124,8 +133,9 @@ public class CodeGenerator extends DepthFirstAdapter {
         return jumpLabel;
     }
 
-    protected void Emit(String string){
-        // Writes to file
-        throw new NotImplementedException();
+    private void Emit(String inst){
+
+        writer.println(inst);
+
     }
 }
