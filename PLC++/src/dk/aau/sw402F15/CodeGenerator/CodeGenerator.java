@@ -22,7 +22,8 @@ public class CodeGenerator extends DepthFirstAdapter {
         try {
             writer = new PrintWriter("InstructionList.txt", "UTF-8");
 
-            Emit("SSET(630) W0 5");
+            Emit("LD P_First_Cycle");
+            Emit("SSET(630) W0 #5");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -60,21 +61,21 @@ public class CodeGenerator extends DepthFirstAdapter {
             int elseLabel = getNextJump();
 
             node.getCondition().apply(this);
-            Emit("CJP " + ifLabel);
+            Emit("CJP(510) #" + ifLabel);
             node.getRight().apply(this);
-            Emit("JMP " + elseLabel);
-            Emit("JME " + ifLabel);
+            Emit("JMP(004) #" + elseLabel);
+            Emit("JME(005) #" + ifLabel);
             node.getLeft().apply(this);
-            Emit("JME " + elseLabel);
+            Emit("JME(005) #" + elseLabel);
         }
         else {
             // If statement
             int label = getNextJump();
 
             node.getCondition().apply(this);
-            Emit("CJPN " + label);
+            Emit("CJPN(511) #" + label);
             node.getLeft().apply(this);
-            Emit("JME " + label);
+            Emit("JME(005) #" + label);
         }
     }
 
@@ -90,8 +91,8 @@ public class CodeGenerator extends DepthFirstAdapter {
                 e.apply(this);
             }
         }
-        Emit("JMP " + jumpLabel);
-        Emit("JME " + loopLabel);
+        Emit("JMP(004) #" + jumpLabel);
+        Emit("JME(005) #" + loopLabel);
         node.getStatement().apply(this);
         {
             List<PExpr> copy = new ArrayList<PExpr>(node.getIterator());
@@ -100,9 +101,9 @@ public class CodeGenerator extends DepthFirstAdapter {
                 e.apply(this);
             }
         }
-        Emit("JME " + jumpLabel);
+        Emit("JME(005) #" + jumpLabel);
         node.getCondition().apply(this);
-        Emit("CJP " + loopLabel);
+        Emit("CJP(510) #" + loopLabel);
     }
 
     @Override
@@ -115,12 +116,12 @@ public class CodeGenerator extends DepthFirstAdapter {
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
-        Emit("JMP " + jumpLabel);
-        Emit("JME " + loopLabel);
+        Emit("JMP(004) #" + jumpLabel);
+        Emit("JME(005) #" + loopLabel);
         node.getStatement().apply(this);
-        Emit("JME " + jumpLabel);
+        Emit("JME(005) #" + jumpLabel);
         node.getCondition().apply(this);
-        Emit("CJP " + loopLabel);
+        Emit("CJP(510) #" + loopLabel);
     }
 
     private int getNextJump(){
@@ -134,14 +135,14 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("PUSH(632) W0 " + node.getIntegerLiteral().getText());
+        Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText());
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        Emit("PUSH(632) W0 " + node.getDecimalLiteral().getText());
+        Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText());
     }
 
     @Override
