@@ -18,8 +18,14 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     PrintWriter writer;
 
-    public CodeGenerator() throws FileNotFoundException, UnsupportedEncodingException {
-        writer = new PrintWriter("InstructionList.txt", "UTF-8");
+    public CodeGenerator() {
+        try {
+            writer = new PrintWriter("InstructionList.txt", "UTF-8");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -133,7 +139,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         return jumpLabel;
     }
 
-    private void Emit(String inst){
+    protected void Emit(String inst){
 
         writer.println(inst);
 
