@@ -68,36 +68,43 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outACompareEqualExpr(ACompareEqualExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
     public void outACompareGreaterExpr(ACompareGreaterExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
     public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
     public void outACompareLessExpr(ACompareLessExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
     public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
     public void outACompareNotEqualExpr(ACompareNotEqualExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         throw new NotImplementedException();
+        //Mads
     }
 
     @Override
