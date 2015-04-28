@@ -472,7 +472,7 @@ statement =
 ;
 
 expr =
-  | {identifier}				[name]:identifier
+    {identifier}				[name]:identifier
 
   | {function_call}				[name]:identifier				[args]:expr*
   | {array}						[name]:identifier				expr
