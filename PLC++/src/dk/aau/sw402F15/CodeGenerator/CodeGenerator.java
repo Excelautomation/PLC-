@@ -21,6 +21,8 @@ public class CodeGenerator extends DepthFirstAdapter {
     public CodeGenerator() {
         try {
             writer = new PrintWriter("InstructionList.txt", "UTF-8");
+
+            Emit("SSET(630) W0 5");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -43,11 +45,10 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.caseADeclaration(node);
     }
 
-    @Override
-    public void caseAExpr(AExpr node) {
+/*    public void caseAExpr(AExpr node) {
         ExprCodeEvaluator exprCodeEvaluator = new ExprCodeEvaluator();
         node.apply(exprCodeEvaluator);
-    }
+    }*/
 
     @Override
     public void caseABranchStatement(ABranchStatement node) {
