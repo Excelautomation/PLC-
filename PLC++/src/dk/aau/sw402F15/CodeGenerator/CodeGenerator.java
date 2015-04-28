@@ -27,12 +27,7 @@ public class CodeGenerator extends DepthFirstAdapter {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void caseAAddExpr(AAddExpr node){
-        throw new NotImplementedException();
-    }
-
+    
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
         throw new NotImplementedException();
