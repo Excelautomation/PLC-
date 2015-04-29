@@ -4,7 +4,6 @@ import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,9 +24,104 @@ public class ASTSimplify extends DepthFirstAdapter {
             statements.add(new AExprStatement(expr));
         statementList.add(new AWhileStatement(node.getCondition(), new AScopeStatement(statements)));
 
-        node.replaceBy(new AScopeStatement(statementList));
+        Node newNode = new AScopeStatement(statementList);
 
-        super.outAForStatement(node);
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
     }
 
+    @Override
+    public void caseAModExpr(AModExpr node) {
+        // 3 % 2 = std.mod(3, 2) // STDLIB
+        List<PExpr> argumentList = new ArrayList<PExpr>();
+        argumentList.add(node.getLeft());
+        argumentList.add(node.getRight());
+
+        Node newNode =
+                new AMemberExpr(
+                        new AFunctionCallExpr(new TIdentifier("std"), new ArrayList<Object>()),
+                        new AFunctionCallExpr(new TIdentifier("mod"), argumentList
+                        )
+                )
+        ;
+
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
+
+    @Override
+    public void caseACompoundAddExpr(ACompoundAddExpr node) {
+        Node newNode = new AAssignmentExpr(
+                node.getLeft(),
+                new AAddExpr(node.getLeft(), node.getRight())
+        );
+
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
+
+    @Override
+    public void caseACompoundSubExpr(ACompoundSubExpr node) {
+        Node newNode = new AAssignmentExpr(
+                node.getLeft(),
+                new ASubExpr(node.getLeft(), node.getRight())
+        );
+
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
+
+    @Override
+    public void caseACompoundMultExpr(ACompoundMultExpr node) {
+        Node newNode = new AAssignmentExpr(
+                node.getLeft(),
+                new AMultiExpr(node.getLeft(), node.getRight())
+        );
+
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
+
+    @Override
+    public void caseACompoundDivExpr(ACompoundDivExpr node) {
+        Node newNode = new AAssignmentExpr(
+                node.getLeft(),
+                new ADivExpr(node.getLeft(), node.getRight())
+        );
+
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
+
+    @Override
+    public void caseACompoundModExpr(ACompoundModExpr node) {
+        Node newNode = new AAssignmentExpr(
+                node.getLeft(),
+                new AModExpr(node.getLeft(), node.getRight())
+        );
+
+        // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
 }
