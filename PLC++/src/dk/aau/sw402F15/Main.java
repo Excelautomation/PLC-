@@ -29,9 +29,9 @@ public class Main {
                 "func().nrOfWheels = 4;" +
                 "return 1;\n" +
                 "}\n";*/
-            String code = "int main() {" +
-                    "int a = 1; " +
-                    "a = 1 + 1;" +
+            String code = "float main() {" +
+                    "float a = 1.0; " +
+                    "a = 1.10 + 1.0;" +
                     "return a;" +
                     "}";
 
