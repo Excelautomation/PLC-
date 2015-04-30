@@ -1,8 +1,0 @@
-LD P_First_Cycle
-SSET(630) W0 5
-PUSH(632) W0 #1.0
-PUSH(632) W0 #1.10
-PUSH(632) W0 #1.0
-LIFO(634) W0 r1
-LIFO(634) W0 r2
-+(400) r1 r2 r1
