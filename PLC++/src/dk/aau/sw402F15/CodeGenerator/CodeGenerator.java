@@ -299,13 +299,6 @@ public class CodeGenerator extends DepthFirstAdapter {
         Emit("CJP(510) #" + loopLabel, true);
     }
 
-    private int getNextJump(){
-        jumpLabel = jumpLabel + 1;
-        if(jumpLabel > 255)
-            throw new IndexOutOfBoundsException();
-        return jumpLabel;
-    }
-
     @Override
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
@@ -356,6 +349,13 @@ public class CodeGenerator extends DepthFirstAdapter {
         Emit("r2\tINT\tW5\t\t0", false);
         Emit("LIFO(634) W0 r1", true);
         Emit("LIFO(634) W0 r2", true);
+    }
+
+    private int getNextJump(){
+        jumpLabel = jumpLabel + 1;
+        if(jumpLabel > 255)
+            throw new IndexOutOfBoundsException();
+        return jumpLabel;
     }
 
     protected void Emit(String s, boolean inst){
