@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.TypeChecker;
 
+import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.TypeChecker.Exceptions.*;
@@ -132,6 +133,41 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     public void outAFalseExpr(AFalseExpr node) {
         super.outAFalseExpr(node);
         stack.push(SymbolType.Boolean());
+    }
+
+    // Casts
+    @Override
+    public void outATypeCastExpr(ATypeCastExpr node) {
+        super.outATypeCastExpr(node);
+
+        // Cast no typechecker test
+        stack.pop();
+        stack.push(Helper.getSymbolTypeFromTypeSpecifier(node.getTargetType()));
+    }
+
+    // Increment and decrement
+    @Override
+    public void outAIncrementExpr(AIncrementExpr node) {
+        super.outAIncrementExpr(node);
+
+        // Don't pop - we don't change type
+        SymbolType.Type type = stack.peek().getType();
+
+        if (type != SymbolType.Type.Int && type != SymbolType.Type.Decimal) {
+            throw new IllegalExpressionException();
+        }
+    }
+
+    @Override
+    public void outADecrementExpr(ADecrementExpr node) {
+        super.outADecrementExpr(node);
+
+        // Don't pop - we don't change type
+        SymbolType.Type type = stack.peek().getType();
+
+        if (type != SymbolType.Type.Int && type != SymbolType.Type.Decimal) {
+            throw new IllegalExpressionException();
+        }
     }
 
     // Comparison
