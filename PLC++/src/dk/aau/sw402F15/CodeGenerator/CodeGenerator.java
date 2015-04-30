@@ -16,13 +16,15 @@ import java.util.List;
 public class CodeGenerator extends DepthFirstAdapter {
     int jumpLabel = 0;
 
-    PrintWriter writer;
+    PrintWriter instructionWriter;
+    PrintWriter symbolWriter;
 
     public CodeGenerator() {
         try {
-            writer = new PrintWriter("InstructionList.txt", "UTF-8");
-            Emit("LD P_First_Cycle");
-            Emit("SSET(630) W0 8");
+            instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
+            symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
+            Emit("LD P_First_Cycle", true);
+            Emit("SSET(630) W0 5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -32,7 +34,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outStart(Start node){
-        writer.close();
+        instructionWriter.close();
+        symbolWriter.close();
     }
 
     @Override
@@ -74,7 +77,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outACompareEqualExpr(node);
 
         PopFromStack();
-        Emit("=(300) r1 r2");
+        Emit("=(300) r1 r2", true);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outACompareGreaterExpr(node);
 
         PopFromStack();
-        Emit(">(320) r1 r2");
+        Emit(">(320) r1 r2", true);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outACompareGreaterOrEqualExpr(node);
 
         PopFromStack();
-        Emit(">=(325) r1 r2");
+        Emit(">=(325) r1 r2", true);
     }
 
     @Override
@@ -98,7 +101,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outACompareLessExpr(node);
 
         PopFromStack();
-        Emit("<(310) r1 r2");
+        Emit("<(310) r1 r2", true);
     }
 
     @Override
@@ -106,7 +109,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outACompareLessOrEqualExpr(node);
 
         PopFromStack();
-        Emit("<=(315) r1 r2");
+        Emit("<=(315) r1 r2", true);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outACompareNotEqualExpr(node);
 
         PopFromStack();
-        Emit("<>(305) r1 r2");
+        Emit("<>(305) r1 r2", true);
     }
 
     @Override
@@ -233,21 +236,21 @@ public class CodeGenerator extends DepthFirstAdapter {
             int elseLabel = getNextJump();
 
             node.getCondition().apply(this);
-            Emit("CJP(510) #" + ifLabel);
+            Emit("CJP(510) #" + ifLabel, true);
             node.getRight().apply(this);
-            Emit("JMP(004) #" + elseLabel);
-            Emit("JME(005) #" + ifLabel);
+            Emit("JMP(004) #" + elseLabel, true);
+            Emit("JME(005) #" + ifLabel, true);
             node.getLeft().apply(this);
-            Emit("JME(005) #" + elseLabel);
+            Emit("JME(005) #" + elseLabel, true);
         }
         else {
             // If statement
             int label = getNextJump();
 
             node.getCondition().apply(this);
-            Emit("CJPN(511) #" + label);
+            Emit("CJPN(511) #" + label, true);
             node.getLeft().apply(this);
-            Emit("JME(005) #" + label);
+            Emit("JME(005) #" + label, true);
         }
     }
 
@@ -273,9 +276,9 @@ public class CodeGenerator extends DepthFirstAdapter {
                 e.apply(this);
             }
         }
-        Emit("JME(005) #" + jumpLabel);
+        Emit("JME(005) #" + jumpLabel, true);
         node.getCondition().apply(this);
-        Emit("CJP(510) #" + loopLabel);
+        Emit("CJP(510) #" + loopLabel, true);
     }
 
     @Override
@@ -288,12 +291,12 @@ public class CodeGenerator extends DepthFirstAdapter {
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
-        Emit("JMP(004) #" + jumpLabel);
-        Emit("JME(005) #" + loopLabel);
+        Emit("JMP(004) #" + jumpLabel, true);
+        Emit("JME(005) #" + loopLabel, true);
         node.getStatement().apply(this);
-        Emit("JME(005) #" + jumpLabel);
+        Emit("JME(005) #" + jumpLabel, true);
         node.getCondition().apply(this);
-        Emit("CJP(510) #" + loopLabel);
+        Emit("CJP(510) #" + loopLabel, true);
     }
 
     private int getNextJump(){
@@ -307,14 +310,14 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText());
+        Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText());
+        Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText(), true);
     }
 
     @Override
@@ -322,7 +325,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outAAddExpr(node);
 
         PopFromStack();
-        Emit("+(400) r1 r2 r1");
+        Emit("+(400) r1 r2 r1", true);
     }
 
     @Override
@@ -330,14 +333,14 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outADivExpr(node);
 
         PopFromStack();
-        Emit("/(430) r1 r2 r1");
+        Emit("/(430) r1 r2 r1", true);
     }
 
     @Override
     public void outAMultiExpr(AMultiExpr node) {
         super.outAMultiExpr(node);
         PopFromStack();
-        Emit("*(420) r1 r2 r1");
+        Emit("*(420) r1 r2 r1", true);
     }
 
     @Override
@@ -345,21 +348,21 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outASubExpr(node);
 
         PopFromStack();
-        Emit("-(410) r1 r2 r1");
+        Emit("-(410) r1 r2 r1", true);
     }
 
     private void PopFromStack(){
-        Emit("r1 INT W4 0");
-        Emit("r2 INT W5 0");
-
-        Emit("b1 BOOL W6 FALSE");
-        Emit("b2 BOOL W7 FALSE");
-
-        Emit("LIFO(634) W0 r1");
-        Emit("LIFO(634) W0 r2");
+        Emit("r1\tINT\tW4\t\t0", false);
+        Emit("r2\tINT\tW5\t\t0", false);
+        Emit("LIFO(634) W0 r1", true);
+        Emit("LIFO(634) W0 r2", true);
     }
 
-    protected void Emit(String inst){
-        writer.println(inst);
+    protected void Emit(String s, boolean inst){
+        if (inst == true) {
+            instructionWriter.println(s);
+        } else {
+            symbolWriter.println(s);
+        }
     }
 }
