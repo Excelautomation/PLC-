@@ -22,7 +22,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         try {
             writer = new PrintWriter("InstructionList.txt", "UTF-8");
             Emit("LD P_First_Cycle");
-            Emit("SSET(630) W0 5");
+            Emit("SSET(630) W0 6");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -62,8 +62,11 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outACompareAndExpr(ACompareAndExpr node){
-        throw new NotImplementedException();
-        //Mads
+
+        PopFromStack();
+        Emit("LD r1");
+        Emit("AND 2");
+        Emit("SET r3");
     }
 
     @Override
@@ -343,6 +346,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     private void PopFromStack(){
         Emit("r1 INT W4 0");
         Emit("r2 INT W5 0");
+        Emit("r3 INT W6 0");
 
         Emit("LIFO(634) W0 r1");
         Emit("LIFO(634) W0 r2");
