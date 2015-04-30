@@ -290,7 +290,10 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if ((arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int) || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal)) {
+        if ((arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int)
+                || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal)
+                || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
+                || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
             stack.push(SymbolType.Boolean());
         }
         else {
@@ -316,6 +319,10 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
             stack.push(SymbolType.Int());
         }
         else if (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal){
+            stack.push(SymbolType.Decimal());
+        }
+        else if ((arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
+                 || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
             stack.push(SymbolType.Decimal());
         }
         else{
