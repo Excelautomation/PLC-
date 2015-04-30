@@ -169,6 +169,8 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outANegationExpr(ANegationExpr node){
         //throw new NotImplementedException();
+        //Mads
+
     }
 
     @Override
