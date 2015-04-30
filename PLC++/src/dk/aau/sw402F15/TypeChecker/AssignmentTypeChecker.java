@@ -33,7 +33,15 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(scope);
         node.getRight().apply(expressionTypeEvaluator);
 
-        if (expressionTypeEvaluator.getResult().getType() != symbolType.getType()) {
+        SymbolType.Type exprResultType = expressionTypeEvaluator.getResult().getType();
+
+        // Check if we must make a implicit type conversion
+        if (exprResultType == SymbolType.Type.Int && symbolType.getType() == SymbolType.Type.Decimal) {
+            exprResultType = SymbolType.Type.Decimal;
+        }
+
+        // Check if we could match the correct type
+        if (exprResultType != symbolType.getType()) {
             throw new IllegalAssignmentException();
         }
     }

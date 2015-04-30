@@ -50,6 +50,11 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
         // Check type of declaration
         SymbolType declarationType = Helper.getSymbolTypeFromTypeSpecifier(node.getType());
 
+        // Check if we must make a implicit type conversion
+        if (exprType.getType() == SymbolType.Type.Int && declarationType.getType() == SymbolType.Type.Decimal) {
+            exprType = SymbolType.Decimal();
+        }
+
         // Check if types matches
         if (exprType.getType() != declarationType.getType()) {
             throw new IllegalAssignmentException();
