@@ -49,6 +49,9 @@ public class Main {
             // Print tree
             tree.apply(new PrettyPrinter());
 
+            // Simplifying the AST for easier codegen
+            tree.apply(new ASTSimplify());
+
             // Apply preprocessor
             Preprocessor preprocessor = new Preprocessor();
             tree.apply(preprocessor);
@@ -59,9 +62,6 @@ public class Main {
 
             // Applying typechecker
             tree.apply(new TypeChecker(checker.getSymbolTable()));
-
-            // Simplifying the AST for easier codegen
-            tree.apply(new ASTSimplify());
 
             tree.apply(new CodeGenerator());
 
