@@ -67,9 +67,9 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
         PopFromStack();
-        Emit("LD b1");
-        Emit("AND b2");
-        Emit("SET b1");
+        Emit("LD b1", true);
+        Emit("AND b2", true);
+        Emit("SET b1", true);
     }
 
     @Override
@@ -124,9 +124,9 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
         PopFromStack();
-        Emit("LD b1");
-        Emit("OR b2");
-        Emit("SET b1");
+        Emit("LD b1", true);
+        Emit("OR b2", true);
+        Emit("SET b1", true);
     }
 
     @Override
@@ -264,8 +264,8 @@ public class CodeGenerator extends DepthFirstAdapter {
                 e.apply(this);
             }
         }
-        Emit("JMP(004) #" + jumpLabel);
-        Emit("JME(005) #" + loopLabel);
+        Emit("JMP(004) #" + jumpLabel, true);
+        Emit("JME(005) #" + loopLabel, true);
         node.getStatement().apply(this);
         {
             List<PExpr> copy = new ArrayList<PExpr>(node.getIterator());
