@@ -31,38 +31,37 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outStart(Start node) {
+    public void outStart(Start node){
         writer.close();
     }
 
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
-    public void caseADeclaration(ADeclaration node) {
+    public void caseADeclaration(ADeclaration node){
         super.caseADeclaration(node);
     }
 
     @Override
     public void outABreakStatement(ABreakStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outACaseStatement(ACaseStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outACompareAndExpr(ACompareAndExpr node){
-
         PopFromStack();
         Emit("LD r1");
         Emit("AND 2");
@@ -119,103 +118,103 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
         //Mads
     }
 
     @Override
     public void outAContinueStatement(AContinueStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outADeclaration(ADeclaration node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outADefaultStatement(ADefaultStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAFalseExpr(AFalseExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAFunctionCallExpr(AFunctionCallExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAFunctionRootDeclaration(AFunctionRootDeclaration node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAIdentifierExpr(AIdentifierExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAMemberExpr(AMemberExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outANegationExpr(ANegationExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAPortAnalogInputExpr(APortAnalogInputExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAPortAnalogOutputExpr(APortAnalogOutputExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAPortInputExpr(APortInputExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAPortMemoryExpr(APortMemoryExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAPortOutputExpr(APortOutputExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAReturnStatement(AReturnStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outASwitchStatement(ASwitchStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outATrueExpr(ATrueExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outATypeCastExpr(ATypeCastExpr node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
     public void outAWhileStatement(AWhileStatement node) {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
@@ -275,7 +274,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseASwitchStatement(ASwitchStatement node){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     @Override
