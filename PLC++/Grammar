@@ -196,8 +196,11 @@ array_definition {-> array_definition} =
 
 // Statements
 statement {-> statement} =
+    // Empty statement
+    {empty} semi                                                                                                        {-> New statement.empty()}
+
     // Scope
-    {scope} l_brc statement* r_brc																						{-> New statement.scope([statement.statement])}
+  | {scope} l_brc statement* r_brc																						{-> New statement.scope([statement.statement])}
 
     // Declaration and expr
   |	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
@@ -220,8 +223,11 @@ statement {-> statement} =
 ;
 
 statement_no_short_if  {-> statement} =
+    // Empty statement
+    {empty} semi                                                                                                        {-> New statement.empty()}
+
     // Scope
-    {scope} l_brc statement* r_brc																			            {-> New statement.scope([statement.statement])}
+  | {scope} l_brc statement* r_brc																			            {-> New statement.scope([statement.statement])}
 
     // Declaration and expr
   |	{declaration} declaration																							{-> New statement.declaration(declaration.declaration)}
@@ -449,7 +455,9 @@ type_qualifier =
 ;
 
 statement =
-	{declaration} 				declaration
+    {empty}
+
+  |	{declaration} 				declaration
   | {expr} 						expr
   | {scope}					    statement*
   

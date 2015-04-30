@@ -67,38 +67,50 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outACompareEqualExpr(ACompareEqualExpr node){
-        //throw new NotImplementedException();
-        //Mads
+        super.outACompareEqualExpr(node);
+
+        PopFromStack();
+        Emit("=(300) r1 r2");
     }
 
     @Override
     public void outACompareGreaterExpr(ACompareGreaterExpr node){
-        //throw new NotImplementedException();
-        //Mads
+        super.outACompareGreaterExpr(node);
+
+        PopFromStack();
+        Emit(">(320) r1 r2");
     }
 
     @Override
     public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node){
-        //throw new NotImplementedException();
-        //Mads
+        super.outACompareGreaterOrEqualExpr(node);
+
+        PopFromStack();
+        Emit(">=(325) r1 r2");
     }
 
     @Override
     public void outACompareLessExpr(ACompareLessExpr node){
-        //throw new NotImplementedException();
-        //Mads
+        super.outACompareLessExpr(node);
+
+        PopFromStack();
+        Emit("<(310) r1 r2");
     }
 
     @Override
     public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node){
-        //throw new NotImplementedException();
-        //Mads
+        super.outACompareLessOrEqualExpr(node);
+
+        PopFromStack();
+        Emit("<=(315) r1 r2");
     }
 
     @Override
     public void outACompareNotEqualExpr(ACompareNotEqualExpr node){
-        //throw new NotImplementedException();
-        //Mads
+        super.outACompareNotEqualExpr(node);
+
+        PopFromStack();
+        Emit("<>(305) r1 r2");
     }
 
     @Override
