@@ -321,6 +321,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
         PopFromStack();
         Emit("+(400) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
     @Override
@@ -329,6 +330,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
     @Override
@@ -336,6 +338,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outAMultiExpr(node);
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
     @Override
@@ -344,9 +347,10 @@ public class CodeGenerator extends DepthFirstAdapter {
 
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
-    private void PopFromStack(){
+    private void PopFromStack() {
         Emit("r1\tINT\tW4\t\t0", false);
         Emit("r2\tINT\tW5\t\t0", false);
         Emit("LIFO(634) W0 r1", true);
