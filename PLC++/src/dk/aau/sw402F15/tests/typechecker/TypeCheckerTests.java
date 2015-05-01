@@ -88,22 +88,23 @@ public class TypeCheckerTests {
         checkCode("bool b = 1 <= 2;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    // Int is promoted to float and therefor should not give any error
+    @Test
     public void checkIntDecimalComparisonGreater(){
         checkCode("bool b = 1 > 1.1;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test
     public void checkIntDecimalComparisonGreaterOrEqual(){
         checkCode("bool b = 1 >= 1.1;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test
     public void checkIntDecimalComparisonLess(){
         checkCode("bool b = 1 < 1.1;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test
     public void checkIntDecimalComparisonLessOrEqual(){
         checkCode("bool b = 1 <= 1.1;");
     }
