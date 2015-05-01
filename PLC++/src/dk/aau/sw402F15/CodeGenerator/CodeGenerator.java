@@ -62,7 +62,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outABreakStatement(ABreakStatement node){
-        //throw new NotImplementedException();
+        super.outABreakStatement(node);
+        Emit("BREAK(514)", true);
     }
 
     @Override
