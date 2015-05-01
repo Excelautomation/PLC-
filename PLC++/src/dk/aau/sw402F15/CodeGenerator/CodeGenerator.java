@@ -39,6 +39,13 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
+    public void outAAssignmentExpr(AAssignmentExpr node) {
+        super.outAAssignmentExpr(node);
+        // Get location of symbol in memory
+        // Set memory to value of TOS
+    }
+
+    @Override
     public void caseAArrayDefinition(AArrayDefinition node){
         //throw new NotImplementedException();
     }
@@ -280,6 +287,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         }
         Emit("JME(005) #" + jumpLabel, true);
         node.getCondition().apply(this);
+        Emit("LD b1", true);
         Emit("CJP(510) #" + loopLabel, true);
     }
 
@@ -290,6 +298,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseAWhileStatement(AWhileStatement node){
+        Emit("LD b1", true);
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
