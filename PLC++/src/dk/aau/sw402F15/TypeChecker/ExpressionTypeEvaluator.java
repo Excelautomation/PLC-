@@ -286,6 +286,28 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         }
     }
 
+    // Array expr
+    @Override
+    public void outAArrayExpr(AArrayExpr node) {
+        super.outAArrayExpr(node);
+
+        // Get type of index (needs to be an int, since index cannot be a floating point number)
+        SymbolType.Type arg1 = stack.pop().getType();
+        if (arg1 != SymbolType.Type.Int) {
+            throw new IllegalExpressionException();
+        }
+
+        // Check identifier it needs to be an array
+        Symbol symbol = scope.getSymbolOrThrow(node.getName().getText());
+        if (symbol.getType().getType() != SymbolType.Type.Array) {
+            throw new IllegalExpressionException();
+        }
+
+        // Push correct type to stack
+        SymbolArray array = (SymbolArray)symbol;
+        stack.push(array.getContainedType());
+    }
+
     // Helper methods for compare and math operations
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();

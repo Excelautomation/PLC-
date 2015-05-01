@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.Symboltable.Type;
 
+import dk.aau.sw402F15.Symboltable.SymbolArray;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -57,7 +58,7 @@ public class SymbolType {
     }
 
     public static SymbolType Array() {
-        throw new NotImplementedException();
+        return new SymbolType(Type.Array);
     }
 
     public static SymbolType Enum() {
