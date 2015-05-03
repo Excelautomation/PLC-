@@ -232,11 +232,6 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAWhileStatement(AWhileStatement node) {
-        //throw new NotImplementedException();
-    }
-
-    @Override
     public void caseABranchStatement(ABranchStatement node) {
         super.caseABranchStatement(node);
 
