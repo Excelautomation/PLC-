@@ -37,7 +37,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         instructionWriter.close();
         symbolWriter.close();
     }
-
+    
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -233,7 +233,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseABranchStatement(ABranchStatement node) {
-        super.caseABranchStatement(node);
+        //super.caseABranchStatement(node);
 
         if (node.getRight() != null) {
             // If - else statement
