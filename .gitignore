@@ -1,3 +1,8 @@
+# InstructionList
+PLC++/InstructionList.txt
+PLC++/SymbolList.txt
+
+# Java class files
 *.class
 
 # Mobile Tools for Java (J2ME)

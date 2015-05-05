@@ -39,6 +39,13 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
+    public void outAAssignmentExpr(AAssignmentExpr node) {
+        super.outAAssignmentExpr(node);
+        // Get location of symbol in memory
+        // Set memory to value of TOS
+    }
+
+    @Override
     public void caseAArrayDefinition(AArrayDefinition node){
         //throw new NotImplementedException();
     }
@@ -55,7 +62,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outABreakStatement(ABreakStatement node){
-        //throw new NotImplementedException();
+        super.outABreakStatement(node);
+        Emit("BREAK(514)", true);
     }
 
     @Override
@@ -224,11 +232,6 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAWhileStatement(AWhileStatement node) {
-        //throw new NotImplementedException();
-    }
-
-    @Override
     public void caseABranchStatement(ABranchStatement node) {
         super.caseABranchStatement(node);
 
@@ -280,6 +283,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         }
         Emit("JME(005) #" + jumpLabel, true);
         node.getCondition().apply(this);
+        Emit("LD b1", true);
         Emit("CJP(510) #" + loopLabel, true);
     }
 
@@ -290,6 +294,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseAWhileStatement(AWhileStatement node){
+        Emit("LD b1", true);
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
@@ -321,6 +326,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
         PopFromStack();
         Emit("+(400) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
     @Override
@@ -329,6 +335,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
     @Override
@@ -336,6 +343,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         super.outAMultiExpr(node);
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
     @Override
@@ -344,9 +352,10 @@ public class CodeGenerator extends DepthFirstAdapter {
 
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
+        Emit("PUSH(632) W0 r1", true);
     }
 
-    private void PopFromStack(){
+    private void PopFromStack() {
         Emit("r1\tINT\tW4\t\t0", false);
         Emit("r2\tINT\tW5\t\t0", false);
         Emit("LIFO(634) W0 r1", true);

@@ -2,11 +2,13 @@ package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.SymbolVariable;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.RedefinitionOfReadOnlyException;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
+import dk.aau.sw402F15.parser.node.AArrayExpr;
 import dk.aau.sw402F15.parser.node.AAssignmentExpr;
 import dk.aau.sw402F15.parser.node.AIdentifierExpr;
 import dk.aau.sw402F15.parser.node.AMemberExpr;
@@ -33,7 +35,15 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(scope);
         node.getRight().apply(expressionTypeEvaluator);
 
-        if (expressionTypeEvaluator.getResult().getType() != symbolType.getType()) {
+        SymbolType.Type exprResultType = expressionTypeEvaluator.getResult().getType();
+
+        // Check if we must make a implicit type conversion
+        if (exprResultType == SymbolType.Type.Int && symbolType.getType() == SymbolType.Type.Decimal) {
+            exprResultType = SymbolType.Type.Decimal;
+        }
+
+        // Check if we could match the correct type
+        if (exprResultType != symbolType.getType()) {
             throw new IllegalAssignmentException();
         }
     }
@@ -49,15 +59,20 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
     @Override
     public void caseAIdentifierExpr(AIdentifierExpr node) {
         Symbol symbol = scope.getSymbolOrThrow(node.getName().getText());
+        SymbolVariable variable = (SymbolVariable) symbol;
 
-        if (symbol.getClass() == SymbolVariable.class) {
-            SymbolVariable variable = (SymbolVariable) symbol;
-
-            if (variable.isConst())
-                throw new RedefinitionOfReadOnlyException();
+        if (variable.isConst())
+            throw new RedefinitionOfReadOnlyException();
 
 
-            this.symbolType = variable.getType();
-        }
+        this.symbolType = variable.getType();
+    }
+
+    @Override
+    public void caseAArrayExpr(AArrayExpr node) {
+        Symbol symbol = scope.getSymbolOrThrow(node.getName().getText());
+        SymbolArray array = (SymbolArray)symbol;
+
+        this.symbolType = array.getContainedType();
     }
 }

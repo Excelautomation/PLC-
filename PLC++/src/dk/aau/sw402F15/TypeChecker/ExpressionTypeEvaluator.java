@@ -42,6 +42,9 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         stack.push(assignmentChecker.getResult());
     }
 
+    /*
+    Not called
+
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -52,7 +55,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         if (arg1.getType() != arg2.getType()) {
             throw new IllegalAssignmentException();
         }
-    }
+    }*/
 
     // Member expression
     @Override
@@ -149,25 +152,46 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     @Override
     public void outAIncrementExpr(AIncrementExpr node) {
         super.outAIncrementExpr(node);
-
-        // Don't pop - we don't change type
-        SymbolType.Type type = stack.peek().getType();
-
-        if (type != SymbolType.Type.Int && type != SymbolType.Type.Decimal) {
-            throw new IllegalExpressionException();
-        }
+        checkUnary();
     }
 
     @Override
     public void outADecrementExpr(ADecrementExpr node) {
         super.outADecrementExpr(node);
+        checkUnary();
+    }
 
-        // Don't pop - we don't change type
-        SymbolType.Type type = stack.peek().getType();
+    // Unary plus and minus
+    @Override
+    public void outAUnaryPlusExpr(AUnaryPlusExpr node) {
+        super.outAUnaryPlusExpr(node);
+        checkUnary();
+    }
 
-        if (type != SymbolType.Type.Int && type != SymbolType.Type.Decimal) {
-            throw new IllegalExpressionException();
-        }
+    @Override
+    public void outAUnaryMinusExpr(AUnaryMinusExpr node) {
+        super.outAUnaryMinusExpr(node);
+        checkUnary();
+    }
+
+    // Negation
+    @Override
+    public void outANegationExpr(ANegationExpr node) {
+        super.outANegationExpr(node);
+        checkUnaryBool();
+    }
+
+    // Logic comparison
+    @Override
+    public void outACompareAndExpr(ACompareAndExpr node) {
+        super.outACompareAndExpr(node);
+        checkLocicComparison();
+    }
+
+    @Override
+    public void outACompareOrExpr(ACompareOrExpr node) {
+        super.outACompareOrExpr(node);
+        checkLocicComparison();
     }
 
     // Comparison
@@ -250,11 +274,59 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         checkExpression();
     }
 
+    // Ternary expr
+    @Override
+    public void outATernaryExpr(ATernaryExpr node) {
+        super.outATernaryExpr(node);
+        // expr = expr ? expr
+        // All 3 types needs to be equal
+        SymbolType.Type arg3 = stack.pop().getType(), arg2 = stack.pop().getType(), arg1 = stack.pop().getType();
+        if (arg1 != arg2 || arg2 != arg3) {
+            throw new IllegalExpressionException();
+        }
+    }
+
+    // Array expr
+    @Override
+    public void outAArrayExpr(AArrayExpr node) {
+        super.outAArrayExpr(node);
+
+        // Get type of index (needs to be an int, since index cannot be a floating point number)
+        SymbolType.Type arg1 = stack.pop().getType();
+        if (arg1 != SymbolType.Type.Int) {
+            throw new IllegalExpressionException();
+        }
+
+        // Check identifier it needs to be an array
+        Symbol symbol = scope.getSymbolOrThrow(node.getName().getText());
+        if (symbol.getType().getType() != SymbolType.Type.Array) {
+            throw new IllegalExpressionException();
+        }
+
+        // Push correct type to stack
+        SymbolArray array = (SymbolArray)symbol;
+        stack.push(array.getContainedType());
+    }
+
     // Helper methods for compare and math operations
     private void checkComparison() {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if ((arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int) || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal)) {
+        if ((arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int)
+                || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal)
+                || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
+                || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
+            stack.push(SymbolType.Boolean());
+        }
+        else {
+            throw new IllegalComparisonException();
+        }
+    }
+
+    private void checkLocicComparison() {
+        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
+
+        if ((arg1.getType() == SymbolType.Type.Boolean && arg2.getType() == SymbolType.Type.Boolean)) {
             stack.push(SymbolType.Boolean());
         }
         else {
@@ -271,7 +343,29 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         else if (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal){
             stack.push(SymbolType.Decimal());
         }
+        else if ((arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
+                 || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
+            stack.push(SymbolType.Decimal());
+        }
         else{
+            throw new IllegalExpressionException();
+        }
+    }
+
+    private void checkUnary() {
+        // Don't pop - we don't change type
+        SymbolType.Type type = stack.peek().getType();
+
+        if (type != SymbolType.Type.Int && type != SymbolType.Type.Decimal) {
+            throw new IllegalExpressionException();
+        }
+    }
+
+    private void checkUnaryBool() {
+        // Don't pop - we don't change type
+        SymbolType.Type type = stack.peek().getType();
+
+        if (type != SymbolType.Type.Boolean) {
             throw new IllegalExpressionException();
         }
     }
