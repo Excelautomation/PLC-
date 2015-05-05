@@ -261,30 +261,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseAForStatement(AForStatement node){
-        int jumpLabel = getNextJump();
-        int loopLabel = getNextJump();
-
-        {
-            List<PExpr> copy = new ArrayList<PExpr>(node.getInitilizer());
-            for(PExpr e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        Emit("JMP(004) #" + jumpLabel, true);
-        Emit("JME(005) #" + loopLabel, true);
-        node.getStatement().apply(this);
-        {
-            List<PExpr> copy = new ArrayList<PExpr>(node.getIterator());
-            for(PExpr e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        Emit("JME(005) #" + jumpLabel, true);
-        node.getCondition().apply(this);
-        Emit("LD b1", true);
-        Emit("CJP(510) #" + loopLabel, true);
+        // Not needed since we convert For-loops til While-loops
     }
 
     @Override
