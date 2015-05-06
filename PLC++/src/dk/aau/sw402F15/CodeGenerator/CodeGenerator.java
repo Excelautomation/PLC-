@@ -154,7 +154,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outAFalseExpr(AFalseExpr node){
-        //throw new NotImplementedException();
+        super.outAFalseExpr(node);
+        Emit("LD P_Off", true);
     }
 
     @Override
@@ -223,7 +224,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outATrueExpr(ATrueExpr node){
-        //throw new NotImplementedException();
+        super.outATrueExpr(node);
+        Emit("LD P_On", true);
     }
 
     @Override
