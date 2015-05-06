@@ -150,9 +150,25 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
 
     // Increment and decrement
     @Override
+    public void inAIncrementExpr(AIncrementExpr node) {
+        super.inAIncrementExpr(node);
+
+        // Push identifier on stack
+        stack.push(scope.getSymbolOrThrow(node.getName().getText()).getType());
+    }
+
+    @Override
     public void outAIncrementExpr(AIncrementExpr node) {
         super.outAIncrementExpr(node);
         checkUnary();
+    }
+
+    @Override
+    public void inADecrementExpr(ADecrementExpr node) {
+        super.inADecrementExpr(node);
+
+        // Push identifier on stack
+        stack.push(scope.getSymbolOrThrow(node.getName().getText()).getType());
     }
 
     @Override
