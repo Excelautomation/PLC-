@@ -214,7 +214,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outAReturnStatement(AReturnStatement node){
-        //throw new NotImplementedException();
+        super.outAReturnStatement(node);
+        Emit("RET(093)", true);
     }
 
     @Override
