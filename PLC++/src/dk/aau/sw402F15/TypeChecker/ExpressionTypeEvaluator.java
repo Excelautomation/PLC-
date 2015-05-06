@@ -63,7 +63,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         MemberExpressionEvaluator memberExpressionEvaluator = new MemberExpressionEvaluator(scope);
         node.apply(memberExpressionEvaluator);
 
-        stack.push(memberExpressionEvaluator.getSymbol().getType());
+        stack.push(memberExpressionEvaluator.getSymbol());
     }
 
     // Function call

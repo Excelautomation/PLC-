@@ -3,6 +3,7 @@ package dk.aau.sw402F15.TypeChecker;
 import dk.aau.sw402F15.ScopeChecker.MemberChecker;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.AMemberExpr;
 
@@ -11,7 +12,7 @@ import dk.aau.sw402F15.parser.node.AMemberExpr;
  */
 public class MemberExpressionEvaluator extends DepthFirstAdapter {
     private Scope scope;
-    private Symbol symbol;
+    private SymbolType symbol;
 
     public MemberExpressionEvaluator(Scope scope) {
         this.scope = scope;
@@ -25,7 +26,7 @@ public class MemberExpressionEvaluator extends DepthFirstAdapter {
         symbol = memberChecker.getSymbol();
     }
 
-    public Symbol getSymbol() {
+    public SymbolType getSymbol() {
         return symbol;
     }
 }

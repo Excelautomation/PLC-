@@ -53,7 +53,7 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         MemberExpressionEvaluator memberExpressionEvaluator = new MemberExpressionEvaluator(scope);
         node.apply(memberExpressionEvaluator);
 
-        this.symbolType = memberExpressionEvaluator.getSymbol().getType();
+        this.symbolType = memberExpressionEvaluator.getSymbol();
     }
 
     @Override
