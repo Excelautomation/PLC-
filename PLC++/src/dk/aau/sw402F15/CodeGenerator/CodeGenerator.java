@@ -16,14 +16,16 @@ import java.io.UnsupportedEncodingException;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int returnlabel;
-    private int startAddress = -4;
+    private int nextAddress = -4;
     private int startFunctionNumber = -1;
 
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
     public int getAddressAndIncrement() {
-        return startAddress += 4;
+        if (nextAddress > 504)
+            throw new OutOfMemoryError();
+        return nextAddress += 4;
     }
 
     public int getFunctionNumber() {
@@ -341,7 +343,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + node.getIntegerLiteral(), true);
+        Emit("MOV(021) &" + node.getIntegerLiteral() + " W" + getAddressAndIncrement(), true);
     }
 
     @Override
@@ -357,9 +359,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // TODO Different if float
 
-        PopFromStack();
-        Emit("+(400) r1 r2 r1", true);
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+        //PopFromStack();
+        Emit("+(400) W12 W16 W" + getAddressAndIncrement(), true);
     }
 
     @Override
@@ -396,10 +397,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     private void PopFromStack() {
-        Emit("r1\tINT\tW4\t\t0", false);
-        Emit("r2\tINT\tW5\t\t0", false);
-        Emit("LIFO(634) W" + getAddressAndIncrement() + " r1", true);
-        Emit("LIFO(634) W" + getAddressAndIncrement() + " r2", true);
+        Emit("r1\tINT\tTK0\t\t0", false);
+        Emit("r2\tINT\tTK4\t\t0", false);
+        Emit("LIFO(634) W511 r1", true);
+        Emit("LIFO(634) W507 r2", true);
     }
 
     private int getNextJump(){

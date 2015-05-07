@@ -1,8 +1,9 @@
-float f = 4.5;
-
-float func()
+int func()
 {
-    float g = f + 1.2;
+    int i = 4;
+    int j = 10;
 
-    return g;
+    int sum = i + j;
+
+    return sum;
 }
