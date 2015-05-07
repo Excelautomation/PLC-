@@ -107,6 +107,20 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
+    public void outAIncrementExpr(AIncrementExpr node) {
+        super.outAIncrementExpr(node);
+
+        Emit("++(590) D" + getNextDAddress(false), true);
+    }
+
+    @Override
+    public void outADecrementExpr(ADecrementExpr node) {
+        super.outADecrementExpr(node);
+
+        Emit("--(592) D" + getNextDAddress(false), true);
+    }
+
+    @Override
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
 
@@ -216,6 +230,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
         Emit("SBN(092) " + getFunctionNumber(), true);
+        Emit("LD P_On", true);
         returnlabel = getNextJump();
     }
 
