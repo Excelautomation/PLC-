@@ -63,7 +63,7 @@ public class MemberChecker extends DepthFirstAdapter {
                 return;
             }
             else
-                throw new MemberExpressionIsNotAStructException();
+                throw new MemberExpressionIsNotAStructException(node);
         }
 
         currentSymbol = currentScope.getSymbolOrThrow(node.getText(), node).getType();
