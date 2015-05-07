@@ -1,9 +1,9 @@
-bool func()
-{
-    int i = 4;
-    int j = 6;
+    bool func()
+    {
+        bool a = true;
+        bool b = false;
 
-    bool b = i > j;
+        bool c = a || b;
 
-    return b;
-}
+        return c;
+    }
