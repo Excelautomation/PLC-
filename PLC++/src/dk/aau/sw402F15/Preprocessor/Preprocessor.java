@@ -44,7 +44,7 @@ public class Preprocessor extends DepthFirstAdapter {
     // Enum declaration
     @Override
     public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
-        throw new CompilerInternalException("Enum is not implemented");
+        throw new CompilerInternalException("Enum is not implemented", node);
     }
 
     // RootDeclaration

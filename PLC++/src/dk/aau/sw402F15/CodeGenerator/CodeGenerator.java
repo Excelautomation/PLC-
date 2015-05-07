@@ -16,14 +16,16 @@ import java.io.UnsupportedEncodingException;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int returnlabel;
-    private int startAddress = -4;
+    private int nextAddress = -4;
     private int startFunctionNumber = -1;
 
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
     public int getAddressAndIncrement() {
-        return startAddress += 4;
+        if (nextAddress > 32763)
+            throw new OutOfMemoryError();
+        return nextAddress += 4;
     }
 
     public int getFunctionNumber() {
@@ -37,7 +39,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) W" + getAddressAndIncrement() + " &5", true);
+            Emit("SSET(630) D" + getAddressAndIncrement() + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -52,7 +54,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         instructionWriter.close();
         symbolWriter.close();
     }
-    
+
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -183,7 +185,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         } else if (symbol.getType().getType() == SymbolType.Type.Struct){
 
         } else {
-           // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
+            // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
 
     }
@@ -208,7 +210,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("MCRO(099) " + getFunctionNumber() + " W" + getAddressAndIncrement() + " W" + getAddressAndIncrement(), true);
+        Emit("MCRO(099) " + getFunctionNumber() + " D" + getAddressAndIncrement() + " D" + getAddressAndIncrement(), true);
         returnlabel = getNextJump();
     }
 
@@ -341,56 +343,64 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + node.getIntegerLiteral(), true);
+        Emit("MOV(021) &" + node.getIntegerLiteral() + " D" + getAddressAndIncrement(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        Emit("+F(454) +0,0 +" + node.getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
+        Emit("+F(454) +0,0 +" + node.getDecimalLiteral().toString().replace(".", ",") + "D" + getAddressAndIncrement() + "", true);
     }
 
     @Override
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
-        PopFromStack();
-        Emit("+(400) r1 r2 r1", true);
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+        // TODO Different if float
+
+        //PopFromStack();
+        Emit("+(400) D12 D16 D" + getAddressAndIncrement(), true);
     }
 
     @Override
     public void outADivExpr(ADivExpr node) {
         super.outADivExpr(node);
 
+        // TODO Different if float
+
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+        Emit("PUSH(632) D" + getAddressAndIncrement() + " r1", true);
     }
 
     @Override
     public void outAMultiExpr(AMultiExpr node) {
         super.outAMultiExpr(node);
+
+        // TODO Different if float
+
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+        Emit("PUSH(632) D" + getAddressAndIncrement() + " r1", true);
     }
 
     @Override
     public void outASubExpr(ASubExpr node) {
         super.outASubExpr(node);
 
+        // TODO Different if float
+
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
-        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+        Emit("PUSH(632) D" + getAddressAndIncrement() + " r1", true);
     }
 
     private void PopFromStack() {
-        Emit("r1\tINT\tW4\t\t0", false);
-        Emit("r2\tINT\tW5\t\t0", false);
-        Emit("LIFO(634) W" + getAddressAndIncrement() + " r1", true);
-        Emit("LIFO(634) W" + getAddressAndIncrement() + " r2", true);
+        Emit("r1\tINT\tTK0\t\t0", false);
+        Emit("r2\tINT\tTK4\t\t0", false);
+        Emit("LIFO(634) W511 r1", true);
+        Emit("LIFO(634) W507 r2", true);
     }
 
     private int getNextJump(){
