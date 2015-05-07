@@ -20,7 +20,11 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
-    int nextAddress = 0; // Increment by 4 after usage
+    private int startAddress = -4;
+    public int getAddressAndIncrement()
+    {
+        return startAddress += 4;
+    }
 
     public CodeGenerator(Scope scope) {
         super(scope, scope);
@@ -29,7 +33,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) W" + nextAddress + " &5", true);
+            Emit("SSET(630) W" + getAddressAndIncrement() + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -158,13 +162,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
             throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
-            Emit("PUSH(632) W" + nextAddress + " &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
-            nextAddress += 4;
+            Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
+
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
             throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
-            Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W" + nextAddress + "", true);
-            nextAddress += 4;
+            Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
+
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
             throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
@@ -336,14 +340,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        //Emit("PUSH(632) W" + nextAddress + " #" + node.getIntegerLiteral().getText(), true);
+        //Emit("PUSH(632) W" + getAddressAndIncrement() + " #" + node.getIntegerLiteral().getText(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        //Emit("PUSH(632) W" + nextAddress + " #" + node.getDecimalLiteral().getText(), true);
+        //Emit("PUSH(632) W" + getAddressAndIncrement() + " #" + node.getDecimalLiteral().getText(), true);
     }
 
     @Override
@@ -352,8 +356,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         PopFromStack();
         Emit("+(400) r1 r2 r1", true);
-        Emit("PUSH(632) W" + nextAddress + " r1", true);
-        nextAddress += 4;
+        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+
     }
 
     @Override
@@ -362,8 +366,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
-        Emit("PUSH(632) W" + nextAddress + " r1", true);
-        nextAddress += 4;
+        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+
     }
 
     @Override
@@ -371,8 +375,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAMultiExpr(node);
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
-        Emit("PUSH(632) W" + nextAddress + " r1", true);
-        nextAddress += 4;
+        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+
     }
 
     @Override
@@ -381,17 +385,17 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
-        Emit("PUSH(632) W" + nextAddress + " r1", true);
-        nextAddress += 4;
+        Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
+
     }
 
     private void PopFromStack() {
         Emit("r1\tINT\tW4\t\t0", false);
         Emit("r2\tINT\tW5\t\t0", false);
-        Emit("LIFO(634) W" + nextAddress + " r1", true);
-        nextAddress += 4;
-        Emit("LIFO(634) W" + nextAddress + " r2", true);
-        nextAddress += 4;
+        Emit("LIFO(634) W" + getAddressAndIncrement() + " r1", true);
+
+        Emit("LIFO(634) W" + getAddressAndIncrement() + " r2", true);
+
     }
 
     private int getNextJump(){
