@@ -75,8 +75,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CompilerException e) {
-            e.printError();
-            e.printStackTrace();
+            e.printError(code);
         }
     }
 }

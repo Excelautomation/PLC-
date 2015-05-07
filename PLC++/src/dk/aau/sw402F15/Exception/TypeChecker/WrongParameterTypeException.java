@@ -11,7 +11,9 @@ public class WrongParameterTypeException extends TypeCheckerException {
     private SymbolType actualType;
 
     public WrongParameterTypeException(Node node, SymbolType expectedType, SymbolType actualType) {
-        super(node);
+        super("Wrong actual parameter " +
+                "(expected: " + expectedType.getType().name() + (expectedType.hasName() ? expectedType.getName() : "") + "; " +
+                "actual: " + actualType.getType().name() + (actualType.hasName() ? actualType.getName() : "") + ")",node);
         this.expectedType = expectedType;
         this.actualType = actualType;
     }
