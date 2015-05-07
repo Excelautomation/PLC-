@@ -55,7 +55,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SBS(091) 0", true);
+            Emit("SSET(630) D" + getNextDAddress(true) + " &5", true);
+            // here we call the init method
+            Emit("LD P_On", true);
+            // here we call the run Method
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -168,7 +171,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node){
+    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
         super.outACompareLessOrEqualExpr(node);
 
         Emit("AND<=(315) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false), true);
@@ -176,7 +179,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareNotEqualExpr(ACompareNotEqualExpr node){
+    public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
         super.outACompareNotEqualExpr(node);
 
         Emit("AND<>(305) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false), true);

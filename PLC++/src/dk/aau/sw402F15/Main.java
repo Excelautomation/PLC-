@@ -30,7 +30,11 @@ public class Main {
                 "func().nrOfWheels = 4;" +
                 "return 1;\n" +
                 "}\n";*/
-            String code = "void run() { }";
+            String code = "void run() {" +
+                    "int i;" +
+                    "bool b;" +
+                    " }"
+                    ;
 
         //System.out.println(code);
 
