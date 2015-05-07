@@ -234,7 +234,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         PopFromStack();
         Emit("NOT r1", true);
-
     }
 
     @Override
@@ -358,7 +357,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("+(400) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     @Override
@@ -368,7 +366,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     @Override
@@ -377,7 +374,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     @Override
@@ -387,16 +383,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     private void PopFromStack() {
         Emit("r1\tINT\tW4\t\t0", false);
         Emit("r2\tINT\tW5\t\t0", false);
         Emit("LIFO(634) W" + getAddressAndIncrement() + " r1", true);
-
         Emit("LIFO(634) W" + getAddressAndIncrement() + " r2", true);
-
     }
 
     private int getNextJump(){
