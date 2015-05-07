@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     int jumpLabel = 0;
-
+    int returnlabel;
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
     public CodeGenerator(Scope scope) {
@@ -64,10 +64,11 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void caseADeclaration(ADeclaration node){
         super.caseADeclaration(node);
     }
-
+    
     @Override
     public void outABreakStatement(ABreakStatement node){
         super.outABreakStatement(node);
+
         Emit("BREAK(514)", true);
     }
 
@@ -79,6 +80,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
+
         PopFromStack();
         Emit("LD b1", true);
         Emit("AND b2", true);
@@ -136,6 +138,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
+
         PopFromStack();
         Emit("LD b1", true);
         Emit("OR b2", true);
@@ -185,6 +188,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAFalseExpr(AFalseExpr node){
         super.outAFalseExpr(node);
+
         Emit("LD P_Off", true);
     }
 
@@ -194,8 +198,17 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node){
-        //throw new NotImplementedException();
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
+       super.inAFunctionRootDeclaration(node);
+        Emit("SBN(092)", true);
+        returnlabel = getNextJump();
+    }
+
+    @Override
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
+        Emit("JME(005) #" + returnlabel, true);
+        Emit("RET(093)", true);
     }
 
     @Override
@@ -245,7 +258,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAReturnStatement(AReturnStatement node){
         super.outAReturnStatement(node);
-        Emit("RET(093)", true);
+        Emit("JMP(004) #" + returnlabel, true);
     }
 
     @Override
@@ -256,6 +269,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
+
         Emit("LD P_On", true);
     }
 
