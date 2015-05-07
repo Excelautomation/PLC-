@@ -29,11 +29,7 @@ public class Main {
                 "func().nrOfWheels = 4;" +
                 "return 1;\n" +
                 "}\n";*/
-            String code = "float main() {" +
-                    "float a = 1.4; " +
-                    //"a = 1.10 + 1;" +
-                    "return a;" +
-                    "}";
+            String code = "void run() { }";
 
         //System.out.println(code);
 

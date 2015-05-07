@@ -215,8 +215,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
-        Emit("JME(005) #" + returnlabel, true);
-        Emit("RET(093)", true);
+        //Emit("JME(005) #" + returnlabel, true);
+        //Emit("RET(093)", true);
     }
 
     @Override
