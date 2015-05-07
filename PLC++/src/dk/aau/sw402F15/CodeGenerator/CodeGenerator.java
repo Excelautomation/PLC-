@@ -316,11 +316,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void caseAForStatement(AForStatement node){
-        // Not needed since we convert For-loops til While-loops
-    }
-
-    @Override
     public void caseASwitchStatement(ASwitchStatement node){
         //throw new NotImplementedException();
     }
