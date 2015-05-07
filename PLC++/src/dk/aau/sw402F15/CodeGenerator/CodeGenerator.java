@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class CodeGenerator extends DepthFirstAdapter {
     int jumpLabel = 0;
-
+    int returnlabel;
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
@@ -164,8 +164,16 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node){
-        //throw new NotImplementedException();
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
+       super.inAFunctionRootDeclaration(node);
+        returnlabel = getNextJump();
+    }
+
+    @Override
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
+        Emit("JME(005) #" + returnlabel, true);
+        Emit("RET(093)", true);
     }
 
     @Override
@@ -215,7 +223,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outAReturnStatement(AReturnStatement node){
         super.outAReturnStatement(node);
-        Emit("RET(093)", true);
+        Emit("JMP(004) #" + returnlabel, true);
     }
 
     @Override
