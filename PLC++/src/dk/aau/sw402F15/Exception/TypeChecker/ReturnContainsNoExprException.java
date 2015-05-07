@@ -4,7 +4,7 @@ import dk.aau.sw402F15.parser.node.Node;
 
 public class ReturnContainsNoExprException extends TypeCheckerException {
     public ReturnContainsNoExprException(Node node) {
-        super(node);
+        this("Missing return value", node);
     }
 
     public ReturnContainsNoExprException(String message, Node node) {

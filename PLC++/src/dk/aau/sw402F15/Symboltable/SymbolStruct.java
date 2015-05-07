@@ -5,7 +5,7 @@ import dk.aau.sw402F15.parser.node.Node;
 
 import java.util.List;
 
-public class SymbolStruct extends  Symbol {
+public class SymbolStruct extends Symbol {
 
     private List<Symbol> symbolList;
 

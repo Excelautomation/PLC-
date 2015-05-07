@@ -6,7 +6,10 @@ import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.SymbolVariable;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.*;
+import dk.aau.sw402F15.parser.node.AArrayDefinition;
+import dk.aau.sw402F15.parser.node.AConstTypeQualifier;
+import dk.aau.sw402F15.parser.node.ADeclaration;
+import dk.aau.sw402F15.parser.node.Node;
 
 /**
  * Created by sahb on 22/04/15.
@@ -23,12 +26,10 @@ public class DeclarationSymbolProcessor extends DepthFirstAdapter {
     @Override
     public void caseADeclaration(ADeclaration node) {
         // Apply qualifier and array
-        if(node.getQuailifer() != null)
-        {
+        if (node.getQuailifer() != null) {
             node.getQuailifer().apply(this);
         }
-        if(node.getArray() != null)
-        {
+        if (node.getArray() != null) {
             node.getArray().apply(this);
         }
 
@@ -56,8 +57,7 @@ public class DeclarationSymbolProcessor extends DepthFirstAdapter {
     private void declareVariable(Node node, String name, SymbolType variableType, boolean isConst, boolean isArray) {
         if (isArray) {
             currentScope.addSymbol(new SymbolArray(variableType, name, node, currentScope));
-        }
-        else {
+        } else {
             currentScope.addSymbol(new SymbolVariable(variableType, name, node, currentScope, isConst));
         }
     }

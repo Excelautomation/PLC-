@@ -1,9 +1,10 @@
 package dk.aau.sw402F15.tests.parser;
 
+import dk.aau.sw402F15.parser.node.ABranchStatement;
+import dk.aau.sw402F15.parser.node.AFunctionRootDeclaration;
+import dk.aau.sw402F15.parser.node.AProgram;
 import dk.aau.sw402F15.parser.node.Node;
-import dk.aau.sw402F15.parser.node.*;
 import dk.aau.sw402F15.tests.ParserTest;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -32,7 +33,7 @@ public class DanglingElse extends ParserTest {
 
     private AFunctionRootDeclaration getFunction(Node node) {
         // Check if node is Abstract syntax program
-        AProgram program = (AProgram)node;
+        AProgram program = (AProgram) node;
 
         // Find first function
         return (AFunctionRootDeclaration) program.getRootDeclaration().getFirst();

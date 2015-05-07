@@ -10,8 +10,7 @@ public class IncompatibleReturnTypeException extends TypeCheckerException {
     private final SymbolType symbolType;
 
     public IncompatibleReturnTypeException(Node node, SymbolType symbolType) {
-        super(node);
-        this.symbolType = symbolType;
+        this("Incompatible returntype: " + symbolType.getType().name() + (symbolType.hasName() ? (" " + symbolType.getName()) : ""), node, symbolType);
     }
 
     public IncompatibleReturnTypeException(String message, Node node, SymbolType symbolType) {

@@ -7,7 +7,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class MissingReturnStatementException extends TypeCheckerException {
     public MissingReturnStatementException(Node node) {
-        super(node);
+        super("Missing return statement", node);
     }
 
     public MissingReturnStatementException(String message, Node node) {

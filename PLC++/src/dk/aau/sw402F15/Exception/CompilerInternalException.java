@@ -4,10 +4,6 @@ import dk.aau.sw402F15.parser.node.Node;
 
 public class CompilerInternalException extends CompilerException {
 
-    public CompilerInternalException(Node node) {
-        super(node);
-    }
-
     public CompilerInternalException(String message, Node node) {
         super(message, node);
     }
