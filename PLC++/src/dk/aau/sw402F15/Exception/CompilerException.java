@@ -8,11 +8,8 @@ import dk.aau.sw402F15.parser.node.Node;
 public abstract class CompilerException extends RuntimeException {
     private Node node;
 
-    public CompilerException() {
-    }
+    public void printError() {
 
-    public CompilerException(String message) {
-        super(message);
     }
 
     public CompilerException(Node node) {
