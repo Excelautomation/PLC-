@@ -59,10 +59,11 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void caseADeclaration(ADeclaration node){
         super.caseADeclaration(node);
     }
-
+    
     @Override
     public void outABreakStatement(ABreakStatement node){
         super.outABreakStatement(node);
+
         Emit("BREAK(514)", true);
     }
 
@@ -74,6 +75,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
+
         PopFromStack();
         Emit("LD b1", true);
         Emit("AND b2", true);
@@ -131,6 +133,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
+
         PopFromStack();
         Emit("LD b1", true);
         Emit("OR b2", true);
@@ -155,6 +158,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outAFalseExpr(AFalseExpr node){
         super.outAFalseExpr(node);
+
         Emit("LD P_Off", true);
     }
 
@@ -215,6 +219,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outAReturnStatement(AReturnStatement node){
         super.outAReturnStatement(node);
+
         Emit("RET(093)", true);
     }
 
@@ -226,6 +231,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
+
         Emit("LD P_On", true);
     }
 
