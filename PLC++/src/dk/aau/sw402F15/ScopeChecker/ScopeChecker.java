@@ -10,7 +10,6 @@ import dk.aau.sw402F15.parser.node.TIdentifier;
 
 /**
  * Created by Mads on 08/04/15.
- *
  */
 
 public class ScopeChecker extends ScopeDepthFirstAdapter {
@@ -40,8 +39,7 @@ public class ScopeChecker extends ScopeDepthFirstAdapter {
 
     // Check all symbols
     @Override
-    public void caseTIdentifier(TIdentifier node)
-    {
+    public void caseTIdentifier(TIdentifier node) {
         currentScope.getSymbolOrThrow(node.getText(), node);
     }
 

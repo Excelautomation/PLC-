@@ -7,7 +7,6 @@ import dk.aau.sw402F15.SymbolProcessor.StructPreprocessor;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by sahb on 22/04/15.
@@ -44,7 +43,7 @@ public class Preprocessor extends DepthFirstAdapter {
     // Enum declaration
     @Override
     public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
-        throw new CompilerInternalException("Enum is not implemented");
+        throw new CompilerInternalException("Enum is not implemented", node);
     }
 
     // RootDeclaration
@@ -56,14 +55,13 @@ public class Preprocessor extends DepthFirstAdapter {
 
     // Scope builder
     @Override
-    public void inAScopeStatement(AScopeStatement node)
-    {
+    public void inAScopeStatement(AScopeStatement node) {
         super.inAScopeStatement(node);
         currentScope = currentScope.addSubScope(node);
     }
 
     @Override
-    public void outAScopeStatement(AScopeStatement node){
+    public void outAScopeStatement(AScopeStatement node) {
         super.outAScopeStatement(node);
         currentScope = currentScope.getParentScope();
     }

@@ -3,15 +3,8 @@ package dk.aau.sw402F15.Exception.TypeChecker;
 import dk.aau.sw402F15.parser.node.Node;
 
 public class RedefinitionOfConstException extends TypeCheckerException {
-    public RedefinitionOfConstException() {
-    }
-
-    public RedefinitionOfConstException(String message) {
-        super(message);
-    }
-
     public RedefinitionOfConstException(Node node) {
-        super(node);
+        this("Cannot assign a value to const variable", node);
     }
 
     public RedefinitionOfConstException(String message, Node node) {

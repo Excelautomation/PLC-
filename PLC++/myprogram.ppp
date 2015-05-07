@@ -1,6 +1,9 @@
-int func() {
-    float f = 4.3;
-    int i = 5 + 7;
+int func()
+{
+    int i = 4;
+    int j = 6;
 
-    return 0;
+    int lulz = j + i;
+
+    return lulz;
 }

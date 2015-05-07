@@ -7,7 +7,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class ReturnExprInVoidException extends TypeCheckerException {
     public ReturnExprInVoidException(Node node) {
-        super(node);
+        this("Cannot return value in void method", node);
     }
 
     public ReturnExprInVoidException(String message, Node node) {

@@ -7,7 +7,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class DivisionByZeroException extends TypeCheckerException {
     public DivisionByZeroException(Node node) {
-        super(node);
+        this("Cannot divide by constant zero", node);
     }
 
     public DivisionByZeroException(String message, Node node) {

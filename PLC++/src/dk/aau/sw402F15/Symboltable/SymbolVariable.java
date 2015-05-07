@@ -14,7 +14,7 @@ public class SymbolVariable extends Symbol {
         this._isConst = isConst;
     }
 
-    public boolean isConst(){
+    public boolean isConst() {
         return _isConst;
     }
 }
