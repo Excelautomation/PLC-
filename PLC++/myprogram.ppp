@@ -1,9 +1,9 @@
-int func()
+bool func()
 {
     int i = 4;
     int j = 6;
 
-    int lulz = j + i;
+    bool b = i > j;
 
-    return lulz;
+    return b;
 }

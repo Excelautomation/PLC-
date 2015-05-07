@@ -65,13 +65,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outStart(Start node) {
+    public void outStart(Start node){
         Emit("END(001)", true);
 
         instructionWriter.close();
         symbolWriter.close();
     }
-
+    
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -119,7 +119,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit("AND b2", true);
         Emit("SET b1", true);*/
     }
-
+    
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
