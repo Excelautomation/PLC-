@@ -173,19 +173,19 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
-            Emit(node.getName().getText() + "\tBOOL\tW" + getAddressAndIncrement() + ".00\t\t0\t", false);
+            Emit(node.getName().getText() + "\tBOOL\tW" + getNextAddress(true) + ".00\t\t0\t", false);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
-            Emit(node.getName().getText() + "\tINT\tW" + getAddressAndIncrement() + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tINT\tW" + getNextAddress(true) + "\t\t0\t", false);
             
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
             throw new NotImplementedException();
 
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
-            Emit(node.getName().getText() + "\tREAL\tW" + getAddressAndIncrement() + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tREAL\tW" + getNextAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
-            Emit(node.getName().getText() + "\tTIMER\tW" + getAddressAndIncrement() + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tTIMER\tW" + getNextAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
             throw new NotImplementedException();
