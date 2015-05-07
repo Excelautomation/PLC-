@@ -61,9 +61,11 @@ public class Main {
             tree.apply(checker);
 
             // Applying typechecker
-            tree.apply(new TypeChecker(checker.getSymbolTable()));
+            TypeChecker typeChecker = new TypeChecker(checker.getSymbolTable());
+            tree.apply(typeChecker);
 
-            tree.apply(new CodeGenerator());
+            // Apply codegenerator
+            tree.apply(new CodeGenerator(typeChecker.getScope()));
 
         } catch (ParserException e) {
             e.printStackTrace();

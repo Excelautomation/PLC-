@@ -1,5 +1,8 @@
 package dk.aau.sw402F15.CodeGenerator;
 
+import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -15,11 +18,11 @@ import java.util.List;
  */
 public class CodeGenerator extends DepthFirstAdapter {
     int jumpLabel = 0;
-
+    int returnlabel;
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
-
-    public CodeGenerator() {
+    Scope scope;
+    public CodeGenerator(Scope scope) {
         try {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
@@ -30,6 +33,7 @@ public class CodeGenerator extends DepthFirstAdapter {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        this.scope = scope;
     }
 
     @Override
@@ -148,6 +152,31 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outADeclaration(ADeclaration node){
         //throw new NotImplementedException();
+        Symbol symbol = scope.getSymbol(node.getName().getText());
+
+        if (symbol.getType() == SymbolType.Boolean()){
+            //Emit(symbol.getName() + " BOOL W0", false);
+        } else if (symbol.getType() == SymbolType.Int()){
+
+        } else if (symbol.getType() == SymbolType.Char()){
+
+        } else if (symbol.getType() == SymbolType.Decimal()){
+
+        } else if (symbol.getType() == SymbolType.Timer()){
+
+        } else if (symbol.getType() == SymbolType.Array()){
+
+        } else if (symbol.getType() == SymbolType.Method()){
+
+        } else if (symbol.getType() == SymbolType.Function("tmp")){
+
+        } else if (symbol.getType() == SymbolType.Struct("tmp")){
+
+        } else {
+            throw new NotImplementedException();
+        }
+
+        //throw new NotImplementedException();
     }
 
     @Override
@@ -168,8 +197,17 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node){
-        //throw new NotImplementedException();
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
+       super.inAFunctionRootDeclaration(node);
+        Emit("SBN(092)", true);
+        returnlabel = getNextJump();
+    }
+
+    @Override
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
+        Emit("JME(005) #" + returnlabel, true);
+        Emit("RET(093)", true);
     }
 
     @Override
@@ -219,8 +257,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outAReturnStatement(AReturnStatement node){
         super.outAReturnStatement(node);
-
-        Emit("RET(093)", true);
+        Emit("JMP(004) #" + returnlabel, true);
     }
 
     @Override

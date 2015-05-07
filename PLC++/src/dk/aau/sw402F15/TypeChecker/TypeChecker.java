@@ -35,4 +35,8 @@ public class TypeChecker extends ScopeDepthFirstAdapter {
         DeclarationTypeChecker declarationTypeChecker = new DeclarationTypeChecker(currentScope);
         node.apply(declarationTypeChecker);
     }
+
+    public Scope getScope() {
+        return rootScope;
+    }
 }
