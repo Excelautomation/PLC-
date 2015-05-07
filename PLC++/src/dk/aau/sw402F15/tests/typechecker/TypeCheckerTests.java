@@ -1,6 +1,5 @@
 package dk.aau.sw402F15.tests.typechecker;
 
-import dk.aau.sw402F15.Exception.*;
 import dk.aau.sw402F15.Exception.TypeChecker.*;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
@@ -22,7 +21,7 @@ import java.io.StringReader;
 public class TypeCheckerTests {
 
     @Test
-    public void checkIntDeclaration(){
+    public void checkIntDeclaration() {
         checkCode("int i = 0;");
     }
 
@@ -57,73 +56,73 @@ public class TypeCheckerTests {
     }
 
     @Test(expected = IncompaitbleTypesException.class)
-    public void checkDecimalSetToBool(){
+    public void checkDecimalSetToBool() {
         checkCode("float f = true;");
     }
 
     @Test(expected = IncompaitbleTypesException.class)
-    public void checkDecimalSetToInt(){
+    public void checkDecimalSetToInt() {
         checkCode("float f = 1;");
     }
 
     @Test
-    public void checkIntIntComparisonGreater(){
+    public void checkIntIntComparisonGreater() {
         checkCode("bool b = 1 > 2;");
     }
 
     @Test
-    public void checkIntIntComparisonGreaterOrEqual(){
+    public void checkIntIntComparisonGreaterOrEqual() {
         checkCode("bool b = 1 >= 2;");
     }
 
     @Test
-    public void checkIntIntComparisonLess(){
+    public void checkIntIntComparisonLess() {
         checkCode("bool b = 1 < 2;");
     }
 
     @Test
-    public void checkIntIntComparisonLessOrEqual(){
+    public void checkIntIntComparisonLessOrEqual() {
         checkCode("bool b = 1 <= 2;");
     }
 
     // Int is promoted to float and therefor should not give any error
     @Test
-    public void checkIntDecimalComparisonGreater(){
+    public void checkIntDecimalComparisonGreater() {
         checkCode("bool b = 1 > 1.1;");
     }
 
     @Test
-    public void checkIntDecimalComparisonGreaterOrEqual(){
+    public void checkIntDecimalComparisonGreaterOrEqual() {
         checkCode("bool b = 1 >= 1.1;");
     }
 
     @Test
-    public void checkIntDecimalComparisonLess(){
+    public void checkIntDecimalComparisonLess() {
         checkCode("bool b = 1 < 1.1;");
     }
 
     @Test
-    public void checkIntDecimalComparisonLessOrEqual(){
+    public void checkIntDecimalComparisonLessOrEqual() {
         checkCode("bool b = 1 <= 1.1;");
     }
 
     @Test(expected = IncompaitbleTypesException.class)
-    public void checkIntBoolComparisonGreater(){
+    public void checkIntBoolComparisonGreater() {
         checkCode("bool b = 1 > true;");
     }
 
     @Test(expected = IncompaitbleTypesException.class)
-    public void checkIntBoolComparisonGreaterOrEqual(){
+    public void checkIntBoolComparisonGreaterOrEqual() {
         checkCode("bool b = 1 >= true;");
     }
 
     @Test(expected = IncompaitbleTypesException.class)
-    public void checkIntBoolComparisonLess(){
+    public void checkIntBoolComparisonLess() {
         checkCode("bool b = 1 < true;");
     }
 
     @Test(expected = IncompaitbleTypesException.class)
-    public void checkIntBoolComparisonLessOrEqual(){
+    public void checkIntBoolComparisonLessOrEqual() {
         checkCode("bool b = 1 <= true;");
     }
 
@@ -163,10 +162,14 @@ public class TypeCheckerTests {
     }
 
     @Test(expected = RedefinitionOfConstException.class)
-    public void checkAssignmentOfConst() { checkCode("const int i = 7; int func() { i = 2; return 1; } "); }
+    public void checkAssignmentOfConst() {
+        checkCode("const int i = 7; int func() { i = 2; return 1; } ");
+    }
 
     @Test(expected = RedefinitionOfConstException.class)
-    public void checkAssignmentOfConstInFunction() { checkCode("int func(){const int i = 7; i = 2; return 5;} "); }
+    public void checkAssignmentOfConstInFunction() {
+        checkCode("int func(){const int i = 7; i = 2; return 5;} ");
+    }
 
 
     private void checkCode(String code) {

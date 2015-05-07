@@ -1,7 +1,6 @@
 package dk.aau.sw402F15.Exception;
 
 import dk.aau.sw402F15.parser.node.Node;
-import dk.aau.sw402F15.parser.node.Token;
 
 import java.util.ArrayList;
 

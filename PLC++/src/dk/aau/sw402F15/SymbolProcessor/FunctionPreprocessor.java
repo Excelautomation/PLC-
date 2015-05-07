@@ -33,9 +33,8 @@ public class FunctionPreprocessor extends DepthFirstAdapter {
         List<SymbolType> formalParameters = new ArrayList<SymbolType>();
 
         {
-            for(PDeclaration e : node.getParams())
-            {
-                ADeclaration declaration = (ADeclaration)e;
+            for (PDeclaration e : node.getParams()) {
+                ADeclaration declaration = (ADeclaration) e;
                 formalParameters.add(Helper.getSymbolTypeFromTypeSpecifier(declaration.getType()));
 
                 // Apply preprocessor to currentScope
@@ -47,8 +46,7 @@ public class FunctionPreprocessor extends DepthFirstAdapter {
         // Apply statements to preprocessor
         {
             List<PStatement> copy = new ArrayList<PStatement>(node.getStatements());
-            for(PStatement e : copy)
-            {
+            for (PStatement e : copy) {
                 Preprocessor preprocessor = new Preprocessor(functionScope);
                 e.apply(preprocessor);
             }

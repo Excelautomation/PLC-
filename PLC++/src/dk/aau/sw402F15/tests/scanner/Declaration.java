@@ -22,6 +22,7 @@ public class Declaration extends ScannerTest {
     }
 
     private String type;
+
     public Declaration(String type) {
         this.type = type;
     }
