@@ -6,6 +6,8 @@ import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.ADeclaration;
+import dk.aau.sw402F15.parser.node.ADoubleTypeSpecifier;
+import dk.aau.sw402F15.parser.node.ATypeCastExpr;
 
 /**
  * Created by sahb on 27/04/15.
@@ -24,7 +26,7 @@ public class DeclarationTypeChecker extends DepthFirstAdapter {
             return;
 
         ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(scope);
-        node.getExpr().apply(expressionTypeEvaluator);
+        node.apply(expressionTypeEvaluator);
 
         // Get expr type
         SymbolType exprType = expressionTypeEvaluator.getResult();
@@ -32,9 +34,17 @@ public class DeclarationTypeChecker extends DepthFirstAdapter {
         // Check type of declaration
         SymbolType declarationType = Helper.getSymbolTypeFromTypeSpecifier(node.getType());
 
+        // Check if we must make a implicit type conversion
+        if (exprType.equals(SymbolType.Type.Int) && declarationType.equals(SymbolType.Type.Decimal)) {
+            // Int is promoted to decimal
+            // Add typecast
+            node.setExpr(new ATypeCastExpr(new ADoubleTypeSpecifier(), node.getExpr()));
+            return;
+        }
+
         // Check if types matches
-        if (exprType.getType() != declarationType.getType()) {
-            throw new IncompaitbleTypesException(node, exprType, declarationType);
+        if (!exprType.equals(declarationType)) {
+            throw new IncompaitbleTypesException(node, declarationType, exprType);
         }
     }
 }
