@@ -46,6 +46,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
             Emit("SSET(630) D" + getNextAddress(true) + " &5", true);
+            // here we call the init method
+            Emit("LD P_On", true);
+            // here we call the run Method
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -138,7 +142,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node){
+    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
         super.outACompareLessOrEqualExpr(node);
 
         PopFromStack();
@@ -146,7 +150,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareNotEqualExpr(ACompareNotEqualExpr node){
+    public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
         super.outACompareNotEqualExpr(node);
 
         PopFromStack();
@@ -219,7 +223,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.inAFunctionRootDeclaration(node);
         Emit("MCRO(099) " + getFunctionNumber() + " D" + getNextAddress(true) + " D" + getNextAddress(true), true);
         returnlabel = getNextJump();
