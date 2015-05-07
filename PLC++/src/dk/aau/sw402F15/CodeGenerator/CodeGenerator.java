@@ -37,7 +37,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SBS(091) 0", true);
             Emit("SSET(630) W" + getAddressAndIncrement() + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -48,6 +47,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outStart(Start node){
+        Emit("END(001)", true);
+
         instructionWriter.close();
         symbolWriter.close();
     }
@@ -166,7 +167,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
-            
+
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
@@ -182,7 +183,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         } else if (symbol.getType().getType() == SymbolType.Type.Struct){
 
         } else {
-            throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
+           // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
 
     }
@@ -207,7 +208,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("SBN(092) " + getFunctionNumber(), true);
+        Emit("MCRO(099) " + getFunctionNumber() + " W" + getAddressAndIncrement() + " W" + getAddressAndIncrement(), true);
         returnlabel = getNextJump();
     }
 
