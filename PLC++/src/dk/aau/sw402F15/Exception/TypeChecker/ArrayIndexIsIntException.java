@@ -7,7 +7,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class ArrayIndexIsIntException extends TypeCheckerException {
     public ArrayIndexIsIntException(Node node) {
-        super(node);
+        this("Array index needs to be a int", node);
     }
 
     public ArrayIndexIsIntException(String message, Node node) {

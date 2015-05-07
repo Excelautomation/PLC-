@@ -10,7 +10,7 @@ public class ExpectingBoolException extends TypeCheckerException {
     private final SymbolType type;
 
     public ExpectingBoolException(Node node, SymbolType type) {
-        super(node);
+        super("Expecting bool", node);
         this.type = type;
     }
 

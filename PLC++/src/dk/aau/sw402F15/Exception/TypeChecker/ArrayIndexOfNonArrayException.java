@@ -7,7 +7,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class ArrayIndexOfNonArrayException extends TypeCheckerException {
     public ArrayIndexOfNonArrayException(Node node) {
-        super(node);
+        this("Array type expected", node);
     }
 
     public ArrayIndexOfNonArrayException(String message, Node node) {

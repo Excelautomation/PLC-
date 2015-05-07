@@ -5,6 +5,7 @@ import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -22,10 +23,15 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
-    public int getAddressAndIncrement() {
+    public int getNextAddress(boolean increment) {
         if (nextAddress > 32763)
             throw new OutOfMemoryError();
-        return nextAddress += 4;
+
+        if (increment)
+            return nextAddress += 4;
+        else
+            return nextAddress;
+
     }
 
     public int getFunctionNumber() {
@@ -55,7 +61,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         instructionWriter.close();
         symbolWriter.close();
     }
-
+    
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);

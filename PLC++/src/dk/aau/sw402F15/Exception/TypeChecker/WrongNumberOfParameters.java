@@ -10,7 +10,7 @@ public class WrongNumberOfParameters extends TypeCheckerException {
     private int actualNumbers;
 
     public WrongNumberOfParameters(Node node, int expectedNumbers, int actualNumbers) {
-        super(node);
+        super("Wrong number of parameters in function call (expected: " + expectedNumbers + " actual: " + actualNumbers + ")", node);
 
         this.expectedNumbers = expectedNumbers;
         this.actualNumbers = actualNumbers;

@@ -1,6 +1,5 @@
 package dk.aau.sw402F15.Symboltable.Type;
 
-import dk.aau.sw402F15.Symboltable.SymbolArray;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

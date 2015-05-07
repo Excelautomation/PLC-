@@ -3,8 +3,9 @@ package dk.aau.sw402F15.TypeChecker;
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import dk.aau.sw402F15.parser.node.ADeclarationRootDeclaration;
+import dk.aau.sw402F15.parser.node.AFunctionRootDeclaration;
+import dk.aau.sw402F15.parser.node.AVoidTypeSpecifier;
 
 /**
  * Created by sahb on 27/04/15.

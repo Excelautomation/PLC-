@@ -8,7 +8,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class ScopeNotFoundException extends CompilerException {
     public ScopeNotFoundException(Node node) {
-        super(node);
+        this("Scope was not found", node);
     }
 
     public ScopeNotFoundException(String message, Node node) {
