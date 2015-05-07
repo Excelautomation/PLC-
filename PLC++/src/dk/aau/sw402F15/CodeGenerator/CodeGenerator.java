@@ -55,7 +55,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) D" + getNextAddress(true) + " &5", true);
+            Emit("SSET(630) D" + getNextDAddress(true) + " &5", true);
             // here we call the init method
             Emit("LD P_On", true);
             // here we call the run Method
