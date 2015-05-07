@@ -1,11 +1,9 @@
 package dk.aau.sw402F15.tests.typechecker;
 
+import dk.aau.sw402F15.Exception.*;
+import dk.aau.sw402F15.Exception.TypeChecker.*;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
-import dk.aau.sw402F15.Symboltable.Scope;
-import dk.aau.sw402F15.TypeChecker.Exceptions.*;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalComparisonException;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
@@ -38,32 +36,32 @@ public class TypeCheckerTests {
         checkCode("float b = 1.1;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkIntDeclarationSetToBool() {
         checkCode("int i = true;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkIntDeclarationSetToDecimal() {
         checkCode("int i = 1.1;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkBoolDeclarationSetToInt() {
         checkCode("bool b = 1;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkBoolDeclarationSetToDecimal() {
         checkCode("bool b = 1.1;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkDecimalSetToBool(){
         checkCode("float f = true;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkDecimalSetToInt(){
         checkCode("float f = 1;");
     }
@@ -109,32 +107,32 @@ public class TypeCheckerTests {
         checkCode("bool b = 1 <= 1.1;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkIntBoolComparisonGreater(){
         checkCode("bool b = 1 > true;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkIntBoolComparisonGreaterOrEqual(){
         checkCode("bool b = 1 >= true;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkIntBoolComparisonLess(){
         checkCode("bool b = 1 < true;");
     }
 
-    @Test(expected = IllegalComparisonException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkIntBoolComparisonLessOrEqual(){
         checkCode("bool b = 1 <= true;");
     }
 
-    @Test(expected = IllegalAssignmentException.class)
+    @Test(expected = IncompaitbleTypesException.class)
     public void checkAssignBoolExprToInt() {
         checkCode("int i = 7 < 8;");
     }
 
-    @Test(expected = IllegalReturnTypeException.class)
+    @Test(expected = ReturnExprInVoidException.class)
     public void checkReturnInVoidFunction() {
         checkCode("void func(){return 2;}");
     }
@@ -154,7 +152,7 @@ public class TypeCheckerTests {
         checkCode("int func(){return 2;}");
     }
 
-    @Test(expected = WrongParameterException.class)
+    @Test(expected = WrongParameterTypeException.class)
     public void checkWrongParameterInFunction() {
         checkCode("int func(int k, int p){ func(2.2, 2); return k + p; } ");
     }
@@ -164,10 +162,10 @@ public class TypeCheckerTests {
         checkCode("int func(int k, int p){ func(2, 2); return k + p; } ");
     }
 
-    @Test(expected = RedefinitionOfReadOnlyException.class)
+    @Test(expected = RedefinitionOfConstException.class)
     public void checkAssignmentOfConst() { checkCode("const int i = 7; int func() { i = 2; return 1; } "); }
 
-    @Test(expected = RedefinitionOfReadOnlyException.class)
+    @Test(expected = RedefinitionOfConstException.class)
     public void checkAssignmentOfConstInFunction() { checkCode("int func(){const int i = 7; i = 2; return 5;} "); }
 
 

@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.Preprocessor;
 
+import dk.aau.sw402F15.Exception.CompilerInternalException;
 import dk.aau.sw402F15.SymbolProcessor.DeclarationSymbolProcessor;
 import dk.aau.sw402F15.SymbolProcessor.FunctionPreprocessor;
 import dk.aau.sw402F15.SymbolProcessor.StructPreprocessor;
@@ -43,7 +44,7 @@ public class Preprocessor extends DepthFirstAdapter {
     // Enum declaration
     @Override
     public void caseAEnumRootDeclaration(AEnumRootDeclaration node) {
-        throw new NotImplementedException();
+        throw new CompilerInternalException("Enum is not implemented");
     }
 
     // RootDeclaration

@@ -1,8 +1,8 @@
 package dk.aau.sw402F15.Symboltable;
 
-import dk.aau.sw402F15.TypeChecker.Exceptions.ScopeNotFoundException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolAlreadyExistsException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
+import dk.aau.sw402F15.Exception.SymbolTable.ScopeNotFoundException;
+import dk.aau.sw402F15.Exception.SymbolTable.SymbolAlreadyExistsException;
+import dk.aau.sw402F15.Exception.SymbolTable.SymbolNotFoundException;
 import dk.aau.sw402F15.parser.node.Node;
 
 import java.util.*;
@@ -33,7 +33,7 @@ public class Scope {
 
     public void addSymbol(Symbol symbol) {
         if (getSymbol(symbol.getName()) != null) {
-            throw new SymbolAlreadyExistsException();
+            throw new SymbolAlreadyExistsException(symbol.getNode());
         }
 
         symbols.put(symbol.getName(), symbol);
@@ -45,7 +45,7 @@ public class Scope {
         return scope;
     }
 
-    public Symbol getSymbol(String name) {
+    private Symbol getSymbol(String name) {
         Symbol symbol = symbols.get(name);
         if (symbol != null)
             return symbol;
@@ -57,11 +57,11 @@ public class Scope {
         return null;
     }
 
-    public Symbol getSymbolOrThrow(String name) {
+    public Symbol getSymbolOrThrow(String name, Node node) {
         Symbol symbol = getSymbol(name);
 
         if (symbol == null)
-            throw new SymbolNotFoundException();
+            throw new SymbolNotFoundException(node);
 
         return symbol;
     }
@@ -79,7 +79,7 @@ public class Scope {
         Scope scope = getSubScopeByNode(node);
 
         if (scope == null)
-            throw new ScopeNotFoundException();
+            throw new ScopeNotFoundException(node);
 
         return scope;
     }
