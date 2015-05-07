@@ -1,6 +1,6 @@
 package dk.aau.sw402F15.tests.scopechecker;
 
-import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolNotFoundException;
+import dk.aau.sw402F15.Exception.SymbolTable.SymbolNotFoundException;
 import dk.aau.sw402F15.tests.ScopeCheckerTest;
 import org.junit.Test;
 
