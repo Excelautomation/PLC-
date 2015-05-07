@@ -1,13 +1,10 @@
 package dk.aau.sw402F15.TypeChecker;
 
+import dk.aau.sw402F15.Exception.TypeChecker.*;
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalReturnTypeException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.MissingReturnStatementException;
-import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolFoundWrongTypeException;
 import dk.aau.sw402F15.parser.node.*;
 
 /**
@@ -32,7 +29,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
 
         // Check if function should return and if true check if we did not have a return and therefore should return an error
         if (hasReturnType && !returnStatementFound) {
-            throw new MissingReturnStatementException();
+            throw new MissingReturnStatementException(node);
         }
     }
 
@@ -58,7 +55,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
 
         // Check if types matches
         if (exprType.getType() != declarationType.getType()) {
-            throw new IllegalAssignmentException();
+            throw new IncompaitbleTypesException(node, declarationType, exprType);
         }
     }
 
@@ -69,8 +66,9 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
             node.getCondition().apply(expressionTypeEvaluator);
 
-            if (expressionTypeEvaluator.getResult().getType() != SymbolType.Type.Boolean) {
-                throw new SymbolFoundWrongTypeException();
+            SymbolType exprResult = expressionTypeEvaluator.getResult();
+            if (exprResult.getType() != SymbolType.Type.Boolean) {
+                throw new ExpectingBoolException(node, exprResult);
             }
         }
 
@@ -84,8 +82,9 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
             node.getCondition().apply(expressionTypeEvaluator);
 
-            if (expressionTypeEvaluator.getResult().getType() != SymbolType.Type.Boolean) {
-                throw new SymbolFoundWrongTypeException();
+            SymbolType exprResult = expressionTypeEvaluator.getResult();
+            if (exprResult.getType() != SymbolType.Type.Boolean) {
+                throw new ExpectingBoolException(node, exprResult);
             }
         }
 
@@ -99,8 +98,9 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
             node.getCondition().apply(expressionTypeEvaluator);
 
-            if (expressionTypeEvaluator.getResult().getType() != SymbolType.Type.Boolean) {
-                throw new SymbolFoundWrongTypeException();
+            SymbolType exprResult = expressionTypeEvaluator.getResult();
+            if (exprResult.getType() != SymbolType.Type.Boolean) {
+                throw new ExpectingBoolException(node, exprResult);
             }
         }
 
@@ -122,20 +122,20 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
 
             // Check if the function has a returntype
             if (hasReturnType)
-                throw new IllegalReturnTypeException();
+                throw new ReturnContainsNoExprException(node);
         } else {
             // Return with result
 
             // Check if function does not have a returntype
             if (!hasReturnType)
-                throw new IllegalReturnTypeException();
+                throw new ReturnExprInVoidException(node);
 
             // Check if expr has correct return type
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
             node.getExpr().apply(expressionTypeEvaluator);
 
             if (returnType.getType() != expressionTypeEvaluator.getResult().getType())
-                throw new IllegalReturnTypeException();
+                throw new IncompatibleReturnTypeException(node, returnType);
         }
 
         returnStatementFound = true;

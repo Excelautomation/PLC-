@@ -161,7 +161,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outADeclaration(ADeclaration node){
-        Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
+        Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
 

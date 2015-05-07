@@ -1,9 +1,9 @@
 package dk.aau.sw402F15.TypeChecker;
 
+import dk.aau.sw402F15.Exception.TypeChecker.IncompaitbleTypesException;
 import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
-import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.ADeclaration;
 
@@ -34,7 +34,7 @@ public class DeclarationTypeChecker extends DepthFirstAdapter {
 
         // Check if types matches
         if (exprType.getType() != declarationType.getType()) {
-            throw new IllegalAssignmentException();
+            throw new IncompaitbleTypesException(node, exprType, declarationType);
         }
     }
 }

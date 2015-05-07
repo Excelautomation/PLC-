@@ -42,7 +42,7 @@ public class ScopeChecker extends ScopeDepthFirstAdapter {
     @Override
     public void caseTIdentifier(TIdentifier node)
     {
-        currentScope.getSymbolOrThrow(node.getText());
+        currentScope.getSymbolOrThrow(node.getText(), node);
     }
 
     @Override
