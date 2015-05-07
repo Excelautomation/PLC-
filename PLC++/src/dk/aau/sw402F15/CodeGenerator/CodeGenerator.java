@@ -1,29 +1,31 @@
 package dk.aau.sw402F15.CodeGenerator;
 
-import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
+import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
+import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Claus & Jimmi on 24-04-2015.
  */
-public class CodeGenerator extends DepthFirstAdapter {
+public class CodeGenerator extends ScopeDepthFirstAdapter {
     int jumpLabel = 0;
-
+    int returnlabel;
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
+    public CodeGenerator(Scope scope) {
+        super(scope, scope);
 
-    public CodeGenerator() {
         try {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) W0 5", true);
+            Emit("SSET(630) W0 &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -58,10 +60,11 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void caseADeclaration(ADeclaration node){
         super.caseADeclaration(node);
     }
-
+    
     @Override
     public void outABreakStatement(ABreakStatement node){
         super.outABreakStatement(node);
+
         Emit("BREAK(514)", true);
     }
 
@@ -73,6 +76,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
+
         PopFromStack();
         Emit("LD b1", true);
         Emit("AND b2", true);
@@ -130,6 +134,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
+
         PopFromStack();
         Emit("LD b1", true);
         Emit("OR b2", true);
@@ -143,6 +148,31 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outADeclaration(ADeclaration node){
+
+        Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
+
+        if (symbol.getType().getType() == SymbolType.Type.Boolean){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Int){
+            Emit("PUSH(632) W0 &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
+        } else if (symbol.getType().getType() == SymbolType.Type.Char){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
+            Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W0", true);
+        } else if (symbol.getType().getType() == SymbolType.Type.Timer){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Array){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Function){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Struct){
+            throw new NotImplementedException();
+        } else {
+            throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
+        }
+
         //throw new NotImplementedException();
     }
 
@@ -153,7 +183,9 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outAFalseExpr(AFalseExpr node){
-        //throw new NotImplementedException();
+        super.outAFalseExpr(node);
+
+        Emit("LD P_Off", true);
     }
 
     @Override
@@ -162,8 +194,17 @@ public class CodeGenerator extends DepthFirstAdapter {
     }
 
     @Override
-    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node){
-        //throw new NotImplementedException();
+    public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
+       super.inAFunctionRootDeclaration(node);
+        Emit("SBN(092)", true);
+        returnlabel = getNextJump();
+    }
+
+    @Override
+    public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
+        super.outAFunctionRootDeclaration(node);
+        Emit("JME(005) #" + returnlabel, true);
+        Emit("RET(093)", true);
     }
 
     @Override
@@ -212,7 +253,8 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outAReturnStatement(AReturnStatement node){
-        //throw new NotImplementedException();
+        super.outAReturnStatement(node);
+        Emit("JMP(004) #" + returnlabel, true);
     }
 
     @Override
@@ -222,7 +264,9 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outATrueExpr(ATrueExpr node){
-        //throw new NotImplementedException();
+        super.outATrueExpr(node);
+
+        Emit("LD P_On", true);
     }
 
     @Override
@@ -260,30 +304,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseAForStatement(AForStatement node){
-        int jumpLabel = getNextJump();
-        int loopLabel = getNextJump();
-
-        {
-            List<PExpr> copy = new ArrayList<PExpr>(node.getInitilizer());
-            for(PExpr e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        Emit("JMP(004) #" + jumpLabel, true);
-        Emit("JME(005) #" + loopLabel, true);
-        node.getStatement().apply(this);
-        {
-            List<PExpr> copy = new ArrayList<PExpr>(node.getIterator());
-            for(PExpr e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        Emit("JME(005) #" + jumpLabel, true);
-        node.getCondition().apply(this);
-        Emit("LD b1", true);
-        Emit("CJP(510) #" + loopLabel, true);
+        // Not needed since we convert For-loops til While-loops
     }
 
     @Override
@@ -309,14 +330,14 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText(), true);
+        //Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText(), true);
+        //Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText(), true);
     }
 
     @Override

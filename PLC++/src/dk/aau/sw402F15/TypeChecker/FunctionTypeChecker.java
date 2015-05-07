@@ -7,6 +7,7 @@ import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalAssignmentException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.IllegalReturnTypeException;
 import dk.aau.sw402F15.TypeChecker.Exceptions.MissingReturnStatementException;
+import dk.aau.sw402F15.TypeChecker.Exceptions.SymbolFoundWrongTypeException;
 import dk.aau.sw402F15.parser.node.*;
 
 /**
@@ -59,6 +60,51 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
         if (exprType.getType() != declarationType.getType()) {
             throw new IllegalAssignmentException();
         }
+    }
+
+    @Override
+    public void caseABranchStatement(ABranchStatement node) {
+        // Check if condition is boolean
+        if (node.getCondition() != null) {
+            ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
+            node.getCondition().apply(expressionTypeEvaluator);
+
+            if (expressionTypeEvaluator.getResult().getType() != SymbolType.Type.Boolean) {
+                throw new SymbolFoundWrongTypeException();
+            }
+        }
+
+        super.caseABranchStatement(node);
+    }
+
+    @Override
+    public void caseAWhileStatement(AWhileStatement node) {
+        // Check if condition is boolean
+        if (node.getCondition() != null) {
+            ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
+            node.getCondition().apply(expressionTypeEvaluator);
+
+            if (expressionTypeEvaluator.getResult().getType() != SymbolType.Type.Boolean) {
+                throw new SymbolFoundWrongTypeException();
+            }
+        }
+
+        super.caseAWhileStatement(node);
+    }
+
+    @Override
+    public void caseAForStatement(AForStatement node) {
+        // Check if condition is boolean
+        if (node.getCondition() != null) {
+            ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
+            node.getCondition().apply(expressionTypeEvaluator);
+
+            if (expressionTypeEvaluator.getResult().getType() != SymbolType.Type.Boolean) {
+                throw new SymbolFoundWrongTypeException();
+            }
+        }
+
+        super.caseAForStatement(node);
     }
 
     @Override

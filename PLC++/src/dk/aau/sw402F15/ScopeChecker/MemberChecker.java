@@ -14,14 +14,14 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class MemberChecker extends DepthFirstAdapter {
     private Scope currentScope;
-    private Symbol currentSymbol;
+    private SymbolType currentSymbol;
 
 
     public MemberChecker(Scope currentScope) {
         this.currentScope = currentScope;
     }
 
-    public Symbol getSymbol() {
+    public SymbolType getSymbol() {
         return currentSymbol;
     }
 
@@ -31,58 +31,68 @@ public class MemberChecker extends DepthFirstAdapter {
 
         if (currentSymbol == null)
         {
-            currentSymbol = currentScope.getSymbolOrThrow(node.getText());
+            currentSymbol = currentScope.getSymbolOrThrow(node.getText()).getType();
+
+            // Get symbol
+            Symbol symbol = currentScope.getSymbolOrThrow(currentSymbol.getName());
 
             // TODO arrays not handled
-            if (currentSymbol.getType().getType() == SymbolType.Type.Function) {
-                SymbolFunction symbolFunction = (SymbolFunction)currentSymbol;
+            if (currentSymbol.getType() == SymbolType.Type.Function) {
+                SymbolFunction symbolFunction = (SymbolFunction)symbol;
 
                 // Check if returntype is correct
                 if (symbolFunction.getReturnType().getType() != SymbolType.Type.Struct) {
                     throw new NotImplementedException();
                 }
 
-                currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName());
+                currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName()).getType();
             }
-            else if (currentSymbol.getClass() == SymbolVariable.class) {
-                SymbolVariable symbolVariable = (SymbolVariable)currentSymbol;
+            else if (symbol.getClass() == SymbolVariable.class) {
+                SymbolVariable symbolVariable = (SymbolVariable)symbol;
 
                 // Check if decltype is correct
                 if (symbolVariable.getType().getType() != SymbolType.Type.Struct) {
                     throw new NotImplementedException();
                 }
 
-                currentSymbol = currentScope.getSymbolOrThrow(symbolVariable.getType().getName());
+                currentSymbol = currentScope.getSymbolOrThrow(symbolVariable.getType().getName()).getType();
             }
 
             // Update scope if symbol is a struct
-            if (currentSymbol.getType().getType() == SymbolType.Type.Struct) {
-                currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+            if (currentSymbol.getType() == SymbolType.Type.Struct) {
+                symbol = currentScope.getSymbolOrThrow(currentSymbol.getName());
+                currentScope = symbol.getScope().getSubScopeByNodeOrThrow(symbol.getNode());
                 return;
             }
             else
                 throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
         }
 
-        currentSymbol = currentScope.getSymbolOrThrow(node.getText());
+        currentSymbol = currentScope.getSymbolOrThrow(node.getText()).getType();
 
         // Check if it's a function
-        if (currentSymbol.getType().getType() == SymbolType.Type.Function) {
-            SymbolFunction symbolFunction = (SymbolFunction)currentSymbol;
+        if (currentSymbol.getType() == SymbolType.Type.Function) {
+            SymbolFunction symbolFunction = (SymbolFunction)currentScope.getSymbolOrThrow(currentSymbol.getName());
 
             // Check if returntype is correct
             if (symbolFunction.getReturnType().getType() == SymbolType.Type.Struct) {
-                currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName());
+                currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName()).getType();
+            }
+            else {
+                // Returntype is not a struct just update currentSymbol
+                currentSymbol = symbolFunction.getReturnType();
             }
         }
 
         // Update scope if symbol is a struct
-        if (currentSymbol.getType().getType() == SymbolType.Type.Struct) {
-            currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
+        if (currentSymbol.getType() == SymbolType.Type.Struct) {
+            Symbol symbol = currentScope.getSymbolOrThrow(currentSymbol.getName());
+            currentScope = symbol.getScope().getSubScopeByNodeOrThrow(symbol.getNode());
             return;
         }
         else {
-            System.out.println("PANIC! : "  + currentSymbol.getName());
+            if (currentSymbol.hasName())
+                System.out.println("PANIC! : "  + currentSymbol.getName());
             //throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
         }
     }
@@ -159,7 +169,7 @@ public class MemberChecker extends DepthFirstAdapter {
             throw new MemberExpressionNotValidScopeCheckerException("Invalid node in member expr");
     }*/
 
-    private void updateSymbol(TIdentifier node) {
+    /*private void updateSymbol(TIdentifier node) {
         currentSymbol = currentScope.getSymbolOrThrow(node.getText());
 
         // Check if symbol if a variable - if it is - find the type
@@ -202,6 +212,6 @@ public class MemberChecker extends DepthFirstAdapter {
 
         // Update currentScope
         currentScope = currentSymbol.getScope().getSubScopeByNodeOrThrow(currentSymbol.getNode());
-    }
+    }*/
 
 }
