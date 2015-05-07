@@ -34,7 +34,7 @@ public abstract class CompilerException extends RuntimeException {
             }
 
             // Transfer to array
-            lines = new String[startLine - endLine + 1];
+            lines = new String[endLine - startLine + 1];
             filteredLines.toArray(lines);
         }
 
