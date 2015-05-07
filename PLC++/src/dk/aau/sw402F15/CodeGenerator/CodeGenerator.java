@@ -4,15 +4,12 @@ import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
-import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Claus & Jimmi on 24-04-2015.
