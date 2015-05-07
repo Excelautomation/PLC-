@@ -1,6 +1,8 @@
-int func() {
-    float f = 4.3;
-    int i = 5;
+float f = 4.5;
 
-    return 0;
+float func()
+{
+    float g = f + 1.2;
+
+    return g;
 }

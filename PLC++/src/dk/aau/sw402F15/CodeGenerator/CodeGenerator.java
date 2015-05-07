@@ -355,6 +355,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
+        // TODO Different if float
+
         PopFromStack();
         Emit("+(400) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
@@ -364,6 +366,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outADivExpr(ADivExpr node) {
         super.outADivExpr(node);
 
+        // TODO Different if float
+
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
@@ -372,6 +376,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAMultiExpr(AMultiExpr node) {
         super.outAMultiExpr(node);
+
+        // TODO Different if float
+
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
@@ -380,6 +387,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outASubExpr(ASubExpr node) {
         super.outASubExpr(node);
+
+        // TODO Different if float
 
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
