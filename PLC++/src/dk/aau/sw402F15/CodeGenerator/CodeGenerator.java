@@ -195,6 +195,7 @@ public class CodeGenerator extends DepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
        super.inAFunctionRootDeclaration(node);
+        Emit("SBN(091)", true);
         returnlabel = getNextJump();
     }
 
