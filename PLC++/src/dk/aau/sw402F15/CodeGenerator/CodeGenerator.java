@@ -209,13 +209,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outAFunctionCallExpr(AFunctionCallExpr node){
-        //throw new NotImplementedException();
+
     }
 
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("MCRO(099) " + getFunctionNumber() + " D" + getNextDAddress(true) + " D" + getNextDAddress(true), true);
+        Emit("SBN(092) " + getFunctionNumber(), true);
         returnlabel = getNextJump();
     }
 
@@ -223,7 +223,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
         //Emit("JME(005) #" + returnlabel, true);
-        //Emit("RET(093)", true);
+        Emit("RET(093)", true);
     }
 
     @Override
