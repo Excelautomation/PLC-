@@ -5,6 +5,7 @@ import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -164,16 +165,22 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
+            Emit(node.getName().getText() + "\tBOOL\tW" + getAddressAndIncrement() + ".00\t\t0\t", false);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
+            Emit(node.getName().getText() + "\tINT\tW" + getAddressAndIncrement() + "\t\t0\t", false);
             
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
+            throw new NotImplementedException();
 
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
+            Emit(node.getName().getText() + "\tREAL\tW" + getAddressAndIncrement() + "\t\t0\t", false);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
+            Emit(node.getName().getText() + "\tTIMER\tW" + getAddressAndIncrement() + "\t\t0\t", false);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
+            throw new NotImplementedException();
 
         } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
 
@@ -184,7 +191,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         } else {
             throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
-
     }
 
     @Override
@@ -400,7 +406,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     protected void Emit(String s, boolean inst){
-        if (inst == true) {
+        if (inst) {
             instructionWriter.println(s);
         } else {
             symbolWriter.println(s);
