@@ -37,7 +37,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SBS(091) 0", true);
             Emit("SSET(630) W" + getAddressAndIncrement() + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -48,6 +47,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outStart(Start node){
+        Emit("END(001)", true);
+
         instructionWriter.close();
         symbolWriter.close();
     }
@@ -165,27 +166,27 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
 
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
             Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
             Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Function){
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else if (symbol.getType().getType() == SymbolType.Type.Struct){
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         } else {
-            throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
+           // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
 
         //throw new NotImplementedException();
@@ -211,7 +212,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("SBN(092) " + getFunctionNumber(), true);
+        Emit("MCRO(099) " + getFunctionNumber() + " W" + getAddressAndIncrement() + " W" + getAddressAndIncrement(), true);
         returnlabel = getNextJump();
     }
 
