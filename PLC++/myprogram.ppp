@@ -1,9 +1,7 @@
-    bool func()
+    int func()
     {
-        bool a = true;
-        bool b = false;
+        int i = 100;
+        i++;
 
-        bool c = a || b;
-
-        return c;
+        return i;
     }
