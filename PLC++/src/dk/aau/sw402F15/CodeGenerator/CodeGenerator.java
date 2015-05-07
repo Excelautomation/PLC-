@@ -166,7 +166,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
-            
+
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
