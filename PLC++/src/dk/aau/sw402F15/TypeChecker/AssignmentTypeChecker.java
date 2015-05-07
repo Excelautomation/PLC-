@@ -8,10 +8,7 @@ import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.SymbolVariable;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.AArrayExpr;
-import dk.aau.sw402F15.parser.node.AAssignmentExpr;
-import dk.aau.sw402F15.parser.node.AIdentifierExpr;
-import dk.aau.sw402F15.parser.node.AMemberExpr;
+import dk.aau.sw402F15.parser.node.*;
 
 /**
  * Created by sahb on 27/04/15.
@@ -38,13 +35,15 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         SymbolType exprResultType = expressionTypeEvaluator.getResult();
 
         // Check if we must make a implicit type conversion
-        if (exprResultType.getType() == SymbolType.Type.Int && symbolType.getType() == SymbolType.Type.Decimal) {
+        if (exprResultType.equals(SymbolType.Int()) && symbolType.equals(SymbolType.Decimal())) {
             // Int is promoted to decimal
+            // Add typecast
+            node.getRight().replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr)node.getRight().clone()));
             return;
         }
 
         // Check if we could match the correct type
-        if (exprResultType.getType() != symbolType.getType()) {
+        if (!exprResultType.equals(symbolType)) {
             throw new IncompaitbleTypesException(node, exprResultType, symbolType);
         }
     }

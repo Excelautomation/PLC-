@@ -60,7 +60,7 @@ public class TypeCheckerTests {
         checkCode("float f = true;");
     }
 
-    @Test(expected = IncompaitbleTypesException.class)
+    @Test
     public void checkDecimalSetToInt() {
         checkCode("float f = 1;");
     }

@@ -1,9 +1,7 @@
-int func()
-{
-    int i = 4;
-    int j = 6;
+    int func()
+    {
+        int i = 100;
+        i++;
 
-    int lulz = j + i;
-
-    return lulz;
-}
+        return i;
+    }
