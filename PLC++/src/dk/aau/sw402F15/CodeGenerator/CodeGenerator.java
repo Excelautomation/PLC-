@@ -40,6 +40,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
             Emit("SSET(630) D" + getAddressAndIncrement() + " &5", true);
+            Emit("SBS(091) 0", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -210,7 +211,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("MCRO(099) " + getFunctionNumber() + " D" + getAddressAndIncrement() + " D" + getAddressAndIncrement(), true);
+
         returnlabel = getNextJump();
     }
 
