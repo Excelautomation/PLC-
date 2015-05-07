@@ -5,6 +5,7 @@ import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -54,7 +55,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            //Emit("SSET(630) D" + getNextDAddress(true) + " &5", true);
+            Emit("SBS(091) 0", true);
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -69,7 +71,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         instructionWriter.close();
         symbolWriter.close();
     }
-
+    
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -380,6 +382,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
+        // TODO Different if float
         Emit("+(400) D" + getNextDAddress(false) + " D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(true), true);
     }
 
@@ -406,7 +409,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outASubExpr(node);
 
         // TODO Different if float
-
 
         Emit("-(410) D" + getNextDAddress(false) + " D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(true), true);
     }
