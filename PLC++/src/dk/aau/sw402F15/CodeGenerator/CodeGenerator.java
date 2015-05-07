@@ -110,28 +110,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
 
-        Emit("LD D" + getNextDAddress(false), true);
-        Emit("AND D" + (getNextDAddress(false) - 4), true);
-        Emit("SET W" + getNextWAddress(true), true);
-
-        /*PopFromStack();
-        Emit("LD b1", true);
-        Emit("AND b2", true);
-        Emit("SET b1", true);*/
+        Emit("ANDW(034) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false) + " D" + getNextDAddress(true), true);
     }
     
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
 
-        Emit("LD D" + getNextDAddress(false), true);
-        Emit("OR D" + (getNextDAddress(false) - 4), true);
-        Emit("SET D" + getNextDAddress(true), true);
-
-        /*PopFromStack();
-        Emit("LD b1", true);
-        Emit("OR b2", true);
-        Emit("SET b1", true);*/
+        Emit("ORW(035) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false) + " D" + getNextDAddress(true), true);
     }
 
     @Override
@@ -222,13 +208,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAFalseExpr(AFalseExpr node){
-        super.outAFalseExpr(node);
-
-        Emit("LD P_Off", true);
-    }
-
-    @Override
     public void outAFunctionCallExpr(AFunctionCallExpr node){
 
     }
@@ -304,7 +283,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
-        Emit("LD P_On", true);
+        Emit("MOV(021) #1 D" + getNextDAddress(true), true);
+    }
+
+    @Override
+    public void outAFalseExpr(AFalseExpr node){
+        super.outAFalseExpr(node);
+
+        Emit("MOV(021) #0 D" + getNextDAddress(true), true);
     }
 
     @Override
