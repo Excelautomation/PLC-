@@ -2,7 +2,6 @@ package dk.aau.sw402F15.CodeGenerator;
 
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -233,7 +232,7 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void caseABranchStatement(ABranchStatement node) {
-        //super.caseABranchStatement(node);
+        //Do not call super as this function handles calls of the child classes
 
         if (node.getRight() != null) {
             // If - else statement
