@@ -15,15 +15,20 @@ import java.io.UnsupportedEncodingException;
  * Created by Claus & Jimmi on 24-04-2015.
  */
 public class CodeGenerator extends ScopeDepthFirstAdapter {
-    int jumpLabel = 0;
-    int returnlabel;
+    private int jumpLabel = 0;
+    private int returnlabel;
+    private int startAddress = -4;
+    private int startFunctionNumber = -1;
+
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
-    private int startAddress = -4;
-    public int getAddressAndIncrement()
-    {
+    public int getAddressAndIncrement() {
         return startAddress += 4;
+    }
+
+    public int getFunctionNumber() {
+        return startFunctionNumber += 1;
     }
 
     public CodeGenerator(Scope scope) {
@@ -33,6 +38,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
+            Emit("SBS(091) 0", true);
             Emit("SSET(630) W" + getAddressAndIncrement() + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -206,7 +212,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("SBN(092)", true);
+        Emit("SBN(092) " + getFunctionNumber(), true);
         returnlabel = getNextJump();
     }
 
