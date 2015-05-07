@@ -5,7 +5,6 @@ import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -52,7 +51,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         instructionWriter.close();
         symbolWriter.close();
     }
-
+    
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -292,7 +291,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseABranchStatement(ABranchStatement node) {
-        super.caseABranchStatement(node);
+        //Do not call super as this function handles calls of the child classes
 
         if (node.getRight() != null) {
             // If - else statement
