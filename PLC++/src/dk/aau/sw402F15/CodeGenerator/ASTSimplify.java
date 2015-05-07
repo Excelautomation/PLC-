@@ -22,7 +22,7 @@ public class ASTSimplify extends DepthFirstAdapter {
 
         for (PExpr expr : node.getInitilizer())
             statements.add(new AExprStatement(expr));
-        statementList.add(new AWhileStatement(node.getCondition() == null ?  new ATrueExpr() : node.getCondition(), new AScopeStatement(statements)));
+        statementList.add(new AWhileStatement(node.getCondition() == null ? new ATrueExpr() : node.getCondition(), new AScopeStatement(statements)));
 
         Node newNode = new AScopeStatement(statementList);
 
@@ -45,8 +45,7 @@ public class ASTSimplify extends DepthFirstAdapter {
                         new AFunctionCallExpr(new TIdentifier("std"), new ArrayList<Object>()),
                         new AFunctionCallExpr(new TIdentifier("mod"), argumentList
                         )
-                )
-        ;
+                );
 
         // Apply newnode
         newNode.apply(this);

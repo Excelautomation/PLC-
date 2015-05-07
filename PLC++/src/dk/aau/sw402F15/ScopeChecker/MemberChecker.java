@@ -1,10 +1,13 @@
 package dk.aau.sw402F15.ScopeChecker;
 
 import dk.aau.sw402F15.Exception.ScopeChecker.MemberExpressionIsNotAStructException;
-import dk.aau.sw402F15.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolFunction;
+import dk.aau.sw402F15.Symboltable.SymbolVariable;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.*;
+import dk.aau.sw402F15.parser.node.TIdentifier;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -27,8 +30,7 @@ public class MemberChecker extends DepthFirstAdapter {
     public void caseTIdentifier(TIdentifier node) {
         super.caseTIdentifier(node);
 
-        if (currentSymbol == null)
-        {
+        if (currentSymbol == null) {
             currentSymbol = currentScope.getSymbolOrThrow(node.getText(), node).getType();
 
             // Get symbol
@@ -36,7 +38,7 @@ public class MemberChecker extends DepthFirstAdapter {
 
             // TODO arrays not handled
             if (currentSymbol.getType() == SymbolType.Type.Function) {
-                SymbolFunction symbolFunction = (SymbolFunction)symbol;
+                SymbolFunction symbolFunction = (SymbolFunction) symbol;
 
                 // Check if returntype is correct
                 if (symbolFunction.getReturnType().getType() != SymbolType.Type.Struct) {
@@ -44,9 +46,8 @@ public class MemberChecker extends DepthFirstAdapter {
                 }
 
                 currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName(), node).getType();
-            }
-            else if (symbol.getClass() == SymbolVariable.class) {
-                SymbolVariable symbolVariable = (SymbolVariable)symbol;
+            } else if (symbol.getClass() == SymbolVariable.class) {
+                SymbolVariable symbolVariable = (SymbolVariable) symbol;
 
                 // Check if decltype is correct
                 if (symbolVariable.getType().getType() != SymbolType.Type.Struct) {
@@ -61,8 +62,7 @@ public class MemberChecker extends DepthFirstAdapter {
                 symbol = currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
                 currentScope = symbol.getScope().getSubScopeByNodeOrThrow(symbol.getNode());
                 return;
-            }
-            else
+            } else
                 throw new MemberExpressionIsNotAStructException(node);
         }
 
@@ -70,13 +70,12 @@ public class MemberChecker extends DepthFirstAdapter {
 
         // Check if it's a function
         if (currentSymbol.getType() == SymbolType.Type.Function) {
-            SymbolFunction symbolFunction = (SymbolFunction)currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
+            SymbolFunction symbolFunction = (SymbolFunction) currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
 
             // Check if returntype is correct
             if (symbolFunction.getReturnType().getType() == SymbolType.Type.Struct) {
                 currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName(), node).getType();
-            }
-            else {
+            } else {
                 // Returntype is not a struct just update currentSymbol
                 currentSymbol = symbolFunction.getReturnType();
             }
@@ -87,10 +86,9 @@ public class MemberChecker extends DepthFirstAdapter {
             Symbol symbol = currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
             currentScope = symbol.getScope().getSubScopeByNodeOrThrow(symbol.getNode());
             return;
-        }
-        else {
+        } else {
             if (currentSymbol.hasName())
-                System.out.println("MemberChecker found symbol which is not a struct or function: "  + currentSymbol.getName());
+                System.out.println("MemberChecker found symbol which is not a struct or function: " + currentSymbol.getName());
         }
     }
 

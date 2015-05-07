@@ -20,8 +20,7 @@ public class StructPreprocessor extends DepthFirstAdapter {
     public void caseAStructRootDeclaration(AStructRootDeclaration node) {
         Preprocessor preprocessor = new Preprocessor(structScope);
 
-        if(node.getProgram() != null)
-        {
+        if (node.getProgram() != null) {
             node.getProgram().apply(preprocessor);
         }
 

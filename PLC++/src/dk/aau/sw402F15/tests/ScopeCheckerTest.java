@@ -3,10 +3,8 @@ package dk.aau.sw402F15.tests;
 
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
-import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.parser.lexer.Lexer;
 import dk.aau.sw402F15.parser.lexer.LexerException;
-import dk.aau.sw402F15.parser.node.Node;
 import dk.aau.sw402F15.parser.node.Start;
 import dk.aau.sw402F15.parser.parser.Parser;
 import dk.aau.sw402F15.parser.parser.ParserException;

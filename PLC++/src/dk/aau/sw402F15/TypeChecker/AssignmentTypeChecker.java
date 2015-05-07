@@ -40,7 +40,7 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         // Check if we must make a implicit type conversion
         if (exprResultType.getType() == SymbolType.Type.Int && symbolType.getType() == SymbolType.Type.Decimal) {
             // Int is promoted to decimal
-           return;
+            return;
         }
 
         // Check if we could match the correct type
@@ -72,7 +72,7 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
     @Override
     public void caseAArrayExpr(AArrayExpr node) {
         Symbol symbol = scope.getSymbolOrThrow(node.getName().getText(), node);
-        SymbolArray array = (SymbolArray)symbol;
+        SymbolArray array = (SymbolArray) symbol;
 
         this.symbolType = array.getContainedType();
     }

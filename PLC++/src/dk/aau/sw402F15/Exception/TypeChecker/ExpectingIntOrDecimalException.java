@@ -7,8 +7,7 @@ public class ExpectingIntOrDecimalException extends TypeCheckerException {
     private final SymbolType type;
 
     public ExpectingIntOrDecimalException(Node node, SymbolType type) {
-        super(node);
-        this.type = type;
+        this("Expecting integer", node, type);
     }
 
     public ExpectingIntOrDecimalException(String message, Node node, SymbolType type) {

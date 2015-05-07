@@ -8,7 +8,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class SymbolNotFoundException extends CompilerException {
     public SymbolNotFoundException(Node node) {
-        super(node);
+        super("Symbol was not found", node);
     }
 
     public SymbolNotFoundException(String message, Node node) {

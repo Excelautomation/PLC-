@@ -22,6 +22,7 @@ public class FunctionDefinition extends ScannerTest {
     }
 
     private String type;
+
     public FunctionDefinition(String type) {
         this.type = type;
     }

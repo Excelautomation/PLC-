@@ -2,7 +2,10 @@ package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.Exception.TypeChecker.*;
 import dk.aau.sw402F15.Helper;
-import dk.aau.sw402F15.Symboltable.*;
+import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolArray;
+import dk.aau.sw402F15.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -272,13 +275,10 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         checkExpression(node);
 
         // Checking that we don't divide by zero
-        if (node.getRight().getClass() == AIntegerExpr.class)
-        {
+        if (node.getRight().getClass() == AIntegerExpr.class) {
             if (Integer.parseInt(((AIntegerExpr) node.getRight()).getIntegerLiteral().getText()) == 0)
                 throw new DivisionByZeroException(node);
-        }
-        else if (node.getRight().getClass() == ADecimalExpr.class)
-        {
+        } else if (node.getRight().getClass() == ADecimalExpr.class) {
             if (Float.parseFloat(((ADecimalExpr) node.getRight()).getDecimalLiteral().getText()) == 0.0)
                 throw new DivisionByZeroException(node);
         }
@@ -320,7 +320,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         }
 
         // Push correct type to stack
-        SymbolArray array = (SymbolArray)symbol;
+        SymbolArray array = (SymbolArray) symbol;
         stack.push(array.getContainedType());
     }
 
@@ -333,8 +333,7 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
                 || (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
                 || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
             stack.push(SymbolType.Boolean());
-        }
-        else {
+        } else {
             throw new IncompaitbleTypesException(node, arg1, arg2);
         }
     }
@@ -344,26 +343,22 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
 
         if ((arg1.getType() == SymbolType.Type.Boolean && arg2.getType() == SymbolType.Type.Boolean)) {
             stack.push(SymbolType.Boolean());
-        }
-        else {
+        } else {
             throw new IncompaitbleTypesException(node, arg1, arg2);
         }
     }
 
-    private void checkExpression(Node node){
+    private void checkExpression(Node node) {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int){
+        if (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Int) {
             stack.push(SymbolType.Int());
-        }
-        else if (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal){
+        } else if (arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Decimal) {
             stack.push(SymbolType.Decimal());
-        }
-        else if ((arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
-                 || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
+        } else if ((arg1.getType() == SymbolType.Type.Decimal && arg2.getType() == SymbolType.Type.Int)
+                || (arg1.getType() == SymbolType.Type.Int && arg2.getType() == SymbolType.Type.Decimal)) {
             stack.push(SymbolType.Decimal());
-        }
-        else{
+        } else {
             throw new IncompaitbleTypesException(node, arg1, arg2);
         }
     }

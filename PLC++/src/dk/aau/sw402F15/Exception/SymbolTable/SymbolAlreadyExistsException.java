@@ -8,7 +8,7 @@ import dk.aau.sw402F15.parser.node.Node;
  */
 public class SymbolAlreadyExistsException extends CompilerException {
     public SymbolAlreadyExistsException(Node node) {
-        super(node);
+        this("Symbol already excists", node);
     }
 
     public SymbolAlreadyExistsException(String message, Node node) {

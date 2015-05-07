@@ -5,7 +5,10 @@ import dk.aau.sw402F15.Exception.SymbolTable.SymbolAlreadyExistsException;
 import dk.aau.sw402F15.Exception.SymbolTable.SymbolNotFoundException;
 import dk.aau.sw402F15.parser.node.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 
 public class Scope {
     private Hashtable<String, Symbol> symbols;
@@ -20,11 +23,10 @@ public class Scope {
         this.parentScope = parentScope;
     }
 
-    public List<Symbol> toList(){
+    public List<Symbol> toList() {
         Enumeration<Symbol> enumeration = symbols.elements();
         List<Symbol> result = new ArrayList<Symbol>(symbols.size());
-        while(enumeration.hasMoreElements())
-        {
+        while (enumeration.hasMoreElements()) {
             Symbol symbol = enumeration.nextElement();
             result.add(symbol);
         }
@@ -75,7 +77,7 @@ public class Scope {
         return null;
     }
 
-    public Scope getSubScopeByNodeOrThrow(Node node){
+    public Scope getSubScopeByNodeOrThrow(Node node) {
         Scope scope = getSubScopeByNode(node);
 
         if (scope == null)

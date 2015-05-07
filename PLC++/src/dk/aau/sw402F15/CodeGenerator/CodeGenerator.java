@@ -22,10 +22,15 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
-    public int getAddressAndIncrement() {
+    public int getNextAddress(boolean increment) {
         if (nextAddress > 32763)
             throw new OutOfMemoryError();
-        return nextAddress += 4;
+
+        if (increment)
+            return nextAddress += 4;
+        else
+            return nextAddress;
+
     }
 
     public int getFunctionNumber() {
@@ -39,7 +44,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) D" + getAddressAndIncrement() + " &5", true);
+            Emit("SSET(630) D" + getNextAddress(true) + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -210,7 +215,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("MCRO(099) " + getFunctionNumber() + " D" + getAddressAndIncrement() + " D" + getAddressAndIncrement(), true);
+        Emit("MCRO(099) " + getFunctionNumber() + " D" + getNextAddress(true) + " D" + getNextAddress(true), true);
         returnlabel = getNextJump();
     }
 
@@ -338,24 +343,21 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("MOV(021) &" + node.getIntegerLiteral() + " D" + getAddressAndIncrement(), true);
+        Emit("MOV(021) &" + node.getIntegerLiteral() + " D" + getNextAddress(true), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        Emit("+F(454) +0,0 +" + node.getDecimalLiteral().toString().replace(".", ",") + "D" + getAddressAndIncrement() + "", true);
+        Emit("+F(454) +0,0 +" + node.getDecimalLiteral().toString().replace(".", ",") + "D" + getNextAddress(true) + "", true);
     }
 
     @Override
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
-        // TODO Different if float
-
-        //PopFromStack();
-        Emit("+(400) D12 D16 D" + getAddressAndIncrement(), true);
+        Emit("+(400) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
     @Override
@@ -364,9 +366,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // TODO Different if float
 
-        PopFromStack();
-        Emit("/(430) r1 r2 r1", true);
-        Emit("PUSH(632) D" + getAddressAndIncrement() + " r1", true);
+        Emit("/(430) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
     @Override
@@ -375,9 +375,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // TODO Different if float
 
-        PopFromStack();
-        Emit("*(420) r1 r2 r1", true);
-        Emit("PUSH(632) D" + getAddressAndIncrement() + " r1", true);
+        Emit("*(420) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
     @Override
@@ -386,10 +384,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // TODO Different if float
 
-        PopFromStack();
-        Emit("-(410) r1 r2 r1", true);
-        Emit("PUSH(632) D" + getAddressAndIncrement() + " r1", true);
+
+        Emit("-(410) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
+
 
     private void PopFromStack() {
         Emit("r1\tINT\tTK0\t\t0", false);
