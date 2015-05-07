@@ -1,5 +1,6 @@
 int func() {
     float f = 4.3;
+    int i = 5 + 7;
 
     return 0;
 }

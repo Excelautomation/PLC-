@@ -166,11 +166,11 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
-            Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
+            
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
-            Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
+
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
 
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
@@ -340,14 +340,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        //Emit("PUSH(632) W" + getAddressAndIncrement() + " #" + node.getIntegerLiteral().getText(), true);
+        Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + node.getIntegerLiteral(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        //Emit("PUSH(632) W" + getAddressAndIncrement() + " #" + node.getDecimalLiteral().getText(), true);
+        Emit("+F(454) +0,0 +" + node.getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
     }
 
     @Override
