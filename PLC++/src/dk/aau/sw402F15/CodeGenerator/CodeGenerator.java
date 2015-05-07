@@ -5,7 +5,6 @@ import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -15,15 +14,20 @@ import java.io.UnsupportedEncodingException;
  * Created by Claus & Jimmi on 24-04-2015.
  */
 public class CodeGenerator extends ScopeDepthFirstAdapter {
-    int jumpLabel = 0;
-    int returnlabel;
+    private int jumpLabel = 0;
+    private int returnlabel;
+    private int startAddress = -4;
+    private int startFunctionNumber = -1;
+
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
 
-    private int startAddress = -4;
-    public int getAddressAndIncrement()
-    {
+    public int getAddressAndIncrement() {
         return startAddress += 4;
+    }
+
+    public int getFunctionNumber() {
+        return startFunctionNumber += 1;
     }
 
     public CodeGenerator(Scope scope) {
@@ -33,6 +37,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
+            Emit("SBS(091) 0", true);
             Emit("SSET(630) W" + getAddressAndIncrement() + " &5", true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -46,7 +51,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         instructionWriter.close();
         symbolWriter.close();
     }
-
+    
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
@@ -202,7 +207,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("SBN(092)", true);
+        Emit("SBN(092) " + getFunctionNumber(), true);
         returnlabel = getNextJump();
     }
 
@@ -282,7 +287,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseABranchStatement(ABranchStatement node) {
-        super.caseABranchStatement(node);
+        //Do not call super as this function handles calls of the child classes
 
         if (node.getRight() != null) {
             // If - else statement

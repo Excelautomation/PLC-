@@ -30,8 +30,8 @@ public class Main {
                 "return 1;\n" +
                 "}\n";*/
             String code = "float main() {" +
-                    "float a = 1; " +
-                    "a = 1.10 + 1;" +
+                    "float a = 1.4; " +
+                    //"a = 1.10 + 1;" +
                     "return a;" +
                     "}";
 
