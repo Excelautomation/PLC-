@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.CodeGenerator;
 
 import dk.aau.sw402F15.Symboltable.Scope;
+import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
@@ -16,13 +17,14 @@ import java.util.List;
 /**
  * Created by Claus & Jimmi on 24-04-2015.
  */
-public class CodeGenerator extends DepthFirstAdapter {
+public class CodeGenerator extends ScopeDepthFirstAdapter {
     int jumpLabel = 0;
 
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
-    Scope scope;
     public CodeGenerator(Scope scope) {
+        super(scope, scope);
+
         try {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
@@ -33,7 +35,6 @@ public class CodeGenerator extends DepthFirstAdapter {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        this.scope = scope;
     }
 
     @Override
@@ -148,29 +149,29 @@ public class CodeGenerator extends DepthFirstAdapter {
 
     @Override
     public void outADeclaration(ADeclaration node){
-        //throw new NotImplementedException();
-        Symbol symbol = scope.getSymbol(node.getName().getText());
 
-        if (symbol.getType() == SymbolType.Boolean()){
-            //Emit(symbol.getName() + " BOOL W0", false);
-        } else if (symbol.getType() == SymbolType.Int()){
+        Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
 
-        } else if (symbol.getType() == SymbolType.Char()){
-
-        } else if (symbol.getType() == SymbolType.Decimal()){
-
-        } else if (symbol.getType() == SymbolType.Timer()){
-
-        } else if (symbol.getType() == SymbolType.Array()){
-
-        } else if (symbol.getType() == SymbolType.Method()){
-
-        } else if (symbol.getType() == SymbolType.Function("tmp")){
-
-        } else if (symbol.getType() == SymbolType.Struct("tmp")){
-
-        } else {
+        if (symbol.getType().getType() == SymbolType.Type.Boolean){
             throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Int){
+            Emit("PUSH(632) W0 &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
+        } else if (symbol.getType().getType() == SymbolType.Type.Char){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
+            Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W0", true);
+        } else if (symbol.getType().getType() == SymbolType.Type.Timer){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Array){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Function){
+            throw new NotImplementedException();
+        } else if (symbol.getType().getType() == SymbolType.Type.Struct){
+            throw new NotImplementedException();
+        } else {
+            throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
 
         //throw new NotImplementedException();
@@ -319,14 +320,14 @@ public class CodeGenerator extends DepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText(), true);
+        //Emit("PUSH(632) W0 #" + node.getIntegerLiteral().getText(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText(), true);
+        //Emit("PUSH(632) W0 #" + node.getDecimalLiteral().getText(), true);
     }
 
     @Override
