@@ -162,34 +162,30 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outADeclaration(ADeclaration node){
-
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
 
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
-            //throw new NotImplementedException();
-        } else if (symbol.getType().getType() == SymbolType.Type.Int){
-            Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
 
+        } else if (symbol.getType().getType() == SymbolType.Type.Int){
+            
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
-            //throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
-            Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
 
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
-            //throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
-            //throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
-            //throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Function){
-            //throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Struct){
-            //throw new NotImplementedException();
+
         } else {
            // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
 
-        //throw new NotImplementedException();
     }
 
     @Override
@@ -239,7 +235,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         PopFromStack();
         Emit("NOT r1", true);
-
     }
 
     @Override
@@ -346,14 +341,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
 
-        //Emit("PUSH(632) W" + getAddressAndIncrement() + " #" + node.getIntegerLiteral().getText(), true);
+        Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + node.getIntegerLiteral(), true);
     }
 
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
 
-        //Emit("PUSH(632) W" + getAddressAndIncrement() + " #" + node.getDecimalLiteral().getText(), true);
+        Emit("+F(454) +0,0 +" + node.getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
     }
 
     @Override
@@ -363,7 +358,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("+(400) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     @Override
@@ -373,7 +367,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("/(430) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     @Override
@@ -382,7 +375,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("*(420) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     @Override
@@ -392,16 +384,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         PopFromStack();
         Emit("-(410) r1 r2 r1", true);
         Emit("PUSH(632) W" + getAddressAndIncrement() + " r1", true);
-
     }
 
     private void PopFromStack() {
         Emit("r1\tINT\tW4\t\t0", false);
         Emit("r2\tINT\tW5\t\t0", false);
         Emit("LIFO(634) W" + getAddressAndIncrement() + " r1", true);
-
         Emit("LIFO(634) W" + getAddressAndIncrement() + " r2", true);
-
     }
 
     private int getNextJump(){
