@@ -192,23 +192,23 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outADeclaration(ADeclaration node){
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
-        if (symbol.getType().getType() == SymbolType.Type.Boolean){
+        if (symbol.getType().equals(SymbolType.Boolean())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Int){
+        } else if (symbol.getType().equals(SymbolType.Int())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Char){
+        } else if (symbol.getType().equals(SymbolType.Char())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
+        } else if (symbol.getType().equals(SymbolType.Decimal())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Timer){
+        } else if (symbol.getType().equals(SymbolType.Timer())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Array){
+        } else if (symbol.getType().equals(SymbolType.Array())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Method())){ // Method is a void function
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Function){
+        } else if (symbol.getType().equals(SymbolType.Type.Function)){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Struct){
+        } else if (symbol.getType().equals(SymbolType.Type.Struct)){
 
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though

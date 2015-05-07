@@ -61,6 +61,9 @@ public class Main {
             TypeChecker typeChecker = new TypeChecker(checker.getSymbolTable());
             tree.apply(typeChecker);
 
+            // Print tree
+            tree.apply(new PrettyPrinter());
+
             // Apply codegenerator
             tree.apply(new CodeGenerator(typeChecker.getScope()));
 

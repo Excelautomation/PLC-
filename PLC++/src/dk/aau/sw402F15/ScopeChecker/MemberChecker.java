@@ -37,11 +37,11 @@ public class MemberChecker extends DepthFirstAdapter {
             Symbol symbol = currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
 
             // TODO arrays not handled
-            if (currentSymbol.getType() == SymbolType.Type.Function) {
+            if (currentSymbol.equals(SymbolType.Type.Function)) {
                 SymbolFunction symbolFunction = (SymbolFunction) symbol;
 
                 // Check if returntype is correct
-                if (symbolFunction.getReturnType().getType() != SymbolType.Type.Struct) {
+                if (!symbolFunction.getReturnType().equals(SymbolType.Type.Struct)) {
                     throw new NotImplementedException();
                 }
 
@@ -50,7 +50,7 @@ public class MemberChecker extends DepthFirstAdapter {
                 SymbolVariable symbolVariable = (SymbolVariable) symbol;
 
                 // Check if decltype is correct
-                if (symbolVariable.getType().getType() != SymbolType.Type.Struct) {
+                if (!symbolVariable.getType().equals(SymbolType.Type.Struct)) {
                     throw new NotImplementedException();
                 }
 
@@ -58,7 +58,7 @@ public class MemberChecker extends DepthFirstAdapter {
             }
 
             // Update scope if symbol is a struct
-            if (currentSymbol.getType() == SymbolType.Type.Struct) {
+            if (currentSymbol.equals(SymbolType.Type.Struct)) {
                 symbol = currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
                 currentScope = symbol.getScope().getSubScopeByNodeOrThrow(symbol.getNode());
                 return;
@@ -69,11 +69,11 @@ public class MemberChecker extends DepthFirstAdapter {
         currentSymbol = currentScope.getSymbolOrThrow(node.getText(), node).getType();
 
         // Check if it's a function
-        if (currentSymbol.getType() == SymbolType.Type.Function) {
+        if (currentSymbol.equals(SymbolType.Type.Function)) {
             SymbolFunction symbolFunction = (SymbolFunction) currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
 
             // Check if returntype is correct
-            if (symbolFunction.getReturnType().getType() == SymbolType.Type.Struct) {
+            if (symbolFunction.getReturnType().equals(SymbolType.Type.Struct)) {
                 currentSymbol = currentScope.getSymbolOrThrow(symbolFunction.getReturnType().getName(), node).getType();
             } else {
                 // Returntype is not a struct just update currentSymbol
@@ -82,7 +82,7 @@ public class MemberChecker extends DepthFirstAdapter {
         }
 
         // Update scope if symbol is a struct
-        if (currentSymbol.getType() == SymbolType.Type.Struct) {
+        if (currentSymbol.equals(SymbolType.Type.Struct)) {
             Symbol symbol = currentScope.getSymbolOrThrow(currentSymbol.getName(), node);
             currentScope = symbol.getScope().getSubScopeByNodeOrThrow(symbol.getNode());
             return;

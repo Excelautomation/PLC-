@@ -35,28 +35,8 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseADeclaration(ADeclaration node) {
-        // Check if declaration is not assigned
-        if (node.getExpr() == null)
-            return;
-
-        ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
-        node.apply(expressionTypeEvaluator);
-
-        // Get expr type
-        SymbolType exprType = expressionTypeEvaluator.getResult();
-
-        // Check type of declaration
-        SymbolType declarationType = Helper.getSymbolTypeFromTypeSpecifier(node.getType());
-
-        // Check if we must make a implicit type conversion
-        if (exprType.getType() == SymbolType.Type.Int && declarationType.getType() == SymbolType.Type.Decimal) {
-            exprType = SymbolType.Decimal();
-        }
-
-        // Check if types matches
-        if (exprType.getType() != declarationType.getType()) {
-            throw new IncompaitbleTypesException(node, declarationType, exprType);
-        }
+        DeclarationTypeChecker declarationTypeChecker = new DeclarationTypeChecker(currentScope);
+        node.apply(declarationTypeChecker);
     }
 
     @Override
@@ -67,7 +47,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             node.getCondition().apply(expressionTypeEvaluator);
 
             SymbolType exprResult = expressionTypeEvaluator.getResult();
-            if (exprResult.getType() != SymbolType.Type.Boolean) {
+            if (!exprResult.equals(SymbolType.Type.Boolean)) {
                 throw new ExpectingBoolException(node, exprResult);
             }
         }
@@ -83,7 +63,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             node.getCondition().apply(expressionTypeEvaluator);
 
             SymbolType exprResult = expressionTypeEvaluator.getResult();
-            if (exprResult.getType() != SymbolType.Type.Boolean) {
+            if (!exprResult.equals(SymbolType.Type.Boolean)) {
                 throw new ExpectingBoolException(node, exprResult);
             }
         }
@@ -99,7 +79,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             node.getCondition().apply(expressionTypeEvaluator);
 
             SymbolType exprResult = expressionTypeEvaluator.getResult();
-            if (exprResult.getType() != SymbolType.Type.Boolean) {
+            if (!exprResult.equals(SymbolType.Type.Boolean)) {
                 throw new ExpectingBoolException(node, exprResult);
             }
         }
@@ -134,7 +114,7 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
             node.getExpr().apply(expressionTypeEvaluator);
 
-            if (returnType.getType() != expressionTypeEvaluator.getResult().getType())
+            if (!returnType.equals(expressionTypeEvaluator.getResult()))
                 throw new IncompatibleReturnTypeException(node, returnType);
         }
 
