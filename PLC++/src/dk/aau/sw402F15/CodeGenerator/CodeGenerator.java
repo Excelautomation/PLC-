@@ -156,34 +156,30 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outADeclaration(ADeclaration node){
-
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText());
 
         if (symbol.getType().getType() == SymbolType.Type.Boolean){
-            throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Int){
             Emit("PUSH(632) W" + getAddressAndIncrement() + " &" + ((AIntegerExpr)node.getExpr()).getIntegerLiteral(), true);
-
         } else if (symbol.getType().getType() == SymbolType.Type.Char){
-            throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
             Emit("+F(454) +0,0 +" + ((ADecimalExpr) node.getExpr()).getDecimalLiteral().toString().replace(".", ",") + "W" + getAddressAndIncrement() + "", true);
-
         } else if (symbol.getType().getType() == SymbolType.Type.Timer){
-            throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Array){
-            throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
-            throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Function){
-            throw new NotImplementedException();
+
         } else if (symbol.getType().getType() == SymbolType.Type.Struct){
-            throw new NotImplementedException();
+
         } else {
             throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
 
-        //throw new NotImplementedException();
     }
 
     @Override
