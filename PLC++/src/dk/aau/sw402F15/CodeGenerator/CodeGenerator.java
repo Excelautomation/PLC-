@@ -362,9 +362,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
-        // TODO Different if float
-
-        Emit("+(400) DXX DXX D" + getNextAddress(true), true);
+        Emit("+(400) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
     @Override
@@ -373,7 +371,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // TODO Different if float
 
-        Emit("/(430) DXX DXX D" + getNextAddress(true), true);
+        Emit("/(430) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
     @Override
@@ -382,7 +380,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // TODO Different if float
 
-        Emit("*(420) DXX DXX D" + getNextAddress(true), true);
+        Emit("*(420) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
     @Override
@@ -392,7 +390,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // TODO Different if float
 
 
-        Emit("-(410) DXX DXX D" + getNextAddress(true), true);
+        Emit("-(410) D" + getNextAddress(false) + " D" + (getNextAddress(false) - 4) + " D" + getNextAddress(true), true);
     }
 
 
