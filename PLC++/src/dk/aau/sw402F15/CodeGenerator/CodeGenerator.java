@@ -59,6 +59,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return "H" + nextHAddress;
     }
 
+    public int getFunctionNumber(boolean increment) {
+
+        if (increment)
+            return startFunctionNumber += 1;
+        else
+            return startFunctionNumber;
+    }
+
     public < T > void push(T value)
     {
         if (value.getClass() == Integer.class)
@@ -76,27 +84,25 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         return "H" + (nextHAddress -= 4);
     }
 
-    public int getFunctionNumber(boolean increment) {
-
-        if (increment)
-            return startFunctionNumber += 1;
-        else
-            return startFunctionNumber;
-    }
-
     public CodeGenerator(Scope scope) {
         super(scope, scope);
 
         try {
+            // create writer instances
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
-            Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) " + getNextDAddress(false) + " &32767", true);
-            Emit("SSET(630) " + stackPointer(false) + " &1535", true);
 
             // here we call the init method
+            Emit("LD P_First_Cycle", true);
+
+            // reset all addresses (hack)
+            Emit("SSET(630) " + getNextDAddress(false) + " &32767", true);
+            Emit("SSET(630) " + stackPointer(false) + " &1535", true);
             Emit("SBS(091) 0", true);
+
             // here we call the run Method
+            Emit("LD P_On", true);
+            Emit("SBS(091) 1", true);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -116,6 +122,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
+        //Emit("MOV(021) " + getNextDAddress(false) + " " + node.getLeft(), true); // Note: Temp outcommented
         Emit("MOV(021) " + getNextDAddress(false) + " " + node.getLeft(), true);
     }
 
