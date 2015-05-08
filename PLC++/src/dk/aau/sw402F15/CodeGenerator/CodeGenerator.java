@@ -55,7 +55,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
+            Emit("SSET(630) D" + getNextDAddress(true) + " &5", true);
+            // here we call the init method
             Emit("SBS(091) 0", true);
+            // here we call the run Method
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -107,31 +110,31 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
+    public void outAIncrementExpr(AIncrementExpr node) {
+        super.outAIncrementExpr(node);
+
+        Emit("++(590) D" + getNextDAddress(false), true);
+    }
+
+    @Override
+    public void outADecrementExpr(ADecrementExpr node) {
+        super.outADecrementExpr(node);
+
+        Emit("--(592) D" + getNextDAddress(false), true);
+    }
+
+    @Override
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
 
-        Emit("LD D" + getNextDAddress(false), true);
-        Emit("AND D" + (getNextDAddress(false) - 4), true);
-        Emit("SET W" + getNextWAddress(true), true);
-
-        /*PopFromStack();
-        Emit("LD b1", true);
-        Emit("AND b2", true);
-        Emit("SET b1", true);*/
+        Emit("ANDW(034) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false) + " D" + getNextDAddress(true), true);
     }
     
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
 
-        Emit("LD D" + getNextDAddress(false), true);
-        Emit("OR D" + (getNextDAddress(false) - 4), true);
-        Emit("SET D" + getNextDAddress(true), true);
-
-        /*PopFromStack();
-        Emit("LD b1", true);
-        Emit("OR b2", true);
-        Emit("SET b1", true);*/
+        Emit("ORW(035) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false) + " D" + getNextDAddress(true), true);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node){
+    public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
         super.outACompareLessOrEqualExpr(node);
 
         Emit("AND<=(315) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false), true);
@@ -176,7 +179,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareNotEqualExpr(ACompareNotEqualExpr node){
+    public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
         super.outACompareNotEqualExpr(node);
 
         Emit("AND<>(305) D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(false), true);
@@ -192,23 +195,23 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outADeclaration(ADeclaration node){
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
-        if (symbol.getType().getType() == SymbolType.Type.Boolean){
+        if (symbol.getType().equals(SymbolType.Boolean())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Int){
+        } else if (symbol.getType().equals(SymbolType.Int())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Char){
+        } else if (symbol.getType().equals(SymbolType.Char())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Decimal){
+        } else if (symbol.getType().equals(SymbolType.Decimal())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Timer){
+        } else if (symbol.getType().equals(SymbolType.Timer())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Array){
+        } else if (symbol.getType().equals(SymbolType.Array())){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Method){ // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Method())){ // Method is a void function
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Function){
+        } else if (symbol.getType().equals(SymbolType.Type.Function)){
 
-        } else if (symbol.getType().getType() == SymbolType.Type.Struct){
+        } else if (symbol.getType().equals(SymbolType.Type.Struct)){
 
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
@@ -222,13 +225,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAFalseExpr(AFalseExpr node){
-        super.outAFalseExpr(node);
-
-        Emit("LD P_Off", true);
-    }
-
-    @Override
     public void outAFunctionCallExpr(AFunctionCallExpr node){
 
     }
@@ -237,6 +233,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
         Emit("SBN(092) " + getFunctionNumber(), true);
+        Emit("LD P_On", true);
         returnlabel = getNextJump();
     }
 
@@ -304,7 +301,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
-        Emit("LD P_On", true);
+        Emit("MOV(021) #1 D" + getNextDAddress(true), true);
+    }
+
+    @Override
+    public void outAFalseExpr(AFalseExpr node){
+        super.outAFalseExpr(node);
+
+        Emit("MOV(021) #0 D" + getNextDAddress(true), true);
     }
 
     @Override

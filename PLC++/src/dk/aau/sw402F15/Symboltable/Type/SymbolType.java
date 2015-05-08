@@ -12,7 +12,7 @@ public class SymbolType {
         this.type = type;
     }
 
-    public Type getType() {
+    private Type getType() {
         return type;
     }
 
@@ -22,6 +22,37 @@ public class SymbolType {
 
     public String getName() {
         throw new RuntimeException();
+    }
+
+    public boolean equals(SymbolType symbolType) {
+        if (this.getType() != symbolType.getType())
+            return false;
+
+        if (this.hasName() && symbolType.hasName())
+            return this.getName().equals(symbolType.getName());
+        else if (!(this.hasName() && symbolType.hasName()))
+            return true;
+
+        return false;
+    }
+
+    public boolean equals(SymbolType.Type type) {
+        return this.getType() == type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SymbolType)
+            return equals((SymbolType)obj);
+        else if (obj instanceof SymbolType.Type)
+            return equals((SymbolType.Type) obj);
+
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return type.name() + (hasName() ? (" " + getName()) : "");
     }
 
     public static SymbolType Int() {

@@ -30,7 +30,11 @@ public class Main {
                 "func().nrOfWheels = 4;" +
                 "return 1;\n" +
                 "}\n";*/
-            String code = "void run() { }";
+            String code = "void run() {" +
+                    "int i;" +
+                    "bool b;" +
+                    " }"
+                    ;
 
         //System.out.println(code);
 
@@ -60,6 +64,9 @@ public class Main {
             // Applying typechecker
             TypeChecker typeChecker = new TypeChecker(checker.getSymbolTable());
             tree.apply(typeChecker);
+
+            // Print tree
+            tree.apply(new PrettyPrinter());
 
             // Apply codegenerator
             tree.apply(new CodeGenerator(typeChecker.getScope()));

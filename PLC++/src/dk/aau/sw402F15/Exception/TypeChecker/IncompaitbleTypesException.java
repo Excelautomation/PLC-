@@ -54,7 +54,7 @@ public class IncompaitbleTypesException extends TypeCheckerException {
             if (!out.equals("")) {
                 out += " to ";
             }
-            out += type.getType().name();
+            out += type.toString();
 
             if (type.hasName()) {
                 out += " " + type.getName();
