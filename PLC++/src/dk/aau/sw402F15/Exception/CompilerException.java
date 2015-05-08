@@ -9,7 +9,7 @@ public class CompilerException extends Exception {
     }
 
     public void printError(String code) {
-        ((RuntimeCompilerException)getCause()).printError(code);
+        ((RuntimeCompilerException) getCause()).printError(code);
     }
 
     @Override

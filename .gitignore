@@ -2,6 +2,9 @@
 PLC++/InstructionList.txt
 PLC++/SymbolList.txt
 
+# Code.ppp
+code.ppp
+
 # Java class files
 *.class
 
