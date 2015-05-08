@@ -136,9 +136,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         node.getExpr().apply(this);
         int offset = size; // * Value of the expression
         location += offset;
-        Emit("*(420) D" + getNextDAddress(false) + " &" + size + " D" + getNextDAddress(false), false);
-        Emit("+(400) D" + getNextDAddress(false) + " &" + location + " D" + getNextDAddress(false), false);
-        Emit("+(400) D" + getNextDAddress(false) + " &" + node.getName() + " D" + getNextDAddress(false), false);
+        Emit("*(420) " + getNextDAddress(false) + " &" + size + " " + getNextDAddress(false), false);
+        Emit("+(400) " + getNextDAddress(false) + " &" + location + " " + getNextDAddress(false), false);
+        Emit("+(400) " + getNextDAddress(false) + " &" + node.getName() + " " + getNextDAddress(false), false);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outACompareEqualExpr(node);
 
         Emit("AND=(300) D" + nextDAddress + " " + getNextDAddress(false), true);
-        Emit("SET W" + getNextWAddress(true), true);
+        Emit("SET " + getNextWAddress(true), true);
     }
 
     @Override
@@ -199,7 +199,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outACompareGreaterExpr(node);
 
         Emit("AND>(320) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
-        Emit("SET W" + getNextWAddress(true), true);
+        Emit("SET " + getNextWAddress(true), true);
 
     }
 
@@ -208,7 +208,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outACompareGreaterOrEqualExpr(node);
 
         Emit("AND>=(325) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
-        Emit("SET W" + getNextWAddress(true), true);
+        Emit("SET " + getNextWAddress(true), true);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outACompareLessExpr(node);
 
         Emit("AND<(310) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
-        Emit("SET W" + getNextWAddress(true), true);
+        Emit("SET " + getNextWAddress(true), true);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outACompareLessOrEqualExpr(node);
 
         Emit("AND<=(315) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
-        Emit("SET W" + getNextWAddress(true), true);
+        Emit("SET " + getNextWAddress(true), true);
     }
 
     @Override
@@ -232,7 +232,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outACompareNotEqualExpr(node);
 
         Emit("AND<>(305) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
-        Emit("SET W" + getNextWAddress(true), true);
+        Emit("SET " + getNextWAddress(true), true);
     }
 
     @Override
