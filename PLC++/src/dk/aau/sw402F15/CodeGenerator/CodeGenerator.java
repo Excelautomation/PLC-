@@ -419,7 +419,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAAddExpr(node);
 
         // TODO Different if float
-        Emit("+(400) D" + getNextDAddress(false) + " D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(true), true);
+        Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     @Override
