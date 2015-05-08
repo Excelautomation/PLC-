@@ -7,9 +7,11 @@ import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.awt.geom.FlatteningPathIterator;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.EmptyStackException;
 
 /**
  * Created by Claus & Jimmi on 24-04-2015.
@@ -19,6 +21,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int returnlabel;
     private int nextDAddress = -4;
     private double nextWAddress = 0.00;
+    private int nextHAddress = 0;
     private int startFunctionNumber = -1;
 
     PrintWriter instructionWriter;
@@ -44,6 +47,31 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return nextWAddress;
     }
 
+    public int getNextHAddress(boolean increment) {
+        if (nextHAddress > 4091)
+            throw new OutOfMemoryError();
+
+        if (increment)
+            return nextHAddress += 4;
+        else
+            return nextHAddress;
+    }
+
+    public < T > void push(T value)
+    {
+        if (value.getClass() == Integer.class)
+            Emit("MOV(021) &" + value + " C" + getNextHAddress(true), true);
+        else if (value.getClass() == Float.class || value.getClass() == Double.class)
+            Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + "C" + getNextHAddress(true) + "", true);
+    }
+
+    public int pop()
+    {
+        if (getNextHAddress(false) < 4)
+            throw new EmptyStackException();
+        return nextHAddress -= 4;
+    }
+
     public int getFunctionNumber() {
         return startFunctionNumber += 1;
     }
@@ -55,7 +83,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) D" + getNextDAddress(true) + " &32767", true);
+            Emit("SSET(630) D" + getNextDAddress(false) + " &32767", true);
+            Emit("SSET(630) H" + getNextHAddress(false) + " &1535", true);
+
             // here we call the init method
             Emit("SBS(091) 0", true);
             // here we call the run Method
@@ -240,7 +270,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
-        Emit("JME(005) #" + returnlabel, true);
+        //Emit("JME(005) #" + returnlabel, true);
         Emit("RET(093)", true);
     }
 
@@ -289,7 +319,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAReturnStatement(AReturnStatement node){
         super.outAReturnStatement(node);
-        Emit("JMP(004) #" + returnlabel, true);
+        //Emit("JMP(004) #" + returnlabel, true);
     }
 
     @Override
@@ -356,16 +386,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAWhileStatement(AWhileStatement node){
-        Emit("LD b1", true);
+        //Emit("LD b1", true);
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
+        node.getCondition().apply(this);
+        Emit("LD W" + getNextWAddress(false), true);
         Emit("JMP(004) #" + jumpLabel, true);
-        Emit("JME(005) #" + loopLabel, true);
         node.getStatement().apply(this);
         Emit("JME(005) #" + jumpLabel, true);
-        node.getCondition().apply(this);
-        Emit("CJP(510) #" + loopLabel, true);
+
     }
 
     @Override
