@@ -1,14 +1,9 @@
 void init()
 {
-    int i = 0;
 
-    while (1 < 100)
-    {
-        i = i + 1;
-    }
 }
 
 void run()
 {
-
+    int i = 3 + 4;
 }
