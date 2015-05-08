@@ -4,6 +4,10 @@ void run() {
 
 }
 
+void init() {
+
+}
+
 int test_function() {
 
     int i = 10;
