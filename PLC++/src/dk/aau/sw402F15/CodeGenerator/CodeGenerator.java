@@ -78,8 +78,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
-        // Get location of symbol in memory
-        // Set memory to value of TOS
+        Emit("MOV(021) D" + getNextDAddress(false) + " " + node.getLeft(), true);
     }
 
     @Override
