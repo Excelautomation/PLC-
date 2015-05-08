@@ -196,14 +196,18 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().equals(SymbolType.Boolean())){
+            Emit(node.getName().getText() + "\tBOOL\tW" + getNextAddress(true) + ".00\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Int())){
+            Emit(node.getName().getText() + "\tINT\tW" + getNextAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Char())){
 
         } else if (symbol.getType().equals(SymbolType.Decimal())){
+            Emit(node.getName().getText() + "\tREAL\tW" + getNextAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Timer())){
+            Emit(node.getName().getText() + "\tTIMER\tW" + getNextAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())){
 
@@ -216,8 +220,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
-
-    }
 
     @Override
     public void outADefaultStatement(ADefaultStatement node){
