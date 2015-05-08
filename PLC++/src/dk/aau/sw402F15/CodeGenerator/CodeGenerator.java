@@ -24,7 +24,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int nextDAddress = 0;
     private double nextWAddress = 0.00;
     private int nextHAddress = 0;
-    private int startFunctionNumber = 0;
+    private int startFunctionNumber = -1;
 
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
@@ -295,7 +295,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
 
-        Emit("SBN(092) " + getFunctionNumber(false), true);
+        Emit("SBN(092) " + getFunctionNumber(true), true);
         Emit("LD P_On", true);
 
         //returnlabel = getNextJump();
