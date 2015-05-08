@@ -71,7 +71,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     public String pop()
     {
-        if (nextHAddress < 4)
+        if (nextHAddress < 0)
             throw new EmptyStackException();
         return "H" + (nextHAddress -= 4);
     }
