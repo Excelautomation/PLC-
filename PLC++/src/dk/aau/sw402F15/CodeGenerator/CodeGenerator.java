@@ -207,7 +207,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         } else if (symbol.getType().equals(SymbolType.Array())){
 
-        } else if (symbol.getType().equals(SymbolType.Method())){ // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
 
         } else if (symbol.getType().equals(SymbolType.Type.Function)){
 

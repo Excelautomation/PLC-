@@ -34,7 +34,7 @@ public class Scope {
     }
 
     public void addSymbol(Symbol symbol) {
-        if (getSymbol(symbol.getName()) != null) {
+        if (getSymbolByName(symbol.getName()) != null) {
             throw new SymbolAlreadyExistsException(symbol.getNode());
         }
 
@@ -47,20 +47,20 @@ public class Scope {
         return scope;
     }
 
-    private Symbol getSymbol(String name) {
+    public Symbol getSymbolByName(String name) {
         Symbol symbol = symbols.get(name);
         if (symbol != null)
             return symbol;
 
         Scope scope = getParentScope();
         if (scope != null)
-            return scope.getSymbol(name);
+            return scope.getSymbolByName(name);
 
         return null;
     }
 
     public Symbol getSymbolOrThrow(String name, Node node) {
-        Symbol symbol = getSymbol(name);
+        Symbol symbol = getSymbolByName(name);
 
         if (symbol == null)
             throw new SymbolNotFoundException(node);

@@ -95,12 +95,12 @@ public class SymbolType {
         throw new NotImplementedException();
     }
 
-    public static SymbolType Method() {
-        return new SymbolType(Type.Method);
+    public static SymbolType Void() {
+        return new SymbolType(Type.Void);
     }
 
     public enum Type {
-        Int, Decimal, Boolean, Struct, Function, Timer, Port, Char, Array, Enum, Method
+        Int, Decimal, Boolean, Struct, Function, Timer, Port, Char, Array, Enum, Void
     }
 }
 
