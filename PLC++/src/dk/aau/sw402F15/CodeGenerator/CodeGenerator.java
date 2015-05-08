@@ -65,6 +65,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("MOV(021) &" + value + " " + stackPointer(true), true);
         else if (value.getClass() == Float.class || value.getClass() == Double.class)
             Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer(true) + "", true);
+        else
+            throw new ClassFormatError();
     }
 
     public String pop()
@@ -425,7 +427,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         int loopLabel = getNextJump();
 
         node.getCondition().apply(this);
-        Emit("LD W" + getNextWAddress(false), true);
+        Emit("LD " + getNextWAddress(false), true);
         Emit("JMP(004) #" + jumpLabel, true);
         node.getStatement().apply(this);
         Emit("JME(005) #" + jumpLabel, true);
@@ -451,7 +453,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAAddExpr(node);
 
         // TODO Different if float
-        Emit("+(400) " + getNextDAddress(false) + " " + (nextDAddress - 4) + " " + getNextDAddress(true), true);
+        Emit("+(400) " + getNextDAddress(false) + " D" + (nextDAddress - 4) + " " + getNextDAddress(true), true);
     }
 
     @Override
