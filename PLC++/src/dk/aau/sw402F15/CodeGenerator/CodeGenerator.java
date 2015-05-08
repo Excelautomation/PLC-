@@ -53,10 +53,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (nextHAddress > 4091)
             throw new OutOfMemoryError();
 
+        int currentAddress = nextHAddress;
+        nextHAddress += 4;
+
         if (increment)
-            return "H" + (nextHAddress += 4);
+            return "H" + (currentAddress);
         else
-            return "H" + nextHAddress;
+            return "H" + currentAddress;
     }
 
     public < T > void push(T value)
@@ -71,9 +74,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     public String pop()
     {
-        if (nextHAddress < 0)
-            throw new EmptyStackException();
+        //if (nextHAddress < 0)
+            //throw new EmptyStackException();
         return "H" + (nextHAddress -= 4);
+    }
+
+    public String peek()
+    {
+        return "H" + nextHAddress;
     }
 
     public int getFunctionNumber(boolean increment) {
@@ -217,7 +225,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareLessExpr(ACompareLessExpr node){
         super.outACompareLessExpr(node);
 
-        Emit("AND<(310) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        //Emit("AND<(310) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        Emit("AND<(310)" + " " + pop() + " " + pop(), true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
