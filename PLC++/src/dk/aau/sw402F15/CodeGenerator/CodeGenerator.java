@@ -251,7 +251,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             declareBool(node.getName().getText(), false);
 
         } else if (symbol.getType().equals(SymbolType.Int())) {
-            declareInt(node.getName().getText(), pop());
+            declareInt(node.getName().getText(), 0);
 
         } else if (symbol.getType().equals(SymbolType.Char())) {
             throw new NotImplementedException();
@@ -281,20 +281,20 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     private void declareInt(String name, int value){
         // get next free address in symbolList
-        int address = getNextDAddress(true);
+        String address = getNextDAddress(true);
 
         // Declare
-        Emit(name + "\tINT\tW" + address + "\t\t0\t", false);
+        Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " D" + address, true);
+        Emit("MOV(021) &" + value + " " + address, true);
     }
 
     private void declareBool(String name, boolean value){
         // get next free address in symbolList
-        int address = getNextDAddress(true);
+        String address = getNextDAddress(true);
 
         // Declare
-        Emit(name + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
         if (value)
             Emit("SET " + name, true);
@@ -304,22 +304,22 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     private void declareDecimal(String name, int value){
         // get next free address in symbolList
-        int address = getNextDAddress(true);
+        String address = getNextDAddress(true);
 
         // Declare
-        Emit(name + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " D" + address, true);
+        Emit("MOV(021) &" + value + " " + address, true);
     }
 
     private void declareTimer(String name, int value){
         // get next free address in symbolList
-        int address = getNextDAddress(true);
+        String address = getNextDAddress(true);
 
         // Declare
-        Emit(name + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " D" + address, true);
+        Emit("MOV(021) &" + value + " " + address, true);
     }
 
     @Override
