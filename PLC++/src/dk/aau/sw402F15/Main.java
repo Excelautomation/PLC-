@@ -31,8 +31,7 @@ public class Main {
                 "return 1;\n" +
                 "}\n";*/
             String code = "void run() {" +
-                    "int i;" +
-                    "bool b;" +
+                    "int i = 3;" +
                     " }"
                     ;
 

@@ -196,7 +196,12 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().equals(SymbolType.Boolean())) {
-            Emit(node.getName().getText() + "\tBOOL\tW" + getNextDAddress(true) + ".00\t\t0\t", false);
+
+            int address = getNextDAddress(true);
+
+            Emit(node.getName().getText() + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+
+            //Emit("MOV(021) &" + node.getExpr() + " D" + address, true);
 
         } else if (symbol.getType().equals(SymbolType.Int())) {
             Emit(node.getName().getText() + "\tINT\tW" + getNextDAddress(true) + "\t\t0\t", false);
@@ -210,12 +215,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit(node.getName().getText() + "\tTIMER\tW" + getNextDAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Method())) { // Method is a void function
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Type.Function)) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Type.Struct)) {
+            throw new NotImplementedException();
 
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
