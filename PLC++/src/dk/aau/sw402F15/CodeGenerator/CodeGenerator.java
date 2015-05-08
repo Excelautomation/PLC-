@@ -3,6 +3,7 @@ package dk.aau.sw402F15.CodeGenerator;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -113,12 +114,26 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
-        //throw new NotImplementedException();
+        int size = Integer.parseInt(node.getNumber().getText());
+        // Reserver memory for array
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        //throw new NotImplementedException();
+        // TODO: currently only gets the values
+        node.getExpr().apply(this);
+        SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
+        int location = 0; // Get location in memory
+        int size = 1;
+        if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
+            size = 2;
+        }
+        node.getExpr().apply(this);
+        int offset = size; // * Value of the expression
+        location += offset;
+        Emit("*(420) D" + getNextDAddress(false) + " @" + size + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " @" + location + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " @" + node.getName() + " D" + getNextDAddress(false), false);
     }
 
     @Override
@@ -240,7 +255,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
 
-        } else if (symbol.getType().equals(SymbolType.Method())) { // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
 
         } else if (symbol.getType().equals(SymbolType.Type.Function)) {
 
