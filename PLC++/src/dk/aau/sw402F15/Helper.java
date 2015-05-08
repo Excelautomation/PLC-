@@ -48,7 +48,7 @@ public class Helper {
             sType = SymbolType.Enum();
         }
         else if (type.getClass() == AVoidTypeSpecifier.class) {
-            sType = SymbolType.Method();
+            sType = SymbolType.Void();
         }
 
         return sType;
