@@ -283,7 +283,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (function.getReturnType().equals(SymbolType.Type.Void)) {
             Emit("SBS(091) " + getFunctionNumber(true), true);
         } else {
-            Emit("MCRO(099) " + getFunctionNumber(true) + getNextDAddress(true) + getNextDAddress(true), true);
+            Emit("MCRO(099) " + getFunctionNumber(true) + " " + getNextDAddress(true) + " " + getNextDAddress(true), true);
         }
 
         //Emit("SBS(091) " + getFunctionNumber(true), true);
