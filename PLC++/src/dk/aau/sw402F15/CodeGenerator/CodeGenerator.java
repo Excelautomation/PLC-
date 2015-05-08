@@ -53,10 +53,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (nextHAddress > 4091)
             throw new OutOfMemoryError();
 
+        int currentAddress = nextHAddress;
+        nextHAddress += 4;
+
         if (increment)
-            return "H" + (nextHAddress += 4);
+            return "H" + (currentAddress);
         else
-            return "H" + nextHAddress;
+            return "H" + currentAddress;
     }
 
     public int getFunctionNumber(boolean increment) {
@@ -74,14 +77,19 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         else if (value.getClass() == Float.class || value.getClass() == Double.class)
             Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer(true) + "", true);
         else
-            throw new ClassFormatError();
+            throw new ClassFormatError(); 
     }
 
     public String pop()
     {
-        if (nextHAddress < 0)
-            throw new EmptyStackException();
+        //if (nextHAddress < 0)
+            //throw new EmptyStackException();
         return "H" + (nextHAddress -= 4);
+    }
+
+    public String peek()
+    {
+        return "H" + nextHAddress;
     }
 
     public CodeGenerator(Scope scope) {
@@ -199,7 +207,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareEqualExpr(ACompareEqualExpr node){
         super.outACompareEqualExpr(node);
 
-        Emit("AND=(300) D" + nextDAddress + " " + getNextDAddress(false), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        Emit("AND=(300)" + " " + arg2 + " " + arg1, true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -207,7 +218,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareGreaterExpr(ACompareGreaterExpr node){
         super.outACompareGreaterExpr(node);
 
-        Emit("AND>(320) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        Emit("AND>(320)" + " " + arg2 + " " + arg1, true);
         Emit("SET " + getNextWAddress(true), true);
 
     }
@@ -216,7 +230,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node){
         super.outACompareGreaterOrEqualExpr(node);
 
-        Emit("AND>=(325) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        Emit("AND>=(325)" + " " + arg2 + " " + arg1, true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -224,7 +241,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareLessExpr(ACompareLessExpr node){
         super.outACompareLessExpr(node);
 
-        Emit("AND<(310) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -232,7 +252,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
         super.outACompareLessOrEqualExpr(node);
 
-        Emit("AND<=(315) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        Emit("AND<=(315)" + " " + arg2 + " " + arg1, true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -240,7 +263,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
         super.outACompareNotEqualExpr(node);
 
-        Emit("AND<>(305) D" + (nextDAddress - 4) + " " + getNextDAddress(false), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        Emit("AND<>(305)" + " " + arg2 + " " + arg1, true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -254,30 +280,78 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().equals(SymbolType.Boolean())) {
-            Emit(node.getName().getText() + "\tBOOL\t" + getNextDAddress(true) + ".00\t\t0\t", false);
+            declareBool(node.getName().getText(), false);
 
         } else if (symbol.getType().equals(SymbolType.Int())) {
-            Emit(node.getName().getText() + "\tINT\t" + getNextDAddress(true) + "\t\t0\t", false);
+            declareInt(node.getName().getText(), 0);
 
         } else if (symbol.getType().equals(SymbolType.Char())) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Decimal())) {
-            Emit(node.getName().getText() + "\tREAL\t" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tREAL\tD" + getNextDAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
-            Emit(node.getName().getText() + "\tTIMER\t" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tTIMER\tD" + getNextDAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Type.Function)) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Type.Struct)) {
+            throw new NotImplementedException();
 
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
+    }
+
+    private void declareInt(String name, int value){
+        // get next free address in symbolList
+        String address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tINT\t" + address + "\t\t0\t", false);
+        // Assign
+        Emit("MOV(021) &" + value + " " + address, true);
+    }
+
+    private void declareBool(String name, boolean value){
+        // get next free address in symbolList
+        String address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
+        // Assign
+        if (value)
+            Emit("SET " + name, true);
+        else
+            Emit("RSET " + name, true);
+    }
+
+    private void declareDecimal(String name, int value){
+        // get next free address in symbolList
+        String address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
+        // Assign
+        Emit("MOV(021) &" + value + " " + address, true);
+    }
+
+    private void declareTimer(String name, int value){
+        // get next free address in symbolList
+        String address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
+        // Assign
+        Emit("MOV(021) &" + value + " " + address, true);
     }
 
     @Override
@@ -484,6 +558,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // TODO Different if float
         Emit("-(410) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
+
+
+
 
     private int getNextJump(){
         jumpLabel = jumpLabel + 1;
