@@ -1,5 +1,6 @@
 void init()
 {
+    int j = 0;
 }
 
 void run()
