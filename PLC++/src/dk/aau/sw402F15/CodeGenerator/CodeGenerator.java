@@ -120,6 +120,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
+        // TODO: currently only gets the values
         node.getExpr().apply(this);
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
         int location = 0; // Get location in memory
@@ -132,6 +133,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         location += offset;
         Emit("*(420) D" + getNextDAddress(false) + " @" + size + " D" + getNextDAddress(false), false);
         Emit("+(400) D" + getNextDAddress(false) + " @" + location + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " @" + node.getName() + " D" + getNextDAddress(false), false);
     }
 
     @Override
