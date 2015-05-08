@@ -3,6 +3,7 @@ package dk.aau.sw402F15.CodeGenerator;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -81,12 +82,22 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
-        //throw new NotImplementedException();
+        int size = Integer.parseInt(node.getNumber().getText());
+        //Reserver memory for array
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        //throw new NotImplementedException();
+        node.getExpr().apply(this);
+        SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
+        // Find location in memory
+        int size = 1;
+        if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
+            size = 2;
+        }
+        int offset = size; // * //arraysize
+        //location += offset;
+        //Emit(MOV
     }
 
     @Override
