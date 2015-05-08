@@ -57,8 +57,8 @@ public class ASTSimplify extends DepthFirstAdapter {
     @Override
     public void caseACompoundAddExpr(ACompoundAddExpr node) {
         Node newNode = new AAssignmentExpr(
-                node.getLeft(),
-                new AAddExpr(node.getLeft(), node.getRight())
+                (PExpr)node.getLeft().clone(),
+                new AAddExpr((PExpr)node.getLeft().clone(), (PExpr)node.getRight().clone())
         );
 
         // Apply newnode
@@ -71,8 +71,8 @@ public class ASTSimplify extends DepthFirstAdapter {
     @Override
     public void caseACompoundSubExpr(ACompoundSubExpr node) {
         Node newNode = new AAssignmentExpr(
-                node.getLeft(),
-                new ASubExpr(node.getLeft(), node.getRight())
+                (PExpr)node.getLeft().clone(),
+                new ASubExpr((PExpr)node.getLeft().clone(), (PExpr)node.getRight().clone())
         );
 
         // Apply newnode
@@ -85,8 +85,8 @@ public class ASTSimplify extends DepthFirstAdapter {
     @Override
     public void caseACompoundMultExpr(ACompoundMultExpr node) {
         Node newNode = new AAssignmentExpr(
-                node.getLeft(),
-                new AMultiExpr(node.getLeft(), node.getRight())
+                (PExpr)node.getLeft().clone(),
+                new AMultiExpr((PExpr)node.getLeft().clone(), (PExpr)node.getRight().clone())
         );
 
         // Apply newnode
@@ -99,8 +99,8 @@ public class ASTSimplify extends DepthFirstAdapter {
     @Override
     public void caseACompoundDivExpr(ACompoundDivExpr node) {
         Node newNode = new AAssignmentExpr(
-                node.getLeft(),
-                new ADivExpr(node.getLeft(), node.getRight())
+                (PExpr)node.getLeft().clone(),
+                new ADivExpr((PExpr)node.getLeft().clone(), (PExpr)node.getRight().clone())
         );
 
         // Apply newnode
@@ -113,8 +113,8 @@ public class ASTSimplify extends DepthFirstAdapter {
     @Override
     public void caseACompoundModExpr(ACompoundModExpr node) {
         Node newNode = new AAssignmentExpr(
-                node.getLeft(),
-                new AModExpr(node.getLeft(), node.getRight())
+                (PExpr)node.getLeft().clone(),
+                new AModExpr((PExpr)node.getLeft().clone(), (PExpr)node.getRight().clone())
         );
 
         // Apply newnode
