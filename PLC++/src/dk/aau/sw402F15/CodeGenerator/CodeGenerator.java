@@ -133,7 +133,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         location += offset;
         Emit("*(420) D" + getNextDAddress(false) + " &" + size + " D" + getNextDAddress(false), false);
         Emit("+(400) D" + getNextDAddress(false) + " &" + location + " D" + getNextDAddress(false), false);
-        Emit("+(400) D" + getNextDAddress(false) + " &" + node.getName() + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " " + node.getName() + " D" + getNextDAddress(false), false);
     }
 
     @Override
