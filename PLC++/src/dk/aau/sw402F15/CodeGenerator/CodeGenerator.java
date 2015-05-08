@@ -1,6 +1,5 @@
 package dk.aau.sw402F15.CodeGenerator;
 
-import com.sun.tools.corba.se.idl.constExpr.Not;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
