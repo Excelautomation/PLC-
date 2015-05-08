@@ -1,5 +1,6 @@
 package dk.aau.sw402F15.CodeGenerator;
 
+import com.sun.tools.corba.se.idl.constExpr.Not;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
@@ -225,23 +226,19 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().equals(SymbolType.Boolean())) {
-
-            int address = getNextDAddress(true);
-
-            Emit(node.getName().getText() + "\tBOOL\tW" + address + ".00\t\t0\t", false);
-
-            //Emit("MOV(021) &" + node.getExpr() + " D" + address, true);
+            declareBool(node.getName().getText(), false);
 
         } else if (symbol.getType().equals(SymbolType.Int())) {
-            Emit(node.getName().getText() + "\tINT\tW" + getNextDAddress(true) + "\t\t0\t", false);
+            declareInt(node.getName().getText(), pop());
 
         } else if (symbol.getType().equals(SymbolType.Char())) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Decimal())) {
-            Emit(node.getName().getText() + "\tREAL\tW" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tREAL\tD" + getNextDAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
-            Emit(node.getName().getText() + "\tTIMER\tW" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tTIMER\tD" + getNextDAddress(true) + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
             throw new NotImplementedException();
@@ -258,6 +255,49 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
+    }
+
+    private void declareInt(String name, int value){
+        // get next free address in symbolList
+        int address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tINT\tW" + address + "\t\t0\t", false);
+        // Assign
+        Emit("MOV(021) &" + value + " D" + address, true);
+    }
+
+    private void declareBool(String name, boolean value){
+        // get next free address in symbolList
+        int address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+        // Assign
+        if (value)
+            Emit("SET " + name, true);
+        else
+            Emit("RSET " + name, true);
+    }
+
+    private void declareDecimal(String name, int value){
+        // get next free address in symbolList
+        int address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+        // Assign
+        Emit("MOV(021) &" + value + " D" + address, true);
+    }
+
+    private void declareTimer(String name, int value){
+        // get next free address in symbolList
+        int address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\tW" + address + ".00\t\t0\t", false);
+        // Assign
+        Emit("MOV(021) &" + value + " D" + address, true);
     }
 
     @Override
@@ -457,6 +497,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("-(410) D" + getNextDAddress(false) + " D" + (getNextDAddress(false) - 4) + " D" + getNextDAddress(true), true);
     }
+
+
+
 
     private int getNextJump(){
         jumpLabel = jumpLabel + 1;
