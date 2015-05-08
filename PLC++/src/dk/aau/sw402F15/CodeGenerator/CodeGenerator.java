@@ -69,7 +69,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         else if (value.getClass() == Float.class || value.getClass() == Double.class)
             Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer(true) + "", true);
         else
-            throw new ClassFormatError();
+            throw new ClassFormatError(); 
     }
 
     public String pop()
