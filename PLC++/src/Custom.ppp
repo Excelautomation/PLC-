@@ -1,3 +1,17 @@
 void run() {
+
+    int hej = test_function();
+
+}
+
+void init() {
+
+}
+
+int test_function() {
+
     int i = 10;
+
+    return i;
+
 }
