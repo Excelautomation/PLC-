@@ -86,21 +86,23 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
         int size = Integer.parseInt(node.getNumber().getText());
-        //Reserver memory for array
+        // Reserver memory for array
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
         node.getExpr().apply(this);
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
-        // Find location in memory
+        int location = 0; // Get location in memory
         int size = 1;
         if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
             size = 2;
         }
-        int offset = size; // * //arraysize
-        //location += offset;
-        //Emit(MOV
+        node.getExpr().apply(this);
+        int offset = size; // * Value of the expression
+        location += offset;
+        Emit("*(420) D" + getNextDAddress(false) + " @" + size + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " @" + location + " D" + getNextDAddress(false), false);
     }
 
     @Override

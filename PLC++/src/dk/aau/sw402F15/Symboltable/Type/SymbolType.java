@@ -12,7 +12,7 @@ public class SymbolType {
         this.type = type;
     }
 
-    private Type getType() {
+    public Type getType() {
         return type;
     }
 
