@@ -1,7 +1,7 @@
 package dk.aau.sw402F15.FunctionChecker;
 
-import dk.aau.sw402F15.Exception.RuntimeCompilerException;
 import dk.aau.sw402F15.Exception.FunctionChecker.*;
+import dk.aau.sw402F15.Exception.RuntimeCompilerException;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Symbol;
 import dk.aau.sw402F15.Symboltable.SymbolFunction;
@@ -33,8 +33,8 @@ public class FunctionChecker {
         }
 
         // Check if returntype is void
-        SymbolFunction initFunction = (SymbolFunction)init;
-        SymbolFunction runFunction = (SymbolFunction)run;
+        SymbolFunction initFunction = (SymbolFunction) init;
+        SymbolFunction runFunction = (SymbolFunction) run;
         if (!initFunction.getReturnType().equals(SymbolType.Type.Void)) {
             throw new InitIsNotAVoidFunctionException();
         }

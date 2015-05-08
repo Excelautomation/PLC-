@@ -1,7 +1,6 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.Exception.TypeChecker.*;
-import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
