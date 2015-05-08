@@ -15,8 +15,7 @@ public class Main {
             String code = "void init() {; }" +
                     "" +
                     "void run() {" +
-                    "int i;" +
-                    "bool b;" +
+                    "int i = 3 + 4;" +
                     " }"
                     ;
 
