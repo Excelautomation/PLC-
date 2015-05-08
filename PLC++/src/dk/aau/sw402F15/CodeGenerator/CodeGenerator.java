@@ -108,8 +108,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
-        // Get location of symbol in memory
-        // Set memory to value of TOS
+        Emit("MOV(021) D" + getNextDAddress(false) + " " + node.getLeft(), true);
     }
 
     @Override
@@ -222,31 +221,34 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outADeclaration(ADeclaration node){
+    public void outADeclaration(ADeclaration node) {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
-        if (symbol.getType().equals(SymbolType.Boolean())){
+        if (symbol.getType().equals(SymbolType.Boolean())) {
+            Emit(node.getName().getText() + "\tBOOL\tW" + getNextDAddress(true) + ".00\t\t0\t", false);
 
-        } else if (symbol.getType().equals(SymbolType.Int())){
+        } else if (symbol.getType().equals(SymbolType.Int())) {
+            Emit(node.getName().getText() + "\tINT\tW" + getNextDAddress(true) + "\t\t0\t", false);
 
-        } else if (symbol.getType().equals(SymbolType.Char())){
+        } else if (symbol.getType().equals(SymbolType.Char())) {
 
-        } else if (symbol.getType().equals(SymbolType.Decimal())){
+        } else if (symbol.getType().equals(SymbolType.Decimal())) {
+            Emit(node.getName().getText() + "\tREAL\tW" + getNextDAddress(true) + "\t\t0\t", false);
 
-        } else if (symbol.getType().equals(SymbolType.Timer())){
+        } else if (symbol.getType().equals(SymbolType.Timer())) {
+            Emit(node.getName().getText() + "\tTIMER\tW" + getNextDAddress(true) + "\t\t0\t", false);
 
-        } else if (symbol.getType().equals(SymbolType.Array())){
+        } else if (symbol.getType().equals(SymbolType.Array())) {
 
-        } else if (symbol.getType().equals(SymbolType.Method())){ // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Method())) { // Method is a void function
 
-        } else if (symbol.getType().equals(SymbolType.Type.Function)){
+        } else if (symbol.getType().equals(SymbolType.Type.Function)) {
 
-        } else if (symbol.getType().equals(SymbolType.Type.Struct)){
+        } else if (symbol.getType().equals(SymbolType.Type.Struct)) {
 
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
-
     }
 
     @Override
