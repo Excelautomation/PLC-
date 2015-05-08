@@ -418,7 +418,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
-
+        Emit(push(node.getIntegerLiteral()), true);
         Emit("MOV(021) &" + node.getIntegerLiteral() + " D" + getNextDAddress(true), true);
     }
 
