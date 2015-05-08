@@ -57,7 +57,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("LD P_First_Cycle", true);
             Emit("SSET(630) D" + getNextDAddress(true) + " &5", true);
             // here we call the init method
-            Emit("LD P_On", true);
+            Emit("SBS(091) 0", true);
             // here we call the run Method
 
         } catch (FileNotFoundException e) {
