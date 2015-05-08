@@ -1,7 +1,9 @@
-int func()
+void init()
+{
+}
+
+void run()
 {
     int j = 10 / 5;
     int i = 3 * 3 * 3;
-
-    return 0;
 }

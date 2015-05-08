@@ -3,6 +3,8 @@ package dk.aau.sw402F15.CodeGenerator;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolArray;
+import dk.aau.sw402F15.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -22,7 +24,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int nextDAddress = 0;
     private double nextWAddress = 0.00;
     private int nextHAddress = 0;
-    private int startFunctionNumber = -1;
+    private int startFunctionNumber = 0;
 
     PrintWriter instructionWriter;
     PrintWriter symbolWriter;
@@ -72,8 +74,12 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         return "H" + (nextHAddress -= 4);
     }
 
-    public int getFunctionNumber() {
-        return startFunctionNumber += 1;
+    public int getFunctionNumber(boolean increment) {
+
+        if (increment)
+            return startFunctionNumber += 1;
+        else
+            return startFunctionNumber;
     }
 
     public CodeGenerator(Scope scope) {
@@ -99,7 +105,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outStart(Start node){
-        Emit("END(001)", true);
+        //Emit("END(001)", true);
 
         instructionWriter.close();
         symbolWriter.close();
@@ -113,12 +119,26 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
-        //throw new NotImplementedException();
+        int size = Integer.parseInt(node.getNumber().getText());
+        // Reserver memory for array
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        //throw new NotImplementedException();
+        // TODO: currently only gets the values
+        node.getExpr().apply(this);
+        SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
+        int location = 0; // Get location in memory
+        int size = 1;
+        if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
+            size = 2;
+        }
+        node.getExpr().apply(this);
+        int offset = size; // * Value of the expression
+        location += offset;
+        Emit("*(420) D" + getNextDAddress(false) + " &" + size + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " &" + location + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " &" + node.getName() + " D" + getNextDAddress(false), false);
     }
 
     @Override
@@ -240,7 +260,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
 
-        } else if (symbol.getType().equals(SymbolType.Method())) { // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
 
         } else if (symbol.getType().equals(SymbolType.Type.Function)) {
 
@@ -257,16 +277,26 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAFunctionCallExpr(AFunctionCallExpr node){
+    public void inAFunctionCallExpr(AFunctionCallExpr node){
 
+        SymbolFunction function = (SymbolFunction) currentScope.getSymbolOrThrow(node.getName().getText(), node);
+        if (function.getReturnType().equals(SymbolType.Type.Void)) {
+            Emit("SBS(091) " + getFunctionNumber(true), true);
+        } else {
+            Emit("MCRO(099) " + getFunctionNumber(true) + " D" + getNextDAddress(true) + " D" + getNextDAddress(true), true);
+        }
+
+        //Emit("SBS(091) " + getFunctionNumber(true), true);
     }
 
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
-        Emit("SBN(092) " + getFunctionNumber(), true);
+
+        Emit("SBN(092) " + getFunctionNumber(false), true);
         Emit("LD P_On", true);
-        returnlabel = getNextJump();
+
+        //returnlabel = getNextJump();
     }
 
     @Override
@@ -274,6 +304,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAFunctionRootDeclaration(node);
         //Emit("JME(005) #" + returnlabel, true);
         Emit("RET(093)", true);
+        Emit("END(001)", true);
     }
 
     @Override
@@ -322,6 +353,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAReturnStatement(AReturnStatement node){
         super.outAReturnStatement(node);
         //Emit("JMP(004) #" + returnlabel, true);
+        //Emit("RET(093)", true);
     }
 
     @Override
