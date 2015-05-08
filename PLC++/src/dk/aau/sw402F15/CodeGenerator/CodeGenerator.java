@@ -3,14 +3,17 @@ package dk.aau.sw402F15.CodeGenerator;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
 import dk.aau.sw402F15.Symboltable.Symbol;
+import dk.aau.sw402F15.Symboltable.SymbolArray;
 import dk.aau.sw402F15.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.awt.geom.FlatteningPathIterator;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.EmptyStackException;
 
 /**
  * Created by Claus & Jimmi on 24-04-2015.
@@ -20,6 +23,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int returnlabel;
     private int nextDAddress = -4;
     private double nextWAddress = 0.00;
+    private int nextHAddress = 0;
     private int startFunctionNumber = 0;
 
     PrintWriter instructionWriter;
@@ -51,6 +55,33 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return startFunctionNumber += 1;
         else
             return startFunctionNumber;
+    public int getNextHAddress(boolean increment) {
+        if (nextHAddress > 4091)
+            throw new OutOfMemoryError();
+
+        if (increment)
+            return nextHAddress += 4;
+        else
+            return nextHAddress;
+    }
+
+    public < T > void push(T value)
+    {
+        if (value.getClass() == Integer.class)
+            Emit("MOV(021) &" + value + " C" + getNextHAddress(true), true);
+        else if (value.getClass() == Float.class || value.getClass() == Double.class)
+            Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + "C" + getNextHAddress(true) + "", true);
+    }
+
+    public int pop()
+    {
+        if (getNextHAddress(false) < 4)
+            throw new EmptyStackException();
+        return nextHAddress -= 4;
+    }
+
+    public int getFunctionNumber() {
+        return startFunctionNumber += 1;
     }
 
     public CodeGenerator(Scope scope) {
@@ -60,7 +91,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter = new PrintWriter("InstructionList.txt", "UTF-8");
             symbolWriter = new PrintWriter("SymbolList.txt", "UTF-8");
             Emit("LD P_First_Cycle", true);
-            Emit("SSET(630) D" + getNextDAddress(true) + " &32767", true);
+            Emit("SSET(630) D" + getNextDAddress(false) + " &32767", true);
+            Emit("SSET(630) H" + getNextHAddress(false) + " &1535", true);
+
             // here we call the init method
             Emit("SBS(091) 0", true);
             // here we call the run Method
@@ -83,18 +116,31 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
-        // Get location of symbol in memory
-        // Set memory to value of TOS
+        Emit("MOV(021) D" + getNextDAddress(false) + " " + node.getLeft(), true);
     }
 
     @Override
     public void caseAArrayDefinition(AArrayDefinition node){
-        //throw new NotImplementedException();
+        int size = Integer.parseInt(node.getNumber().getText());
+        // Reserver memory for array
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        //throw new NotImplementedException();
+        // TODO: currently only gets the values
+        node.getExpr().apply(this);
+        SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
+        int location = 0; // Get location in memory
+        int size = 1;
+        if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
+            size = 2;
+        }
+        node.getExpr().apply(this);
+        int offset = size; // * Value of the expression
+        location += offset;
+        Emit("*(420) D" + getNextDAddress(false) + " @" + size + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " @" + location + " D" + getNextDAddress(false), false);
+        Emit("+(400) D" + getNextDAddress(false) + " @" + node.getName() + " D" + getNextDAddress(false), false);
     }
 
     @Override
@@ -216,7 +262,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
 
-        } else if (symbol.getType().equals(SymbolType.Method())) { // Method is a void function
+        } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
 
         } else if (symbol.getType().equals(SymbolType.Type.Function)) {
 
@@ -386,16 +432,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAWhileStatement(AWhileStatement node){
-        Emit("LD b1", true);
+        //Emit("LD b1", true);
         int jumpLabel = getNextJump();
         int loopLabel = getNextJump();
 
+        node.getCondition().apply(this);
+        Emit("LD W" + getNextWAddress(false), true);
         Emit("JMP(004) #" + jumpLabel, true);
-        Emit("JME(005) #" + loopLabel, true);
         node.getStatement().apply(this);
         Emit("JME(005) #" + jumpLabel, true);
-        node.getCondition().apply(this);
-        Emit("CJP(510) #" + loopLabel, true);
+
     }
 
     @Override
