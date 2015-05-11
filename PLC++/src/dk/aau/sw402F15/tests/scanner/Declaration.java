@@ -18,7 +18,7 @@ public class Declaration extends ScannerTest {
 
     @Parameterized.Parameters
     public static Iterable<? extends Object> data() {
-        return Arrays.asList("bool", "char", "double", "float", "int", "long", "port", "timer");
+        return Arrays.asList("bool", "char", "double", "float", "int", "long", "input", "output", "timer");
     }
 
     private String type;
