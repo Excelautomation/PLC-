@@ -17,7 +17,6 @@ specials = '_';
 
 port_input = 'I';
 port_output = 'Q';
-port_memory = 'M';
 port_analog_input = 'AI';
 port_analog_output = 'AQ';
 
@@ -86,7 +85,8 @@ break_keyword       = 'break';
 continue_keyword    = 'continue';
 const_keyword       = 'const';
 enum_keyword        = 'enum';
-port_keyword        = 'port';
+input_keyword       = 'input';
+output_keyword      = 'output';
 timer_keyword       = 'timer';
 void_keyword        = 'void';
 return_keyword      = 'return';
@@ -108,7 +108,6 @@ decimal_literal = (digit)+ '.' (digit)+;
 // Identifier
 port_input_identifier = port_input '#';
 port_output_identifier = port_output '#';
-port_memory_identifier = port_memory '#';
 port_analog_input_identifier = port_analog_input '#';
 port_analog_output_identifier = port_analog_output '#';
 identifier = letter_or_specials letter_or_digit_or_specials*;
@@ -135,7 +134,8 @@ type_specifier {-> type_specifier} =
   | {float} float_keyword																								{-> New type_specifier.float()}
   | {double} double_keyword																								{-> New type_specifier.double()}
   | {timer} timer_keyword																								{-> New type_specifier.timer()}
-  | {port} port_keyword																									{-> New type_specifier.port()}
+  | {input} input_keyword																							    {-> New type_specifier.input()}
+  | {output} output_keyword                                                                                             {-> New type_specifier.output()}
   | {enum} enum_keyword identifier                                                                                      {-> New type_specifier.enum(identifier)}
   | {struct} struct_keyword identifier																				    {-> New type_specifier.struct(identifier)}
 ;
@@ -403,7 +403,6 @@ expr_value {-> expr} =
 
   | {port_input_identifier}		      port_input_identifier [expr]:port_value											{-> New expr.port_input(expr.expr)}
   | {port_output_identifier}	      port_output_identifier [expr]:port_value											{-> New expr.port_output(expr.expr)}
-  | {port_memory_identifier}	      port_memory_identifier [expr]:port_value											{-> New expr.port_memory(expr.expr)}
   | {port_analog_input_identifier}	  port_analog_input_identifier [expr]:port_value									{-> New expr.port_analog_input(expr.expr)}
   | {port_analog_output_identifier}   port_analog_output_identifier [expr]:port_value									{-> New expr.port_analog_output(expr.expr)}
 	
@@ -450,7 +449,8 @@ type_specifier =
   | {float}
   | {double}
   | {timer}
-  | {port}
+  | {input}
+  | {output}
   | {enum}                      identifier
   | {struct}                    identifier
   | {void}

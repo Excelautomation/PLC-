@@ -16,24 +16,26 @@ public class Helper {
 
         //Find the symbol type
         SymbolType sType = null;
-        if (type.getClass() == ABoolTypeSpecifier.class) {
+        if (type instanceof ABoolTypeSpecifier) {
             sType = SymbolType.Boolean();
-        } else if (type.getClass() == ACharTypeSpecifier.class) {
+        } else if (type instanceof ACharTypeSpecifier) {
             sType = SymbolType.Char();
-        } else if (type.getClass() == ADoubleTypeSpecifier.class || type.getClass() == AFloatTypeSpecifier.class) {
+        } else if (type instanceof ADoubleTypeSpecifier || type instanceof AFloatTypeSpecifier) {
             sType = SymbolType.Decimal();
-        } else if (type.getClass() == AIntTypeSpecifier.class || type.getClass() == ALongTypeSpecifier.class) {
+        } else if (type instanceof AIntTypeSpecifier || type instanceof ALongTypeSpecifier) {
             sType = SymbolType.Int();
-        } else if (type.getClass() == APortTypeSpecifier.class) {
-            sType = SymbolType.Port();
-        } else if (type.getClass() == ATimerTypeSpecifier.class) {
+        } else if (type instanceof AInputTypeSpecifier) {
+            sType = SymbolType.PortInput();
+        } else if (type instanceof AOutputTypeSpecifier) {
+            sType = SymbolType.PortOuput();
+        } else if (type instanceof ATimerTypeSpecifier) {
             sType = SymbolType.Timer();
-        } else if (type.getClass() == AStructTypeSpecifier.class) {
+        } else if (type instanceof AStructTypeSpecifier) {
             AStructTypeSpecifier struct = (AStructTypeSpecifier) type;
             sType = SymbolType.Struct(struct.getIdentifier().getText());
-        } else if (type.getClass() == AEnumTypeSpecifier.class) {
+        } else if (type instanceof AEnumTypeSpecifier) {
             sType = SymbolType.Enum();
-        } else if (type.getClass() == AVoidTypeSpecifier.class) {
+        } else if (type instanceof AVoidTypeSpecifier) {
             sType = SymbolType.Void();
         }
 
