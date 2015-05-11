@@ -241,13 +241,13 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     @Override
     public void outACompareEqualExpr(ACompareEqualExpr node) {
         super.outACompareEqualExpr(node);
-        checkComparison(node, node.getLeft(), node.getRight());
+        checkComparisonEquality(node, node.getLeft(), node.getRight());
     }
 
     @Override
     public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
         super.outACompareNotEqualExpr(node);
-        checkComparison(node, node.getLeft(), node.getRight());
+        checkComparisonEquality(node, node.getLeft(), node.getRight());
     }
 
     // Math operations
@@ -325,6 +325,17 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     }
 
     // Helper methods for compare and math operations
+    private void checkComparisonEquality(Node node, PExpr left, PExpr right) {
+        SymbolType arg2 = stack.pop(), arg1 = stack.pop();
+
+        if (arg1.equals(arg2)) {
+            stack.push(SymbolType.Boolean());
+        } else {
+            throw new IncompaitbleTypesException(node, arg1, arg2);
+        }
+    }
+
+
     private void checkComparison(Node node, PExpr left, PExpr right) {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
