@@ -6,5 +6,5 @@ void init()
 void run()
 {
     int j;
-    j = 15;
+    j++;
 }

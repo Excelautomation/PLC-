@@ -128,7 +128,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outStart(Start node){
-        //Emit("END(001)", true);
+        Emit("END(001)", true);
 
         instructionWriter.close();
         symbolWriter.close();
@@ -394,7 +394,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAFunctionRootDeclaration(node);
         //Emit("JME(005) #" + returnlabel, true);
         Emit("RET(093)", true);
-        Emit("END(001)", true);
+        //Emit("END(001)", true);
     }
 
     @Override
