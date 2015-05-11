@@ -333,11 +333,11 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
             stack.push(SymbolType.Boolean());
         } else if ((arg1.equals(SymbolType.Type.Decimal) && arg2.equals(SymbolType.Type.Int))) {
             // Promote right
-            right.replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr)right.clone()));
+            right.replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr) right.clone()));
             stack.push(SymbolType.Boolean());
         } else if ((arg1.equals(SymbolType.Type.Int) && arg2.equals(SymbolType.Type.Decimal))) {
             // Promote left
-            left.replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr)left.clone()));
+            left.replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr) left.clone()));
             stack.push(SymbolType.Boolean());
         } else {
             throw new IncompaitbleTypesException(node, arg1, arg2);

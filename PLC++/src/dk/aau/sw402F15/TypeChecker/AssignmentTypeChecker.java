@@ -38,7 +38,7 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         if (exprResultType.equals(SymbolType.Int()) && symbolType.equals(SymbolType.Decimal())) {
             // Int is promoted to decimal
             // Add typecast
-            node.getRight().replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr)node.getRight().clone()));
+            node.getRight().replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr) node.getRight().clone()));
             return;
         }
 

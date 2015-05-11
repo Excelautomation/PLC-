@@ -27,13 +27,13 @@ public class PrettyPrinter extends DepthFirstAdapter {
 
         printNewLine = true;
 
-        indent+=cntIndent;
+        indent += cntIndent;
     }
 
     @Override
     public void defaultOut(@SuppressWarnings("unused") Node node) {
         super.defaultOut(node);
-        indent-=cntIndent;
+        indent -= cntIndent;
     }
 
     @Override

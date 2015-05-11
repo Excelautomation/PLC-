@@ -1,7 +1,14 @@
-int func()
+void init()
 {
-    int j = 10 / 5;
-    int i = 3 * 3 * 3;
+    int i = 5;
 
-    return 0;
+    while (i < 100)
+    {
+        i = i + 1;
+    }
+}
+
+void run()
+{
+    int j = 5;
 }

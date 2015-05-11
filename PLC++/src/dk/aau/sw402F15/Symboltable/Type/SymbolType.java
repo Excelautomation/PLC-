@@ -43,7 +43,7 @@ public class SymbolType {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SymbolType)
-            return equals((SymbolType)obj);
+            return equals((SymbolType) obj);
         else if (obj instanceof SymbolType.Type)
             return equals((SymbolType.Type) obj);
 
