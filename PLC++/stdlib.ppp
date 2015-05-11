@@ -1,0 +1,64 @@
+// Compiler generated functions
+int __compiler__getTime() {
+	return 0;
+}
+
+// Standard lib
+struct __std {
+	int add(int left, int right) {
+		return left + right;
+	}
+
+	int sub(int left, int right) {
+		return left - right;
+	}
+
+	int mult(int left, int right) {
+		return left * right;
+	}
+
+	int div(int left, int right) {
+		return left / right;
+	}
+
+	int mod(int left, int right) {
+		int __std_i;
+        for (__std_i = 0; (__std_i * right) <= left; __std_i++) ;
+        return left - (right * (__std_i - 1));
+	}
+
+	int getTime() {
+		return __compiler__getTime();
+	}
+}
+
+// Timer
+struct stdtimer {
+	int mTime = 0;
+	int mStart = 0;
+	bool mStarted = false;
+
+	void start() {
+		mStart = std.getTime();
+		mStarted = true;
+	}
+
+	void reset() {
+		mStart = std.getTime();
+		mStarted = false;
+	}
+
+	void setTime(int time) {
+		mTime = time;
+	}
+
+	bool isElapsed() {
+		if (mStarted == false)
+			return false;
+
+		return (mStart + mTime) < std.getTime();
+	}
+}
+
+// Define standard lib variable
+struct __std std;
