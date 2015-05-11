@@ -137,8 +137,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
-        //Emit("MOV(021) " + getNextDAddress(false) + " " + node.getLeft(), true); // Note: Temp outcommented
-        Emit("MOV(021) " + getNextDAddress(false) + " " + node.getLeft(), true);
+        Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
     }
 
     @Override
@@ -186,14 +185,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIncrementExpr(AIncrementExpr node) {
         super.outAIncrementExpr(node);
 
-        Emit("++(590) " + getNextDAddress(false), true);
+        Emit("++(590) " + node.getName(), true);
     }
 
     @Override
     public void outADecrementExpr(ADecrementExpr node) {
         super.outADecrementExpr(node);
 
-        Emit("--(592) " + getNextDAddress(false), true);
+        Emit("--(592) " + node.getName(), true);
     }
 
     @Override
@@ -296,10 +295,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Decimal())) {
-            Emit(node.getName().getText() + "\tREAL\tD" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tREAL\tD" + node.getName() + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
-            Emit(node.getName().getText() + "\tTIMER\tD" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tTIMER\tD" + node.getName() + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
             throw new NotImplementedException();
@@ -325,7 +324,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " " + address, true);
+        Emit("MOV(021) &" + value + " " + name, true);
     }
 
     private void declareBool(String name, boolean value){
