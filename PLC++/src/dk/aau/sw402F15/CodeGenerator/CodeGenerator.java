@@ -186,14 +186,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAIncrementExpr(AIncrementExpr node) {
         super.outAIncrementExpr(node);
 
-        Emit("++(590) " + getNextDAddress(false), true);
+        Emit("++(590) " + node.getName(), true);
     }
 
     @Override
     public void outADecrementExpr(ADecrementExpr node) {
         super.outADecrementExpr(node);
 
-        Emit("--(592) " + getNextDAddress(false), true);
+        Emit("--(592) " + node.getName(), true);
     }
 
     @Override
