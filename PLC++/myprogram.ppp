@@ -1,12 +1,10 @@
 void init()
 {
-    int i;
+
 }
 
 void run()
 {
     int j;
-    int k;
-
     j = 5;
 }
