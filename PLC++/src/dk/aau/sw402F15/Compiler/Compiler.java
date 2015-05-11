@@ -1,4 +1,4 @@
-package dk.aau.sw402F15;
+package dk.aau.sw402F15.Compiler;
 
 import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
 import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
@@ -8,6 +8,7 @@ import dk.aau.sw402F15.Exception.CompilerException;
 import dk.aau.sw402F15.Exception.RuntimeCompilerException;
 import dk.aau.sw402F15.FunctionChecker.FunctionChecker;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
+import dk.aau.sw402F15.PrettyPrinter;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -75,8 +76,20 @@ public class Compiler {
 
             // Parse tree
             if (verbose) System.out.println("Parsing code");
-            Parser parser = new Parser(new Lexer(new PushbackReader(reader, 1024)));
+
+            // Init lexer
+            PushbackReader pushbackReader = new PushbackReader(reader, 1024);
+            Lexer lexer = verbose ? new PrintLexer(pushbackReader) : new Lexer(pushbackReader);
+
+            // Init parser
+            Parser parser = new Parser(lexer);
             Start tree = parser.parse();
+
+            // Running pretty print
+            if (prettyPrint) {
+                if (verbose) System.out.println("Running prettyprinter before transformations");
+                tree.apply(new PrettyPrinter());
+            }
 
             // Simplifying the AST for easier codegen
             if (verbose) System.out.println("Simplifying AST");
@@ -180,7 +193,7 @@ public class Compiler {
 
             // Add stdlib
             if (std()) {
-                this.mFiles.add(0,"stdlib.ppp");
+                this.mFiles.add(0, "stdlib.ppp");
             }
         }
 

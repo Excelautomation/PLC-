@@ -141,6 +141,36 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         stack.push(SymbolType.Boolean());
     }
 
+    @Override
+    public void outAPortInputExpr(APortInputExpr node) {
+        super.outAPortInputExpr(node);
+        checkPort(node);
+    }
+
+    @Override
+    public void outAPortOutputExpr(APortOutputExpr node) {
+        super.outAPortOutputExpr(node);
+        checkPort(node);
+    }
+
+    @Override
+    public void outAPortMemoryExpr(APortMemoryExpr node) {
+        super.outAPortMemoryExpr(node);
+        checkPortMemory(node);
+    }
+
+    @Override
+    public void outAPortAnalogInputExpr(APortAnalogInputExpr node) {
+        super.outAPortAnalogInputExpr(node);
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortAnalogOutputExpr(APortAnalogOutputExpr node) {
+        super.outAPortAnalogOutputExpr(node);
+        throw new NotImplementedException();
+    }
+
     // Casts
     @Override
     public void outATypeCastExpr(ATypeCastExpr node) {
@@ -400,6 +430,28 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
 
         if (!type.equals(SymbolType.Type.Boolean)) {
             throw new ExpectingBoolException(node, type);
+        }
+    }
+
+    private void checkPort(Node node) {
+        SymbolType input = stack.pop();
+
+        if (input.equals(SymbolType.Type.Decimal)) {
+            stack.push(SymbolType.Port());
+        }
+        else {
+            throw new InvalidPortException(node);
+        }
+    }
+
+    private void checkPortMemory(Node node) {
+        SymbolType input = stack.pop();
+
+        if (input.equals(SymbolType.Type.Int)) {
+            stack.push(SymbolType.Port());
+        }
+        else {
+            throw new InvalidPortException(node);
         }
     }
 }
