@@ -15,6 +15,12 @@ digit =	['0' .. '9'];
 letter = ['a' .. 'z'] | ['A' .. 'Z'];
 specials = '_';
 
+port_input = 'I';
+port_output = 'Q';
+port_memory = 'M';
+port_analog_input = 'AI';
+port_analog_output = 'AQ';
+
 letter_or_digit = (letter | digit);
 letter_or_specials = (letter | specials);
 letter_or_digit_or_specials = (letter_or_digit | specials);
@@ -100,11 +106,11 @@ integer_literal = (digit)+;
 decimal_literal = (digit)+ '.' (digit)+;
 
 // Identifier
-port_input_identifier = 'I#';
-port_output_identifier = 'O#';
-port_memory_identifier = 'M#';
-port_analog_input_identifier = 'AI#';
-port_analog_output_identifier = 'AO#';
+port_input_identifier = port_input '#';
+port_output_identifier = port_output '#';
+port_memory_identifier = port_memory '#';
+port_analog_input_identifier = port_analog_input '#';
+port_analog_output_identifier = port_analog_output '#';
 identifier = letter_or_specials letter_or_digit_or_specials*;
 
 // White space
