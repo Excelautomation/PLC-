@@ -385,7 +385,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (function.getReturnType().equals(SymbolType.Type.Void)) {
             Emit("SBS(091) " + getFunctionNumber(true), true);
         } else {
-            Emit("MCRO(099) " + getFunctionNumber(true) + " " + getNextDAddress(true) + " " + getNextDAddress(true), true);
+            Emit("MCRO(099) " + (getFunctionNumber(false) + 1) + " " + getNextDAddress(true) + " " + pop(), true);
         }
 
         //Emit("SBS(091) " + getFunctionNumber(true), true);
@@ -396,7 +396,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.inAFunctionRootDeclaration(node);
 
         Emit("SBN(092) " + getFunctionNumber(true), true);
-        Emit("LD P_First_Cycle", true);
+
+        if (!node.getStatements().isEmpty())
+            Emit("LD P_First_Cycle", true);
 
         //returnlabel = getNextJump();
     }

@@ -1,16 +1,10 @@
 void init()
 {
-    int i;
+
 }
 
 void run()
 {
-    int i;
-    int k;
-
-    while (i < 100)
-    {
-        i++;
-        k++;
-    }
+    int j;
+    j = 5;
 }
