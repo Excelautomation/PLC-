@@ -45,21 +45,6 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         stack.push(assignmentChecker.getResult());
     }
 
-    /*
-    Not called
-
-    @Override
-    public void outAAssignmentExpr(AAssignmentExpr node) {
-        super.outAAssignmentExpr(node);
-
-        SymbolType arg1 = stack.pop();
-        SymbolType arg2 = stack.peek(); // Assignment is an expression (needs to have a returntype)
-
-        if (arg1.getType() != arg2.getType()) {
-            throw new IllegalAssignmentException();
-        }
-    }*/
-
     // Member expression
     @Override
     public void caseAMemberExpr(AMemberExpr node) {
@@ -249,13 +234,13 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     @Override
     public void outACompareAndExpr(ACompareAndExpr node) {
         super.outACompareAndExpr(node);
-        checkLocicComparison(node);
+        checkLocicComparison(node, node.getLeft(), node.getRight());
     }
 
     @Override
     public void outACompareOrExpr(ACompareOrExpr node) {
         super.outACompareOrExpr(node);
-        checkLocicComparison(node);
+        checkLocicComparison(node, node.getLeft(), node.getRight());
     }
 
     // Comparison
@@ -370,28 +355,45 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
     }
 
     // Helper methods for compare and math operations
+    // == !=
     private void checkComparisonEquality(Node node, PExpr left, PExpr right) {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if (arg1.equals(arg2)) {
+        if (arg1.equals(SymbolType.Type.PortInput) && arg2.equals(SymbolType.Type.PortInput)) {
+            // Cast left
+            left.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) left.clone()));
+            // Cast right
+            right.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) right.clone()));
+
+            stack.push(SymbolType.Boolean());
+        } else if (arg1.equals(arg2)) {
+            stack.push(SymbolType.Boolean());
+        } else if (arg1.equals(SymbolType.Type.PortInput) && arg2.equals(SymbolType.Type.Boolean)) {
+            // Cast left
+            left.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) left.clone()));
+            stack.push(SymbolType.Boolean());
+        } else if (arg2.equals(SymbolType.Type.PortInput) && arg1.equals(SymbolType.Type.Boolean)) {
+            // Cast right
+            right.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) right.clone()));
             stack.push(SymbolType.Boolean());
         } else {
             throw new IncompaitbleTypesException(node, arg1, arg2);
         }
     }
 
-
+    // > >= < <=
     private void checkComparison(Node node, PExpr left, PExpr right) {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
-        if ((arg1.equals(SymbolType.Type.Int) && arg2.equals(SymbolType.Type.Int))
-                || (arg1.equals(SymbolType.Type.Decimal) && arg2.equals(SymbolType.Type.Decimal))) {
+        if (arg1.equals(SymbolType.Type.Int) && arg2.equals(SymbolType.Type.Int)) {
             stack.push(SymbolType.Boolean());
-        } else if ((arg1.equals(SymbolType.Type.Decimal) && arg2.equals(SymbolType.Type.Int))) {
+        } else if (arg1.equals(SymbolType.Type.Decimal) && arg2.equals(SymbolType.Type.Decimal)) {
+            stack.push(SymbolType.Boolean());
+        } else if (arg1.equals(SymbolType.Type.Decimal) && arg2.equals(SymbolType.Type.Int)) {
             // Promote right
             right.replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr) right.clone()));
             stack.push(SymbolType.Boolean());
-        } else if ((arg1.equals(SymbolType.Type.Int) && arg2.equals(SymbolType.Type.Decimal))) {
+        } else if (arg1.equals(SymbolType.Type.Int) && arg2.equals(SymbolType.Type.Decimal)) {
             // Promote left
             left.replaceBy(new ATypeCastExpr(new ADoubleTypeSpecifier(), (PExpr) left.clone()));
             stack.push(SymbolType.Boolean());
@@ -400,16 +402,32 @@ public class ExpressionTypeEvaluator extends DepthFirstAdapter {
         }
     }
 
-    private void checkLocicComparison(Node node) {
+    // && ||
+    private void checkLocicComparison(Node node, PExpr left, PExpr right) {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 
         if ((arg1.equals(SymbolType.Type.Boolean) && arg2.equals(SymbolType.Type.Boolean))) {
+            stack.push(SymbolType.Boolean());
+        } else if (arg1.equals(SymbolType.Type.PortInput) && arg2.equals(SymbolType.Type.Boolean)) {
+            // Cast left
+            left.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) left.clone()));
+            stack.push(SymbolType.Boolean());
+        } else if (arg2.equals(SymbolType.Type.PortInput) && arg1.equals(SymbolType.Type.Boolean)) {
+            // Cast right
+            right.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) right.clone()));
+            stack.push(SymbolType.Boolean());
+        } else if (arg1.equals(SymbolType.Type.PortInput) && arg2.equals(SymbolType.Type.PortInput)) {
+            // Cast left
+            left.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) left.clone()));
+            // Cast right
+            right.replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) right.clone()));
             stack.push(SymbolType.Boolean());
         } else {
             throw new IncompaitbleTypesException(node, arg1, arg2);
         }
     }
 
+    // + - * / %
     private void checkExpression(Node node, PExpr left, PExpr right) {
         SymbolType arg2 = stack.pop(), arg1 = stack.pop();
 

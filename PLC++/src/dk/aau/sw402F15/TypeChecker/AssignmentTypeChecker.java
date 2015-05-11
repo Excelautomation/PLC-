@@ -42,6 +42,16 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
             return;
         }
 
+        // Special case: boolean can be assigned to output
+        if (exprResultType.equals(SymbolType.Type.Boolean) && symbolType.equals(SymbolType.Type.PortOuput)) {
+            return;
+        }
+
+        // Special case: input can be assigned to boolean
+        if (exprResultType.equals(SymbolType.Type.PortInput) && symbolType.equals(SymbolType.Type.Boolean)) {
+            return;
+        }
+
         // Check if we could match the correct type
         if (!exprResultType.equals(symbolType)) {
             throw new IncompaitbleTypesException(node, exprResultType, symbolType);

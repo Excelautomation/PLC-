@@ -42,6 +42,11 @@ public class DeclarationTypeChecker extends DepthFirstAdapter {
             return;
         }
 
+        // Special case: input can be assigned to boolean
+        if (exprType.equals(SymbolType.Type.PortInput) && declarationType.equals(SymbolType.Type.Boolean)) {
+            return;
+        }
+
         // Check if types matches
         if (!exprType.equals(declarationType)) {
             throw new IncompaitbleTypesException(node, declarationType, exprType);
