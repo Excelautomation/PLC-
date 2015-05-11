@@ -296,10 +296,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Decimal())) {
-            Emit(node.getName().getText() + "\tREAL\tD" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tREAL\tD" + node.getName() + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
-            Emit(node.getName().getText() + "\tTIMER\tD" + getNextDAddress(true) + "\t\t0\t", false);
+            Emit(node.getName().getText() + "\tTIMER\tD" + node.getName() + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
             throw new NotImplementedException();
@@ -325,7 +325,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " " + address, true);
+        Emit("MOV(021) &" + value + " " + name, true);
     }
 
     private void declareBool(String name, boolean value){

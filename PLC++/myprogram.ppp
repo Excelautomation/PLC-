@@ -7,7 +7,4 @@ void run()
 {
     int j;
     int k;
-    j++;
-    j++;
-    j--;
 }
