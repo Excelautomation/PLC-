@@ -39,6 +39,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return "D" + nextDAddress;
     }
 
+    public String getPreviousDAddress()
+    {
+        int tmp = nextDAddress;
+
+        return "D" + (nextDAddress - 4);
+    }
+
     public String getNextWAddress(boolean increment) {
         if (nextWAddress > 508)
             throw new OutOfMemoryError();
@@ -82,8 +89,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     public String pop()
     {
-        //if (nextHAddress < 0)
-            //throw new EmptyStackException();
+        if (nextHAddress < 0)
+            throw new EmptyStackException();
         return "H" + (nextHAddress -= 4);
     }
 
@@ -103,7 +110,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             // here we call the init method
             Emit("LD P_First_Cycle", true);
 
-            // reset all addresses (hack)
+            // reset all addresses
             Emit("SSET(630) " + getNextDAddress(false) + " &32767", true);
             Emit("SSET(630) " + stackPointer(false) + " &1535", true);
             Emit("SBS(091) 0", true);
@@ -121,7 +128,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outStart(Start node){
-        //Emit("END(001)", true);
+        Emit("END(001)", true);
 
         instructionWriter.close();
         symbolWriter.close();
@@ -387,7 +394,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAFunctionRootDeclaration(node);
         //Emit("JME(005) #" + returnlabel, true);
         Emit("RET(093)", true);
-        Emit("END(001)", true);
+        //Emit("END(001)", true);
     }
 
     @Override
