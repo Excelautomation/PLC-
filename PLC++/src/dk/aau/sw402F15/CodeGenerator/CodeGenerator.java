@@ -130,7 +130,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
-        //Emit("MOV(021) " + getNextDAddress(false) + " " + node.getLeft(), true); // Note: Temp outcommented
         Emit("MOV(021) " + getNextDAddress(false) + " " + node.getLeft(), true);
     }
 
