@@ -153,10 +153,13 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             size = 2;
         }
         node.getExpr().apply(this);
-        int offset = size; // * Value of the expression
-        Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);
-        Emit("+(400) " + pop() + " &" + pop() + " " + stackPointer(true), true);
-        Emit("+(400) " + pop() + " &" + node.getName() + " " + stackPointer(true), true);
+        Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);                     // index * size = offset
+        Emit("+(400) " + pop() + " " + node.getName().getText() + " " + stackPointer(true), true);  // offset + start = location
+        Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);                                // push value to TOS
+        if(size == 2){
+            Emit("+(400) " + pop() + " &1 " + stackPointer(true), true);
+            Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);
+        }
     }
 
     @Override
