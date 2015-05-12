@@ -149,7 +149,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
         if(node.getLeft().getClass() ==  AArrayExpr.class){
-            String address = pop();
+            String address = getNextDAddress(false);
             Emit("MOV(021) " + pop() + " @" + address, true);
         }
         else if (!(node.getLeft() instanceof APortOutputExpr)){
@@ -158,22 +158,20 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAArrayExpr(AArrayExpr node){
+    public void caseAArrayExpr(AArrayExpr node){
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
         push(node.getName().getText());
-        int size = 1;
-        if (symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
-            size = 2;
-            Emit("*(420) " + pop() + " &2 " + stackPointer(true), true);
-        }                    // index * size = offset
+        node.getExpr().apply(this);
+        Emit("*(420) " + pop() + " &4 " + stackPointer(true), true);
         Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);  // offset + start = location
+        Emit("MOV(021) " + pop() + " " + getNextDAddress(false), true);
         Node parent = node.parent();
         if (parent.getClass() != AAssignmentExpr.class || ((AAssignmentExpr)parent).getLeft() != node) {
-            String address = pop();
-            Emit("MOV(021) @" + address + " " + stackPointer(true), true);                           // push value to stack
-            if(size == 2) {
-                Emit("+(400) " + address + " 1 " + stackPointer(true), true);
-                Emit("MOV(021) @" + pop() + " " + stackPointer(true), true);
+            if(symbol.getType() == SymbolType.Decimal()) {
+                Emit("MOVL(498) @" + getNextDAddress(false) + " " + stackPointer(true), true);
+            }
+            else {
+                Emit("MOV(021) @" + getNextDAddress(false) + " " + stackPointer(true), true);
             }
         }
     }
@@ -370,7 +368,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             getNextDAddress(true);
         }
         String name = symbol.getName();
-        Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
+        Emit(name + "\tINT\t D"+ address + "\t\t0\t", false);
         Emit("MOV(021) &" + (address + 4) + " " + name, true);
     }
 
