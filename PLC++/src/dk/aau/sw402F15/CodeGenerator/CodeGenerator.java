@@ -620,7 +620,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
-        push(Float.parseFloat(node.getDecimalLiteral().getText()));
+        if (!(node.parent() instanceof APortOutputExpr))
+            push(Float.parseFloat(node.getDecimalLiteral().getText()));
     }
 
     @Override
