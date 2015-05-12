@@ -79,8 +79,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer(true) + "", true);
         else if (value.getClass() == String.class)
             Emit("MOV(021) " + value + " " + stackPointer(true), true);
-        //else
-            //throw new ClassFormatError();
+        else
+            throw new ClassFormatError();
     }
 
     public String pop()
@@ -614,39 +614,59 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
-        push(node.getDecimalLiteral());
+        push(Float.parseFloat(node.getDecimalLiteral().getText()));
     }
 
     @Override
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
-        // TODO Different if float
-        Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("+F(454) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("+(400) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
     }
 
     @Override
     public void outADivExpr(ADivExpr node) {
         super.outADivExpr(node);
 
-        // TODO Different if float
-        Emit("/(430) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("/F(457) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("/(430) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     @Override
     public void outAMultiExpr(AMultiExpr node) {
         super.outAMultiExpr(node);
 
-        // TODO Different if float
-        Emit("*(420) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("*F(456) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("*(420) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     @Override
     public void outASubExpr(ASubExpr node) {
         super.outASubExpr(node);
 
-        // TODO Different if float
-        Emit("-(410) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("-F(455) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("-(410) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     private int getNextJump(){
