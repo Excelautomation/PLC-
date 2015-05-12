@@ -146,35 +146,18 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAAssignmentExpr(AAssignmentExpr node) {
-        super.outAAssignmentExpr(node);
-        if(node.getLeft().getClass() ==  AArrayExpr.class){
-            String address = pop();
-            Emit("MOV(021) " + pop() + " @" + address, true);
-        }
-        else if (!(node.getLeft() instanceof APortOutputExpr)){
-            Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
-        }
-    }
-
-    @Override
-    public void caseAArrayExpr(AArrayExpr node){
-        node.getExpr().apply(this);
+    public void outAArrayExpr(AArrayExpr node){
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
         push(node.getName().getText());
         int size = 1;
-        if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
+        if (symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
             size = 2;
-        }
-        node.getExpr().apply(this);
-        Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);                     // index * size = offset
-        Emit("+(400) " + pop() + " " + node.getName().getText() + " " + stackPointer(true), true);  // offset + start = location
+            Emit("*(420) " + pop() + " &2 " + stackPointer(true), true);
+        }                     // index * size = offset
+        Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);  // offset + start = location
         Node parent = node.parent();
-        if(parent.getClass() == AAssignmentExpr.class && ((AAssignmentExpr)parent).getLeft() == node) {
-            Emit("MOV(021) " + pop() + " " + stackPointer(true), true);                             // push pointer to stack
-        }
-        else{
-            String address = pop();
+        if(parent.getClass() != AAssignmentExpr.class || ((AAssignmentExpr)parent).getLeft() != node) {
+            String address = stackPointer(false);
             Emit("MOV(021) @" + address + " " + stackPointer(true), true);                           // push value to stack
             if(size == 2) {
                 Emit("+(400) " + address + " 1 " + stackPointer(true), true);
@@ -376,6 +359,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         }
         String name = symbol.getName();
         Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
+        Emit("MOV(021) &" + (address + 4) + " " + name, true);
     }
 
     private void declareInt(String name){
