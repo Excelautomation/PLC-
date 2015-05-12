@@ -168,7 +168,7 @@ public class Compiler {
             this.mFiles = new ArrayList<String>();
 
             for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("--pretty")) {
+                if (args[i].equals("--ast")) {
                     this.mPrettyPrint = true;
                 } else if (args[i].equals("--verbose")) {
                     this.mVerbose = true;
