@@ -2,6 +2,7 @@ package dk.aau.sw402F15.Compiler;
 
 import dk.aau.sw402F15.Rewriter.ASTSimplify;
 import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
+import dk.aau.sw402F15.CodeGenerator.Functions;
 import dk.aau.sw402F15.Exception.CompilerArgument.InvalidArgumentException;
 import dk.aau.sw402F15.Exception.CompilerArgument.MissingArgumentException;
 import dk.aau.sw402F15.Exception.CompilerException;
@@ -120,9 +121,14 @@ public class Compiler {
                 tree.apply(new PrettyPrinter());
             }
 
+            // Get list of functions
+            if (verbose) System.out.println("Create table with functions");
+            Functions functions = new Functions(typeChecker.getScope()); // TODO Better naming
+            tree.apply(functions);
+
             // Apply codegenerator
             if (verbose) System.out.println("Running codegenerator");
-            tree.apply(new CodeGenerator(typeChecker.getScope()));
+            tree.apply(new CodeGenerator(typeChecker.getScope(), functions.functions));
 
             // Print output for total time taken
             long endTime = System.nanoTime() - startTime;
