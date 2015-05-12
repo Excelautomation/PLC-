@@ -22,7 +22,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int returnlabel;
     private int nextDAddress = -2;
     private int nextWAddress = 0;
-    private int nextHAddress = 0;
     private Stack _stack = new Stack();
     private ArrayList<String> functions;
 
