@@ -712,6 +712,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return stPtr;
         }
 
+        public String peek(){
+            return stackPointer();
+        }
+
         // returns the address of the memory the stack points to.
         private String stackPointer(){
             return "W" + stackPointer + ".00";
