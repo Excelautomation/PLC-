@@ -1,6 +1,6 @@
 package dk.aau.sw402F15.Compiler;
 
-import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
+import dk.aau.sw402F15.Rewriter.ASTSimplify;
 import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
 import dk.aau.sw402F15.Exception.CompilerArgument.InvalidArgumentException;
 import dk.aau.sw402F15.Exception.CompilerArgument.MissingArgumentException;
