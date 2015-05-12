@@ -148,14 +148,17 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
-
-        if (!(node.getLeft() instanceof APortOutputExpr))
+        if(node.getLeft().getClass() ==  AArrayExpr.class){
+            String address = pop();
+            Emit("MOV(021) " + pop() + " @" + address, true);
+        }
+        else if (!(node.getLeft() instanceof APortOutputExpr)){
             Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
+        }
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        // TODO: currently only gets the values
         node.getExpr().apply(this);
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
         push(node.getName().getText());
@@ -166,10 +169,17 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         node.getExpr().apply(this);
         Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);                     // index * size = offset
         Emit("+(400) " + pop() + " " + node.getName().getText() + " " + stackPointer(true), true);  // offset + start = location
-        Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);                                // push value to TOS
-        if(size == 2){
-            Emit("+(400) " + pop() + " &1 " + stackPointer(true), true);
-            Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);
+        Node parent = node.parent();
+        if(parent.getClass() == AAssignmentExpr.class && ((AAssignmentExpr)parent).getLeft() == node) {
+            Emit("MOV(021) " + pop() + " " + stackPointer(true), true);                             // push pointer to stack
+        }
+        else{
+            String address = pop();
+            Emit("MOV(021) @" + address + " " + stackPointer(true), true);                           // push value to stack
+            if(size == 2) {
+                Emit("+(400) " + address + " 1 " + stackPointer(true), true);
+                Emit("MOV(021) @" + pop() + " " + stackPointer(true), true);
+            }
         }
     }
 
