@@ -83,8 +83,24 @@ public class SymbolType {
         return new SymbolType(Type.Timer);
     }
 
-    public static SymbolType Port() {
-        return new SymbolType(Type.Port);
+    public static SymbolType PortInput() {
+        return new SymbolType(Type.PortInput);
+    }
+
+    public static SymbolType PortOuput() {
+        return new SymbolType(Type.PortOuput);
+    }
+
+    public static SymbolType PortMemory() {
+        return new SymbolType(Type.PortMemory);
+    }
+
+    public static SymbolType PortAnalogInput() {
+        return new SymbolType(Type.PortAnalogInput);
+    }
+
+    public static SymbolType PortAnalogOutput() {
+        return new SymbolType(Type.PortAnalogOutput);
     }
 
     public static SymbolType Array() {
@@ -100,7 +116,7 @@ public class SymbolType {
     }
 
     public enum Type {
-        Int, Decimal, Boolean, Struct, Function, Timer, Port, Char, Array, Enum, Void
+        Int, Decimal, Boolean, Struct, Function, Timer, Char, Array, Enum, Void, PortInput, PortOuput, PortMemory, PortAnalogInput, PortAnalogOutput
     }
 }
 

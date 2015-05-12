@@ -1,4 +1,4 @@
-package dk.aau.sw402F15;
+package dk.aau.sw402F15.Compiler;
 
 import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
 import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
@@ -8,6 +8,7 @@ import dk.aau.sw402F15.Exception.CompilerException;
 import dk.aau.sw402F15.Exception.RuntimeCompilerException;
 import dk.aau.sw402F15.FunctionChecker.FunctionChecker;
 import dk.aau.sw402F15.Preprocessor.Preprocessor;
+import dk.aau.sw402F15.PrettyPrinter;
 import dk.aau.sw402F15.ScopeChecker.ScopeChecker;
 import dk.aau.sw402F15.TypeChecker.TypeChecker;
 import dk.aau.sw402F15.parser.lexer.Lexer;
@@ -17,6 +18,8 @@ import dk.aau.sw402F15.parser.parser.Parser;
 import dk.aau.sw402F15.parser.parser.ParserException;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -45,9 +48,12 @@ public class Compiler {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CompilerException e) {
+            // Flush stdout
+            System.out.flush();
+
+            if (compilerArgs.verbose()) e.printStackTrace();
             try {
-                Scanner scanner = new Scanner(new FileReader(compilerArgs.file()));
-                e.printError(scanner.toString());
+                e.printError(getCode(compilerArgs));
             } catch (FileNotFoundException e1) {
                 // Should not happen because we read file in compile method - this method is only occuring when an error in the compile method has occured.
                 e1.printStackTrace();
@@ -56,7 +62,7 @@ public class Compiler {
     }
 
     private void compile(CompilerArgs compilerArgs) throws IOException, LexerException, CompilerException, ParserException {
-        compile(new FileReader(compilerArgs.file()), compilerArgs);
+        compile(getReader(compilerArgs), compilerArgs);
     }
 
     private void compile(Reader reader, CompilerArgs compilerArgs) throws LexerException, CompilerException, ParserException, IOException {
@@ -70,8 +76,20 @@ public class Compiler {
 
             // Parse tree
             if (verbose) System.out.println("Parsing code");
-            Parser parser = new Parser(new Lexer(new PushbackReader(reader, 1024)));
+
+            // Init lexer
+            PushbackReader pushbackReader = new PushbackReader(reader, 1024);
+            Lexer lexer = verbose ? new PrintLexer(pushbackReader) : new Lexer(pushbackReader);
+
+            // Init parser
+            Parser parser = new Parser(lexer);
             Start tree = parser.parse();
+
+            // Running pretty print
+            if (prettyPrint) {
+                if (verbose) System.out.println("Running prettyprinter before transformations");
+                tree.apply(new PrettyPrinter());
+            }
 
             // Simplifying the AST for easier codegen
             if (verbose) System.out.println("Simplifying AST");
@@ -121,38 +139,61 @@ public class Compiler {
         }
     }
 
+    private String getCode(CompilerArgs compilerArgs) throws FileNotFoundException {
+        String file = "";
+        for (String f : compilerArgs.file()) {
+            FileReader fr = new FileReader(f);
+            Scanner scanner = new Scanner(fr);
+            while (scanner.hasNext())
+            {
+                file += scanner.nextLine() + "\n";
+            }
+        }
+        return file;
+    }
+
+    private Reader getReader(CompilerArgs compilerArgs) throws FileNotFoundException {
+        String file = getCode(compilerArgs);
+        if (compilerArgs.verbose()) System.out.println(file);
+        return new StringReader(file);
+    }
+
     private class CompilerArgs {
         private boolean mPrettyPrint = false;
         private boolean mVerbose;
-        private String mFile;
-
-        public CompilerArgs(boolean prettyPrint, boolean verbose, String file) {
-            this.mPrettyPrint = prettyPrint;
-            this.mVerbose = verbose;
-            this.mFile = file;
-        }
+        private boolean mStd;
+        private List<String> mFiles;
 
         public CompilerArgs(String[] args) {
+            this.mFiles = new ArrayList<String>();
+
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("--pretty")) {
                     this.mPrettyPrint = true;
                 } else if (args[i].equals("--verbose")) {
                     this.mVerbose = true;
+                } else if (args[i].equals("--std")) {
+                    this.mStd = true;
                 } else if (args[i].equals("-file")) {
-                    this.mFile = args[++i];
+                    this.mFiles.add(args[++i]);
                 } else {
                     // Check if file exists
                     File file = new File(args[i]);
                     if (file.exists() && !file.isDirectory()) {
-                        mFile = args[i];
+                        mFiles.add(args[i]);
                     } else {
                         throw new InvalidArgumentException(args[i]);
                     }
                 }
             }
 
-            if (this.mFile == null) {
+            if (this.mFiles.size() == 0) {
                 throw new MissingArgumentException("File is missing");
+            }
+
+            // Add stdlib
+            if (std()) {
+                this.mFiles.add(0, "stdlib.ppp");
             }
         }
 
@@ -164,8 +205,10 @@ public class Compiler {
             return mVerbose;
         }
 
-        public String file() {
-            return mFile;
+        public boolean std() { return mStd; }
+
+        public List<String> file() {
+            return mFiles;
         }
     }
 }

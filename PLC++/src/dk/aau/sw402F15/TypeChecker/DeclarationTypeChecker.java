@@ -5,9 +5,7 @@ import dk.aau.sw402F15.Helper;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
-import dk.aau.sw402F15.parser.node.ADeclaration;
-import dk.aau.sw402F15.parser.node.ADoubleTypeSpecifier;
-import dk.aau.sw402F15.parser.node.ATypeCastExpr;
+import dk.aau.sw402F15.parser.node.*;
 
 /**
  * Created by sahb on 27/04/15.
@@ -39,6 +37,17 @@ public class DeclarationTypeChecker extends DepthFirstAdapter {
             // Int is promoted to decimal
             // Add typecast
             node.setExpr(new ATypeCastExpr(new ADoubleTypeSpecifier(), node.getExpr()));
+            return;
+        }
+
+        // Special case: input can be assigned to boolean
+        if (exprType.equals(SymbolType.Type.PortInput) && declarationType.equals(SymbolType.Type.Boolean)) {
+            return;
+        }
+
+        // Special case: input can be assigned to output
+        if (exprType.equals(SymbolType.Type.PortInput) && declarationType.equals(SymbolType.Type.PortOuput)) {
+            node.getExpr().replaceBy(new ATypeCastExpr(new ABoolTypeSpecifier(), (PExpr) node.getExpr().clone()));
             return;
         }
 
