@@ -295,21 +295,38 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().equals(SymbolType.Boolean())) {
-            declareBool(node.getName().getText(), pop());
+            if (node.getExpr() != null){
+                declareAndAssignBool(node.getName().getText(), pop());
+            } else {
+                declareBool(node.getName().getText());
+            }
 
         } else if (symbol.getType().equals(SymbolType.Int())) {
-            declareInt(node.getName().getText(), pop());
+            if (node.getExpr() != null){
+                declareAndAssignInt(node.getName().getText(), pop());
+            } else {
+                declareInt(node.getName().getText());
+            }
 
         } else if (symbol.getType().equals(SymbolType.Char())) {
             throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Decimal())) {
-            declareDecimal(node.getName().getText(), pop());
+            if (node.getExpr() != null){
+                declareAndAssignDecimal(node.getName().getText(), pop());
+            } else {
+                declareDecimal(node.getName().getText());
+            }
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
-            declareTimer(node.getName().getText(), pop());
+            if (node.getExpr() != null){
+                declareAndAssignTimer(node.getName().getText(), pop());
+            } else {
+                declareTimer(node.getName().getText());
+            }
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
+            throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
             declareArray((SymbolArray)symbol);
@@ -340,7 +357,15 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
     }
 
-    private void declareInt(String name, String value){
+    private void declareInt(String name){
+        // get next free address in symbolList
+        String address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tINT\t" + address + "\t\t0\t", false);
+    }
+
+    private void declareAndAssignInt(String name, String value){
         // get next free address in symbolList
         String address = getNextDAddress(true);
 
@@ -350,7 +375,15 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit("MOV(021) " + value + " " + name, true);
     }
 
-    private void declareBool(String name, String value){
+    private void declareBool(String name){
+        // get next free address in symbolList
+        String address = getNextWAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
+    }
+
+    private void declareAndAssignBool(String name, String value){
         // get next free address in symbolList
         String address = getNextWAddress(true);
 
@@ -367,7 +400,15 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit("RSET " + name,false);
     }
 
-    private void declareDecimal(String name, String value){
+    private void declareDecimal(String name){
+        // get next free address in symbolList
+        String address = getNextDAddress(true);
+
+        // Declare
+        Emit(name + "\tREAL\t" + address + "\t\t0\t", false);
+    }
+
+    private void declareAndAssignDecimal(String name, String value){
         // get next free address in symbolList
         String address = getNextDAddress(true);
 
@@ -377,7 +418,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit("MOV(021) " + value + " " + name, true);
     }
 
-    private void declareTimer(String name, String value){
+    private void declareTimer(String name){
         throw new NotImplementedException();
         // get next free address in symbolList
         //String address = getNextDAddress(true);
@@ -387,6 +428,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         //Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
         //Emit("MOV(021) &" + value + " " + address, true);
+    }
+
+    private void declareAndAssignTimer(String name, String value){
+        throw new NotImplementedException();
     }
 
     @Override
