@@ -143,27 +143,23 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void caseAArrayDefinition(AArrayDefinition node){
-        int size = Integer.parseInt(node.getNumber().getText());
-        // Reserver memory for array
-    }
-
-    @Override
     public void caseAArrayExpr(AArrayExpr node){
         // TODO: currently only gets the values
         node.getExpr().apply(this);
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
-        int location = 0; // Get location in memory
+        push(node.getName().getText());
         int size = 1;
         if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
             size = 2;
         }
         node.getExpr().apply(this);
-        int offset = size; // * Value of the expression
-        location += offset;
-        Emit("*(420) " + getNextDAddress(false) + " &" + size + " " + getNextDAddress(false), false);
-        Emit("+(400) " + getNextDAddress(false) + " &" + location + " " + getNextDAddress(false), false);
-        Emit("+(400) " + getNextDAddress(false) + " &" + node.getName() + " " + getNextDAddress(false), false);
+        Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);                     // index * size = offset
+        Emit("+(400) " + pop() + " " + node.getName().getText() + " " + stackPointer(true), true);  // offset + start = location
+        Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);                                // push value to TOS
+        if(size == 2){
+            Emit("+(400) " + pop() + " &1 " + stackPointer(true), true);
+            Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);
+        }
     }
 
     @Override
@@ -314,7 +310,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit(node.getName().getText() + "\tTIMER\tD" + node.getName() + "\t\t0\t", false);
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
-            throw new NotImplementedException();
+            declareArray((SymbolArray)symbol);
 
         } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
             throw new NotImplementedException();
@@ -328,6 +324,18 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         } else {
             // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
         }
+    }
+
+    private void declareArray(SymbolArray symbol){
+        ADeclaration node = (ADeclaration) symbol.getNode();
+        AArrayDefinition array = (AArrayDefinition) node.getArray();
+        int size = Integer.parseInt(array.getNumber().getText());
+        int address = nextDAddress;
+        for (int i = 0; i < size; i++){
+            getNextDAddress(true);
+        }
+        String name = symbol.getName();
+        Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
     }
 
     private void declareInt(String name, int value){
@@ -510,11 +518,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             node.getLeft().apply(this);
             Emit("JME(005) #" + label, true);
         }
-    }
-
-    @Override
-    public void caseAForStatement(AForStatement node){
-        // Not needed since we convert For-loops til While-loops
     }
 
     @Override
