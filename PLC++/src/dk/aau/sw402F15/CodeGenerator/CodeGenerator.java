@@ -8,8 +8,6 @@ import dk.aau.sw402F15.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.awt.geom.FlatteningPathIterator;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
