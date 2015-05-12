@@ -89,11 +89,19 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             }
         }
 
-        super.caseAWhileStatement(node);
+        // Ignore return statements since while can be executed 0 to many times
+        FunctionTypeChecker functionTypeChecker = new FunctionTypeChecker(rootScope, currentScope, hasReturnType, returnType);
+        if(node.getStatement() != null)
+        {
+            node.getStatement().apply(functionTypeChecker);
+        }
     }
 
     @Override
     public void caseAForStatement(AForStatement node) {
+        // For is simplified
+        // TODO ADD getInitilizer and getUpdateExpr
+
         // Check if condition is boolean
         if (node.getCondition() != null) {
             ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(currentScope);
@@ -105,7 +113,12 @@ public class FunctionTypeChecker extends ScopeDepthFirstAdapter {
             }
         }
 
-        super.caseAForStatement(node);
+        // Ignore return statements since for can be executed 0 to many times
+        FunctionTypeChecker functionTypeChecker = new FunctionTypeChecker(rootScope, currentScope, hasReturnType, returnType);
+        if(node.getStatement() != null)
+        {
+            node.getStatement().apply(functionTypeChecker);
+        }
     }
 
     @Override
