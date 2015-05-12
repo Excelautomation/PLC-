@@ -1,6 +1,6 @@
 package dk.aau.sw402F15.Compiler;
 
-import dk.aau.sw402F15.CodeGenerator.ASTSimplify;
+import dk.aau.sw402F15.Rewriter.ASTSimplify;
 import dk.aau.sw402F15.CodeGenerator.CodeGenerator;
 import dk.aau.sw402F15.CodeGenerator.Functions;
 import dk.aau.sw402F15.Exception.CompilerArgument.InvalidArgumentException;
@@ -174,7 +174,7 @@ public class Compiler {
             this.mFiles = new ArrayList<String>();
 
             for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("--pretty")) {
+                if (args[i].equals("--ast")) {
                     this.mPrettyPrint = true;
                 } else if (args[i].equals("--verbose")) {
                     this.mVerbose = true;

@@ -1,4 +1,4 @@
-package dk.aau.sw402F15.CodeGenerator;
+package dk.aau.sw402F15.Rewriter;
 
 import dk.aau.sw402F15.parser.analysis.DepthFirstAdapter;
 import dk.aau.sw402F15.parser.node.*;
@@ -118,6 +118,17 @@ public class ASTSimplify extends DepthFirstAdapter {
         );
 
         // Apply newnode
+        newNode.apply(this);
+
+        // Replace node
+        node.replaceBy(newNode);
+    }
+
+    @Override
+    public void caseATimerTypeSpecifier(ATimerTypeSpecifier node) {
+        Node newNode = new AStructTypeSpecifier(new TIdentifier("stdtimer"));
+
+        // Apply newnode (don't do anything but maybe in inherited class)
         newNode.apply(this);
 
         // Replace node

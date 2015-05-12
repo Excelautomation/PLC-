@@ -157,27 +157,23 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void caseAArrayDefinition(AArrayDefinition node){
-        int size = Integer.parseInt(node.getNumber().getText());
-        // Reserver memory for array
-    }
-
-    @Override
     public void caseAArrayExpr(AArrayExpr node){
         // TODO: currently only gets the values
         node.getExpr().apply(this);
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
-        int location = 0; // Get location in memory
+        push(node.getName().getText());
         int size = 1;
         if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
             size = 2;
         }
         node.getExpr().apply(this);
-        int offset = size; // * Value of the expression
-        location += offset;
-        Emit("*(420) " + getNextDAddress(false) + " &" + size + " " + getNextDAddress(false), false);
-        Emit("+(400) " + getNextDAddress(false) + " &" + location + " " + getNextDAddress(false), false);
-        Emit("+(400) " + getNextDAddress(false) + " &" + node.getName() + " " + getNextDAddress(false), false);
+        Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);                     // index * size = offset
+        Emit("+(400) " + pop() + " " + node.getName().getText() + " " + stackPointer(true), true);  // offset + start = location
+        Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);                                // push value to TOS
+        if(size == 2){
+            Emit("+(400) " + pop() + " &1 " + stackPointer(true), true);
+            Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);
+        }
     }
 
     @Override
@@ -313,22 +309,24 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
         if (symbol.getType().equals(SymbolType.Boolean())) {
-            declareBool(node.getName().getText(), false);
+            declareBool(node.getName().getText(), pop());
 
         } else if (symbol.getType().equals(SymbolType.Int())) {
-            declareInt(node.getName().getText(), 0);
+            declareInt(node.getName().getText(), pop());
 
         } else if (symbol.getType().equals(SymbolType.Char())) {
             throw new NotImplementedException();
 
         } else if (symbol.getType().equals(SymbolType.Decimal())) {
-            Emit(node.getName().getText() + "\tREAL\tD" + node.getName() + "\t\t0\t", false);
+            declareDecimal(node.getName().getText(), pop());
 
         } else if (symbol.getType().equals(SymbolType.Timer())) {
-            Emit(node.getName().getText() + "\tTIMER\tD" + node.getName() + "\t\t0\t", false);
+            declareTimer(node.getName().getText(), pop());
+
+        } else if (symbol.getType().equals(SymbolType.Timer())) {
 
         } else if (symbol.getType().equals(SymbolType.Array())) {
-            throw new NotImplementedException();
+            declareArray((SymbolArray)symbol);
 
         } else if (symbol.getType().equals(SymbolType.Void())){ // Method is a void function
             throw new NotImplementedException();
@@ -344,47 +342,65 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         }
     }
 
-    private void declareInt(String name, int value){
+    private void declareArray(SymbolArray symbol){
+        ADeclaration node = (ADeclaration) symbol.getNode();
+        AArrayDefinition array = (AArrayDefinition) node.getArray();
+        int size = Integer.parseInt(array.getNumber().getText());
+        int address = nextDAddress;
+        for (int i = 0; i < size; i++){
+            getNextDAddress(true);
+        }
+        String name = symbol.getName();
+        Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
+    }
+
+    private void declareInt(String name, String value){
         // get next free address in symbolList
         String address = getNextDAddress(true);
 
         // Declare
         Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " " + name, true);
+        Emit("MOV(021) " + value + " " + name, true);
     }
 
-    private void declareBool(String name, boolean value){
+    private void declareBool(String name, String value){
+        // get next free address in symbolList
+        String address = getNextWAddress(true);
+
+        // Declare
+        Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
+
+        // assign
+        Emit("LD P_On",false);
+        Emit("OUT TR0",false);
+        Emit("AND " + value,false);
+        Emit("SET " + name,false);
+        Emit("LD TR0",false);
+        Emit("ANDNOT " + value,false);
+        Emit("RSET " + name,false);
+    }
+
+    private void declareDecimal(String name, String value){
         // get next free address in symbolList
         String address = getNextDAddress(true);
 
         // Declare
-        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
+        Emit(name + "\tREAL\t" + address + "\t\t0\t", false);
         // Assign
-        if (value)
-            Emit("SET " + name, true);
-        else
-            Emit("RSET " + name, true);
+        Emit("MOV(021) " + value + " " + name, true);
     }
 
-    private void declareDecimal(String name, int value){
+    private void declareTimer(String name, String value){
+        throw new NotImplementedException();
         // get next free address in symbolList
-        String address = getNextDAddress(true);
+        //String address = getNextDAddress(true);
+        //Emit(node.getName().getText() + "\tTIMER\tD" + getNextDAddress(true) + "\t\t0\t", false);
 
         // Declare
-        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
+        //Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
-        Emit("MOV(021) &" + value + " " + address, true);
-    }
-
-    private void declareTimer(String name, int value){
-        // get next free address in symbolList
-        String address = getNextDAddress(true);
-
-        // Declare
-        Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
-        // Assign
-        Emit("MOV(021) &" + value + " " + address, true);
+        //Emit("MOV(021) &" + value + " " + address, true);
     }
 
     @Override
@@ -525,11 +541,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             node.getLeft().apply(this);
             Emit("JME(005) #" + label, true);
         }
-    }
-
-    @Override
-    public void caseAForStatement(AForStatement node){
-        // Not needed since we convert For-loops til While-loops
     }
 
     @Override
