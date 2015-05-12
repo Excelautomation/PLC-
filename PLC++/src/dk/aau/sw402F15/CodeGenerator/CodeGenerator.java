@@ -347,7 +347,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) " + value + " " + address, true);
+        Emit("MOV(021) " + value + " " + name, true);
     }
 
     private void declareBool(String name, String value){
@@ -374,7 +374,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tREAL\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) " + value + " " + address, true);
+        Emit("MOV(021) " + value + " " + name, true);
     }
 
     private void declareTimer(String name, String value){
