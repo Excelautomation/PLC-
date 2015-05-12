@@ -22,7 +22,7 @@ import java.util.EmptyStackException;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int returnlabel;
-    private int nextDAddress = 0;
+    private int nextDAddress = -2;
     private int nextWAddress = 0;
     private int nextHAddress = 0;
 
