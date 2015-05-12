@@ -19,9 +19,7 @@ import java.util.EmptyStackException;
  */
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
-    private int returnlabel;
     private int nextDAddress = -2;
-    private int nextWAddress = 0;
     private Stack _stack = new Stack();
     private ArrayList<String> functions;
 
@@ -44,16 +42,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         return "D" + (nextDAddress - 2);
     }
 
-    public String getNextWAddress(boolean increment) {
-        if (nextWAddress > 508)
-            throw new OutOfMemoryError();
-
-        if (increment)
-            return "W" + ((nextWAddress += 1) * 100);
-        else
-            return "W" + nextWAddress * 100;
-    }
-
     public CodeGenerator(Scope scope, ArrayList functions) {
         super(scope, scope);
 
@@ -69,7 +57,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             // reset all addresses
             Emit("SSET(630) " + getNextDAddress(true) + " &32767", true);
-            Emit("SSET(630) " + _stack.stackPointer() + " &1535", true);
+            Emit("SSET(630) 0 &1535", true);
             Emit("SBS(091) 0", true);
 
             // here we call the run Method
@@ -199,7 +187,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         Emit("AND=(300)" + " " + arg2 + " " + arg1, true);
-        Emit("SET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("SET " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -210,7 +199,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         Emit("AND>(320)" + " " + arg2 + " " + arg1, true);
-        Emit("SET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("SET " + _stack.stackPointer(), true);
 
     }
 
@@ -222,7 +212,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         Emit("AND>=(325)" + " " + arg2 + " " + arg1, true);
-        Emit("SET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("SET " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -235,15 +226,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (node.parent().getClass() == AWhileStatement.class)
         {
             Emit("AND<(310)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + getNextWAddress(false), true);
+            Emit("SET " + _stack.stackPointer(), true);
             Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + getNextWAddress(false), true);
+            Emit("RSET " + _stack.stackPointer(), true);
         }
 
         else
         {
             Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + getNextWAddress(false), true);
+            _stack.stackPointerIncrement();
+            Emit("SET " + _stack.stackPointer, true);
         }
     }
 
@@ -255,7 +247,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         Emit("AND<=(315)" + " " + arg2 + " " + arg1, true);
-        Emit("SET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("SET " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -266,7 +259,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         Emit("AND<>(305)" + " " + arg2 + " " + arg1, true);
-        Emit("SET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("SET " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -362,7 +356,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     private void declareBool(String name){
         // get next free address in symbolList
-        String address = getNextWAddress(true);
+        _stack.stackPointerIncrement();
+        String address = _stack.stackPointer();
 
         // Declare
         Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
@@ -381,7 +376,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     private void declareAndAssignBool(String name, String value){
         // get next free address in symbolList
-        String address = getNextWAddress(true);
+        _stack.stackPointerIncrement();
+        String address = _stack.stackPointer();
 
         // Declare
         Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
@@ -505,7 +501,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAPortOutputExpr(APortOutputExpr node){
         super.outAPortOutputExpr(node);
 
-        Emit("LD " + getNextWAddress(false), true);
+        Emit("LD " + _stack.stackPointer(), true);
         Emit("OUT " + node.getExpr(), true);
     }
 
@@ -526,7 +522,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outATrueExpr(node);
 
         Emit("MOVL(498) #1 " + getNextDAddress(true), true);
-        Emit("SET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("SET " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -534,7 +531,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAFalseExpr(node);
 
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
-        Emit("RSET " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("RSET " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -581,7 +579,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         int loopLabel = getNextJump();
 
         //node.getCondition().apply(this);
-        Emit("LDNOT " + getNextWAddress(true), true);
+        _stack.stackPointerIncrement();
+        Emit("LDNOT " + _stack.stackPointer(), true);
         Emit("JMP(004) #" + jumpLabel, true);
         node.getStatement().apply(this);
         node.getCondition().apply(this);
