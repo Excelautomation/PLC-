@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.Stack;
 
 /**
  * Created by Claus & Jimmi on 24-04-2015.
@@ -25,7 +26,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int nextDAddress = -4;
     private int nextWAddress = 0;
     private int nextHAddress = 0;
-
+    private Stack stack = new Stack();
     private ArrayList<String> functions;
 
     PrintWriter instructionWriter;
@@ -149,8 +150,26 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
-        if (!(node.getLeft() instanceof APortOutputExpr))
+
+        if (!(node.getLeft() instanceof APortOutputExpr)) {
             Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
+
+        } else if (node.getRight().getClass() == ACompareAndExpr.class ||
+                node.getRight().getClass() == ACompareOrExpr.class ||
+                node.getRight().getClass() == ACompareEqualExpr.class ||
+                node.getRight().getClass() == ACompareNotEqualExpr.class ||
+                node.getRight().getClass() == ACompareGreaterExpr.class ||
+                node.getRight().getClass() == ACompareGreaterOrEqualExpr.class ||
+                node.getRight().getClass() == ACompareLessExpr.class ||
+                node.getRight().getClass() == ACompareLessOrEqualExpr.class
+                ){
+
+            if (node.getLeft() instanceof AIdentifierExpr){
+                AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
+
+                assignBool(expr.getName().getText(), pop());
+            }
+        }
     }
 
     @Override
@@ -392,6 +411,17 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // Declare
         Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
+    }
+
+    private void assignBool(String name, String value){
+        // assign
+        Emit("LD P_On",false);
+        Emit("OUT TR0",false);
+        Emit("AND " + value,false);
+        Emit("SET " + name,false);
+        Emit("LD TR0",false);
+        Emit("ANDNOT " + value,false);
+        Emit("RSET " + name,false);
     }
 
     private void declareAndAssignBool(String name, String value){
@@ -661,6 +691,71 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             instructionWriter.println(s);
         } else { // Otherwise it's a symbol, then write to SymbolList
             symbolWriter.println(s);
+        }
+    }
+
+
+    public class Stack{
+        private final int stackFieldSize = 2;           // defines the size of each object in the stack as nr of bytes.
+        private int stackPointerStart = 400;            // start address of the stack area in H memory
+        private int stackPointer = stackPointerStart;   // stackPointer
+
+        public Stack(){
+
+        }
+
+        public < T > void push(T value)
+        {
+            if(nextWAddress <= 510){
+                stackPointerIncrement();
+
+                if (value.getClass() == Integer.class)
+                    Emit("MOV(021) &" + value + " " + stackPointer(), true);
+
+                else if (value.getClass() == Float.class || value.getClass() == Double.class)
+                    Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer() + "", true);
+
+                else if (value.getClass() == String.class)
+                    Emit("MOV(021) " + value + " " + stackPointer(), true);
+
+                else if (value.getClass() == Boolean.class){
+
+                    if ((Boolean)value)
+                        Emit("MOV(021) &1 " + stackPointer(), true);
+
+                    else if ((Boolean)value)
+                        Emit("MOV(021) &1 " + stackPointer(), true);
+
+                } else
+                    throw new NotImplementedException();
+            } else
+                throw new OutOfMemoryError();
+        }
+
+        public String pop()
+        {
+            String stPtr = stackPointer();
+            stackPointerDecrement();
+            return stPtr;
+        }
+
+        // returns the address of the memory the stack points to.
+        private String stackPointer(){
+            return "W" + stackPointer + ".00";
+        }
+
+        // increments stack pointer with stack size
+        private void stackPointerIncrement() {
+            if (nextWAddress > 510)
+                throw new OutOfMemoryError();
+            nextWAddress += stackFieldSize;
+        }
+
+        // decrements stack pointer with stack size
+        private void stackPointerDecrement() {
+            if (nextWAddress < 400)
+                throw new OutOfMemoryError();
+            nextWAddress -= stackFieldSize;
         }
     }
 }
