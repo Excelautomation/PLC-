@@ -151,9 +151,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         if (!(node.getLeft() instanceof APortOutputExpr))
             Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
-
-
-
     }
 
     @Override

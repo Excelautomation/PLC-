@@ -5,14 +5,14 @@ void init()
 
 void run()
 {
-    int k;
+    int k = 0;
     turnOn();
 
 }
 
 void turnOn()
 {
-     int i;
+     int i = 0;
 
       while (i < 9000)
       {
