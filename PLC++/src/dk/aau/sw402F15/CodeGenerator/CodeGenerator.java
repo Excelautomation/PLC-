@@ -71,7 +71,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return "H" + currentAddress;
     }
 
-    public < T > void push(T value)
+    public <T> void push(T value)
     {
         if (value.getClass() == Integer.class)
             Emit("MOV(021) &" + value + " " + stackPointer(true), true);
