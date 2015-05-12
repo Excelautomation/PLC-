@@ -1,6 +1,7 @@
 package dk.aau.sw402F15.TypeChecker;
 
 import dk.aau.sw402F15.Exception.TypeChecker.IncompaitbleTypesException;
+import dk.aau.sw402F15.Exception.TypeChecker.InvalidPortException;
 import dk.aau.sw402F15.Exception.TypeChecker.RedefinitionOfConstException;
 import dk.aau.sw402F15.Symboltable.Scope;
 import dk.aau.sw402F15.Symboltable.Symbol;
@@ -90,5 +91,19 @@ public class AssignmentTypeChecker extends DepthFirstAdapter {
         SymbolArray array = (SymbolArray) symbol;
 
         this.symbolType = array.getContainedType();
+    }
+
+    @Override
+    public void caseAPortOutputExpr(APortOutputExpr node) {
+        super.caseAPortOutputExpr(node);
+
+        ExpressionTypeEvaluator expressionTypeEvaluator = new ExpressionTypeEvaluator(scope);
+        node.getExpr().apply(expressionTypeEvaluator);
+
+        if (!expressionTypeEvaluator.getResult().equals(SymbolType.Type.Decimal)) {
+            throw new InvalidPortException(node);
+        }
+
+        this.symbolType = SymbolType.PortOuput();
     }
 }
