@@ -22,7 +22,7 @@ import java.util.EmptyStackException;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int returnlabel;
-    private int nextDAddress = -4;
+    private int nextDAddress = -2;
     private int nextWAddress = 0;
     private int nextHAddress = 0;
 
@@ -36,7 +36,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             throw new OutOfMemoryError();
 
         if (increment)
-            return "D" + (nextDAddress += 4);
+            return "D" + (nextDAddress += 2);
         else
             return "D" + nextDAddress;
     }
@@ -45,7 +45,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     {
         int tmp = nextDAddress;
 
-        return "D" + (nextDAddress - 4);
+        return "D" + (nextDAddress - 2);
     }
 
     public String getNextWAddress(boolean increment) {
@@ -371,7 +371,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         }
         String name = symbol.getName();
         Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
-        Emit("MOV(021) &" + (address + 4) + " " + name, true);
+        Emit("MOV(021) &" + (address + 2) + " " + name, true);
     }
 
     private void declareInt(String name){
