@@ -679,7 +679,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         public < T > void push(T value)
         {
-            if(nextWAddress <= 510){
+            if(stackPointer <= 510){
                 stackPointerIncrement();
 
                 if (value.getClass() == Integer.class)
