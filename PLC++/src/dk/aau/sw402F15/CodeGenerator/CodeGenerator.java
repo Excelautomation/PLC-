@@ -149,7 +149,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
         if(node.getLeft().getClass() ==  AArrayExpr.class){
-            Emit("MOVL(021) " + pop() + " @" + getNextDAddress(false), true);
+            Emit("MOVL(498) " + pop() + " @" + getNextDAddress(false), true);
         }
         else if (!(node.getLeft() instanceof APortOutputExpr)){
             Emit("MOVL(498) " + pop() + " " + node.getLeft(), true);
@@ -163,7 +163,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         node.getExpr().apply(this);
         Emit("*(420) " + pop() + " &2 " + stackPointer(true), true);
         Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);  // offset + start = location
-        Emit("MOV(021) " + pop() + " " + getNextDAddress(false), true);
+        Emit("MOVL(498) " + pop() + " " + getNextDAddress(false), true);
         Node parent = node.parent();
         if (parent.getClass() != AAssignmentExpr.class || ((AAssignmentExpr)parent).getLeft() != node) {
             Emit("MOVL(498) @" + getNextDAddress(false) + " " + stackPointer(true), true);
@@ -363,7 +363,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         }
         String name = symbol.getName();
         Emit(name + "\tINT\t D"+ address + "\t\t0\t", false);
-        Emit("MOV(021) &" + (address + 2) + " " + name, true);
+        Emit("MOVL(498) &" + (address + 2) + " " + name, true);
     }
 
     private void declareInt(String name){
