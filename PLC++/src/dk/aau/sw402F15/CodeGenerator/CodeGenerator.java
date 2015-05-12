@@ -22,7 +22,7 @@ import java.util.EmptyStackException;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int returnlabel;
-    private int nextDAddress = -4;
+    private int nextDAddress = 0;
     private int nextWAddress = 0;
     private int nextHAddress = 0;
 
@@ -36,7 +36,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             throw new OutOfMemoryError();
 
         if (increment)
-            return "D" + (nextDAddress += 4);
+            return "D" + (nextDAddress += 2);
         else
             return "D" + nextDAddress;
     }
@@ -45,7 +45,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     {
         int tmp = nextDAddress;
 
-        return "D" + (nextDAddress - 4);
+        return "D" + (nextDAddress - 2);
     }
 
     public String getNextWAddress(boolean increment) {
@@ -71,14 +71,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return "H" + currentAddress;
     }
 
-    public < T > void push(T value)
+    public <T> void push(T value)
     {
         if (value.getClass() == Integer.class)
-            Emit("MOV(021) &" + value + " " + stackPointer(true), true);
+            Emit("MOVL(498) &" + value + " " + stackPointer(true), true);
         else if (value.getClass() == Float.class || value.getClass() == Double.class)
             Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer(true) + "", true);
         else if (value.getClass() == String.class)
-            Emit("MOV(021) " + value + " " + stackPointer(true), true);
+            Emit("MOVL(498) " + value + " " + stackPointer(true), true);
         else
             throw new ClassFormatError();
     }
@@ -149,11 +149,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
         if(node.getLeft().getClass() ==  AArrayExpr.class){
-            String address = getNextDAddress(false);
-            Emit("MOV(021) " + pop() + " @" + address, true);
+            Emit("MOVL(021) " + pop() + " @" + getNextDAddress(false), true);
         }
         else if (!(node.getLeft() instanceof APortOutputExpr)){
-            Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
+            Emit("MOVL(498) " + pop() + " " + node.getLeft(), true);
         }
     }
 
@@ -162,17 +161,12 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
         push(node.getName().getText());
         node.getExpr().apply(this);
-        Emit("*(420) " + pop() + " &4 " + stackPointer(true), true);
+        Emit("*(420) " + pop() + " &2 " + stackPointer(true), true);
         Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);  // offset + start = location
         Emit("MOV(021) " + pop() + " " + getNextDAddress(false), true);
         Node parent = node.parent();
         if (parent.getClass() != AAssignmentExpr.class || ((AAssignmentExpr)parent).getLeft() != node) {
-            if(symbol.getType() == SymbolType.Decimal()) {
-                Emit("MOVL(498) @" + getNextDAddress(false) + " " + stackPointer(true), true);
-            }
-            else {
-                Emit("MOV(021) @" + getNextDAddress(false) + " " + stackPointer(true), true);
-            }
+            Emit("MOVL(498) @" + getNextDAddress(false) + " " + stackPointer(true), true);
         }
     }
 
@@ -213,7 +207,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("ANDW(034) D" + (nextDAddress - 4) + " " + getNextDAddress(false) + " " + getNextDAddress(true), true);
     }
-    
+
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
@@ -369,7 +363,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         }
         String name = symbol.getName();
         Emit(name + "\tINT\t D"+ address + "\t\t0\t", false);
-        Emit("MOV(021) &" + (address + 4) + " " + name, true);
+        Emit("MOV(021) &" + (address + 2) + " " + name, true);
     }
 
     private void declareInt(String name){
@@ -387,7 +381,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) " + value + " " + name, true);
+        Emit("MOVL(498) " + value + " " + name, true);
     }
 
     private void declareBool(String name){
@@ -430,7 +424,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tREAL\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) " + value + " " + name, true);
+        Emit("MOVL(498) " + value + " " + name, true);
     }
 
     private void declareTimer(String name){
@@ -442,7 +436,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         //Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
-        //Emit("MOV(021) &" + value + " " + address, true);
+        //Emit("MOVL(498) &" + value + " " + address, true);
     }
 
     private void declareAndAssignTimer(String name, String value){
@@ -544,7 +538,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
-        Emit("MOV(021) #1 " + getNextDAddress(true), true);
+        Emit("MOVL(498) #1 " + getNextDAddress(true), true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -552,7 +546,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAFalseExpr(AFalseExpr node) {
         super.outAFalseExpr(node);
 
-        Emit("MOV(021) #0 " + getNextDAddress(true), true);
+        Emit("MOVL(498) #0 " + getNextDAddress(true), true);
         Emit("RSET " + getNextWAddress(true), true);
     }
 
