@@ -174,7 +174,12 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("MOV(021) " + pop() + " " + stackPointer(true), true);                             // push pointer to stack
         }
         else{
-            Emit("MOV(021) @" + pop() + " " + stackPointer(true), true);                            // push value to stack
+            String address = pop();
+            Emit("MOV(021) @" + address + " " + stackPointer(true), true);                           // push value to stack
+            if(size == 2) {
+                Emit("+(400) " + address + " 1 " + stackPointer(true), true);
+                Emit("MOV(021) @" + pop() + " " + stackPointer(true), true);
+            }
         }
     }
 
