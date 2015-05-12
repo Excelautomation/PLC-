@@ -724,14 +724,14 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         private void stackPointerIncrement() {
             if (stackPointer > 510)
                 throw new OutOfMemoryError();
-            stackPointer += stackPointer;
+            stackPointer += stackFieldSize;
         }
 
         // decrements stack pointer with stack size
         private void stackPointerDecrement() {
             if (stackPointer < 400)
                 throw new OutOfMemoryError();
-            stackPointer -= stackPointer;
+            stackPointer -= stackFieldSize;
         }
     }
 }
