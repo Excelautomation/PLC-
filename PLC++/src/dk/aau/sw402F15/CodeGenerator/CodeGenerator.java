@@ -13,7 +13,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
-import java.util.Stack;
 
 /**
  * Created by Claus & Jimmi on 24-04-2015.
@@ -753,6 +752,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             String stPtr = stackPointer();
             stackPointerDecrement();
             return stPtr;
+        }
+
+        public String peek(){
+            return stackPointer();
         }
 
         // returns the address of the memory the stack points to.
