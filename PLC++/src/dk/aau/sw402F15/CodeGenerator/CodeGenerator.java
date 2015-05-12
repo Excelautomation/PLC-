@@ -8,8 +8,6 @@ import dk.aau.sw402F15.Symboltable.SymbolFunction;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.awt.geom.FlatteningPathIterator;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -23,7 +21,7 @@ import java.util.Stack;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int returnlabel;
-    private int nextDAddress = -4;
+    private int nextDAddress = -2;
     private int nextWAddress = 0;
     private int nextHAddress = 0;
     private Stack stack = new Stack();
@@ -37,7 +35,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             throw new OutOfMemoryError();
 
         if (increment)
-            return "D" + (nextDAddress += 4);
+            return "D" + (nextDAddress += 2);
         else
             return "D" + nextDAddress;
     }
@@ -46,7 +44,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     {
         int tmp = nextDAddress;
 
-        return "D" + (nextDAddress - 4);
+        return "D" + (nextDAddress - 2);
     }
 
     public String getNextWAddress(boolean increment) {
@@ -72,16 +70,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             return "H" + currentAddress;
     }
 
-    public < T > void push(T value)
+    public <T> void push(T value)
     {
         if (value.getClass() == Integer.class)
-            Emit("MOV(021) &" + value + " " + stackPointer(true), true);
+            Emit("MOVL(498) &" + value + " " + stackPointer(true), true);
         else if (value.getClass() == Float.class || value.getClass() == Double.class)
             Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer(true) + "", true);
         else if (value.getClass() == String.class)
-            Emit("MOV(021) " + value + " " + stackPointer(true), true);
-        //else
-            //throw new ClassFormatError();
+            Emit("MOVL(498) " + value + " " + stackPointer(true), true);
+        else
+            throw new ClassFormatError();
     }
 
     public String pop()
@@ -152,7 +150,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
 
         if (!(node.getLeft() instanceof APortOutputExpr)) {
-            Emit("MOV(021) " + pop() + " " + node.getLeft(), true);
+            Emit("MOVL(498) " + pop() + " " + node.getLeft(), true);
 
         } else if (node.getRight().getClass() == ACompareAndExpr.class ||
                 node.getRight().getClass() == ACompareOrExpr.class ||
@@ -169,26 +167,22 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
                 assignBool(expr.getName().getText(), pop());
             }
+        } else if(node.getLeft().getClass() ==  AArrayExpr.class){
+            Emit("MOVL(498) " + pop() + " @" + getNextDAddress(false), true);
         }
     }
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        // TODO: currently only gets the values
-        node.getExpr().apply(this);
         SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
         push(node.getName().getText());
-        int size = 1;
-        if (symbol.getContainedType().getType() == SymbolType.Type.Int || symbol.getContainedType().getType() == SymbolType.Type.Decimal) {
-            size = 2;
-        }
         node.getExpr().apply(this);
-        Emit("*(420) " + pop() + " &" + size + " " + stackPointer(true), true);                     // index * size = offset
-        Emit("+(400) " + pop() + " " + node.getName().getText() + " " + stackPointer(true), true);  // offset + start = location
-        Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);                                // push value to TOS
-        if(size == 2){
-            Emit("+(400) " + pop() + " &1 " + stackPointer(true), true);
-            Emit("MOV(021) @" + peek() + " " + stackPointer(true), true);
+        Emit("*(420) " + pop() + " &2 " + stackPointer(true), true);
+        Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);  // offset + start = location
+        Emit("MOVL(498) " + pop() + " " + getNextDAddress(false), true);
+        Node parent = node.parent();
+        if (parent.getClass() != AAssignmentExpr.class || ((AAssignmentExpr)parent).getLeft() != node) {
+            Emit("MOVL(498) @" + getNextDAddress(false) + " " + stackPointer(true), true);
         }
     }
 
@@ -229,7 +223,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("ANDW(034) D" + (nextDAddress - 4) + " " + getNextDAddress(false) + " " + getNextDAddress(true), true);
     }
-    
+
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
@@ -238,7 +232,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outACompareEqualExpr(ACompareEqualExpr node){
+    public void outACompareEqualExpr(ACompareEqualExpr node) {
         super.outACompareEqualExpr(node);
 
         String arg1 = pop();
@@ -384,7 +378,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             getNextDAddress(true);
         }
         String name = symbol.getName();
-        Emit(name + "\tINT\t &"+ address + "\t\t0\t", false);
+        Emit(name + "\tINT\t D"+ address + "\t\t0\t", false);
+        Emit("MOVL(498) &" + (address + 2) + " " + name, true);
     }
 
     private void declareInt(String name){
@@ -402,7 +397,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tINT\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) " + value + " " + name, true);
+        Emit("MOVL(498) " + value + " " + name, true);
     }
 
     private void declareBool(String name){
@@ -456,7 +451,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         Emit(name + "\tREAL\t" + address + "\t\t0\t", false);
         // Assign
-        Emit("MOV(021) " + value + " " + name, true);
+        Emit("MOVL(498) " + value + " " + name, true);
     }
 
     private void declareTimer(String name){
@@ -468,7 +463,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // Declare
         //Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
         // Assign
-        //Emit("MOV(021) &" + value + " " + address, true);
+        //Emit("MOVL(498) &" + value + " " + address, true);
     }
 
     private void declareAndAssignTimer(String name, String value){
@@ -570,7 +565,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
-        Emit("MOV(021) #1 " + getNextDAddress(true), true);
+        Emit("MOVL(498) #1 " + getNextDAddress(true), true);
         Emit("SET " + getNextWAddress(true), true);
     }
 
@@ -578,7 +573,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAFalseExpr(AFalseExpr node) {
         super.outAFalseExpr(node);
 
-        Emit("MOV(021) #0 " + getNextDAddress(true), true);
+        Emit("MOVL(498) #0 " + getNextDAddress(true), true);
         Emit("RSET " + getNextWAddress(true), true);
     }
 
@@ -644,39 +639,60 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
-        push(node.getDecimalLiteral());
+        if (!(node.parent() instanceof APortOutputExpr))
+            push(Float.parseFloat(node.getDecimalLiteral().getText()));
     }
 
     @Override
     public void outAAddExpr(AAddExpr node) {
         super.outAAddExpr(node);
 
-        // TODO Different if float
-        Emit("+(400) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("+F(454) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("+(400) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
     }
 
     @Override
     public void outADivExpr(ADivExpr node) {
         super.outADivExpr(node);
 
-        // TODO Different if float
-        Emit("/(430) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("/F(457) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("/(430) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     @Override
     public void outAMultiExpr(AMultiExpr node) {
         super.outAMultiExpr(node);
 
-        // TODO Different if float
-        Emit("*(420) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("*F(456) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("*(420) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     @Override
     public void outASubExpr(ASubExpr node) {
         super.outASubExpr(node);
 
-        // TODO Different if float
-        Emit("-(410) " + pop() + " " + pop() + " " + stackPointer(true), true);
+        String arg1 = pop();
+        String arg2 = pop();
+
+        if (node.getRight() instanceof ADecimalExpr)
+            Emit("-F(455) " + arg1 + " " + arg2 + " " + stackPointer(true), true);
+        else
+            Emit("-(410) " + pop() + " " + pop() + " " + stackPointer(true), true);
     }
 
     private int getNextJump(){
