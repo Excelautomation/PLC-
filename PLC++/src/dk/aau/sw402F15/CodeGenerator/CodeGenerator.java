@@ -183,6 +183,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareEqualExpr(ACompareEqualExpr node) {
         super.outACompareEqualExpr(node);
 
+        // TODO Check for while-loops (see CompareLess as an example)
+
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
@@ -194,6 +196,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outACompareGreaterExpr(ACompareGreaterExpr node){
         super.outACompareGreaterExpr(node);
+
+        // TODO Check for while-loops (see CompareLess as an example)
 
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
@@ -207,6 +211,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outACompareGreaterOrEqualExpr(ACompareGreaterOrEqualExpr node){
         super.outACompareGreaterOrEqualExpr(node);
+
+        // TODO Check for while-loops (see CompareLess as an example)
 
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
@@ -243,6 +249,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareLessOrEqualExpr(ACompareLessOrEqualExpr node) {
         super.outACompareLessOrEqualExpr(node);
 
+        // TODO Check for while-loops (see CompareLess as an example)
+
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
@@ -254,6 +262,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outACompareNotEqualExpr(ACompareNotEqualExpr node) {
         super.outACompareNotEqualExpr(node);
+
+        // TODO Check for while-loops (see CompareLess as an example)
 
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();

@@ -5,8 +5,9 @@ void init()
 
 void run()
 {
-    int i = 3;
-    int j = 7;
+    int i = 0;
 
-    int k = i + j;
+    Q#100.00 = true;
+    Q#100.01 = false;
+    Q#100.02 = true || false;
 }
