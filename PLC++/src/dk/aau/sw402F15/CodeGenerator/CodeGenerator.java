@@ -188,7 +188,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("AND=(300)" + " " + arg2 + " " + arg1, true);
         _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer(), true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -200,7 +200,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("AND>(320)" + " " + arg2 + " " + arg1, true);
         _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer(), true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
 
     }
 
@@ -213,7 +213,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("AND>=(325)" + " " + arg2 + " " + arg1, true);
         _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer(), true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -226,16 +226,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (node.parent().getClass() == AWhileStatement.class)
         {
             Emit("AND<(310)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.stackPointer(), true);
+            Emit("SET " + _stack.stackPointer() + ".00", true);
             Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.stackPointer(), true);
+            Emit("RSET " + _stack.stackPointer() + ".00", true);
         }
 
         else
         {
             Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
             _stack.stackPointerIncrement();
-            Emit("SET " + _stack.stackPointer, true);
+            Emit("SET " + _stack.stackPointer + ".00", true);
         }
     }
 
@@ -248,7 +248,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("AND<=(315)" + " " + arg2 + " " + arg1, true);
         _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer(), true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -260,7 +260,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("AND<>(305)" + " " + arg2 + " " + arg1, true);
         _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer(), true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -357,7 +357,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private void declareBool(String name){
         // get next free address in symbolList
         _stack.stackPointerIncrement();
-        String address = _stack.stackPointer();
+        String address = _stack.stackPointer() + ".00";
 
         // Declare
         Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
@@ -501,7 +501,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAPortOutputExpr(APortOutputExpr node){
         super.outAPortOutputExpr(node);
 
-        Emit("LD " + _stack.stackPointer(), true);
+        Emit("LD " + _stack.stackPointer() + ".00", true);
         Emit("OUT " + node.getExpr(), true);
     }
 
@@ -523,7 +523,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("MOVL(498) #1 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer(), true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -532,7 +532,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
-        Emit("RSET " + _stack.stackPointer(), true);
+        Emit("RSET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -580,7 +580,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         //node.getCondition().apply(this);
         _stack.stackPointerIncrement();
-        Emit("LDNOT " + _stack.stackPointer(), true);
+        Emit("LDNOT " + _stack.stackPointer() + ".00", true);
         Emit("JMP(004) #" + jumpLabel, true);
         node.getStatement().apply(this);
         node.getCondition().apply(this);
@@ -692,10 +692,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
                 else if (value.getClass() == Boolean.class){
 
                     if ((Boolean)value)
-                        Emit("MOVL(498) #1 " + stackPointer(), true);
+                        Emit("SET " + stackPointer() + ".00", true);
 
                     else if (!(Boolean)value)
-                        Emit("MOVL(498) #0 " + stackPointer(), true);
+                        Emit("RSET " + stackPointer() + ".00", true);
 
                 } else
                     throw new NotImplementedException();
@@ -716,7 +716,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         // returns the address of the memory the stack points to.
         private String stackPointer(){
-            return "W" + stackPointer + ".00";
+            return "W" + stackPointer;
         }
 
         // increments stack pointer with stack size
