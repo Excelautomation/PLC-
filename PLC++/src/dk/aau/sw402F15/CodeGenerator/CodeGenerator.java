@@ -1,10 +1,6 @@
 package dk.aau.sw402F15.CodeGenerator;
 
-import dk.aau.sw402F15.Symboltable.Scope;
-import dk.aau.sw402F15.Symboltable.ScopeDepthFirstAdapter;
-import dk.aau.sw402F15.Symboltable.Symbol;
-import dk.aau.sw402F15.Symboltable.SymbolArray;
-import dk.aau.sw402F15.Symboltable.SymbolFunction;
+import dk.aau.sw402F15.Symboltable.*;
 import dk.aau.sw402F15.Symboltable.Type.SymbolType;
 import dk.aau.sw402F15.parser.node.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -169,14 +165,24 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outACompareAndExpr(ACompareAndExpr node){
         super.outACompareAndExpr(node);
 
-        Emit("ANDW(034) D" + (nextDAddress - 4) + " " + getNextDAddress(false) + " " + getNextDAddress(true), true);
+        Emit("LD P_First_Cycle", true);
+        String code = "ANDW(034) " + _stack.pop() + " " + _stack.pop() + " ";
+        // TODO Hack needed because it doesn't execute sequentially
+        _stack.stackPointerIncrement(3);
+        code = code + _stack.stackPointer();
+        Emit(code, true);
     }
 
     @Override
     public void outACompareOrExpr(ACompareOrExpr node){
         super.outACompareOrExpr(node);
 
-        Emit("ORW(035) D" + (nextDAddress - 4) + " " + getNextDAddress(false) + " " + getNextDAddress(true), true);
+        Emit("LD P_First_Cycle", true);
+        String code = "ORW(035) " + _stack.pop() + " " + _stack.pop() + " ";
+        // TODO Hack needed because it doesn't execute sequentially
+        _stack.stackPointerIncrement(3);
+        code = code + _stack.stackPointer();
+        Emit(code, true);
     }
 
     @Override
@@ -370,18 +376,18 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String address = _stack.stackPointer() + ".00";
 
         // Declare
-        Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
+        Emit(name + "\tBOOL\t" + address + ".00" + "\t\t0\t", false);
     }
 
     private void assignBool(String name, String value){
         // assign
-        Emit("LD P_On",false);
+        /*Emit("LD P_On",false);
         Emit("OUT TR0",false);
         Emit("AND " + value,false);
         Emit("SET " + name,false);
         Emit("LD TR0",false);
         Emit("ANDNOT " + value,false);
-        Emit("RSET " + name,false);
+        Emit("RSET " + name,false);*/
     }
 
     private void declareAndAssignBool(String name, String value){
@@ -390,16 +396,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String address = _stack.stackPointer();
 
         // Declare
-        Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
+        Emit(name + "\tBOOL\t" + address + ".00" + "\t\t0\t", false);
 
         // assign
-        Emit("LD P_On",false);
+        /*Emit("LD P_On",false);
         Emit("OUT TR0",false);
         Emit("AND " + value,false);
         Emit("SET " + name,false);
         Emit("LD TR0",false);
         Emit("ANDNOT " + value,false);
-        Emit("RSET " + name,false);
+        Emit("RSET " + name,false);*/
     }
 
     private void declareDecimal(String name){
@@ -407,7 +413,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String address = getNextDAddress(true);
 
         // Declare
-        Emit(name + "\tREAL\t" + address + "\t\t0\t", false);
+        Emit(name + "\tREAL\t" + address + "0.00" + "\t\t0\t", false);
     }
 
     private void declareAndAssignDecimal(String name, String value){
@@ -477,7 +483,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outAIdentifierExpr(AIdentifierExpr node){
-        _stack.push(node.getName().getText());
+        _stack.push(node.getName().getText(), node);
     }
 
     @Override
@@ -715,6 +721,24 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
                 throw new OutOfMemoryError();
         }
 
+        public < T > void push(T value, Node node)
+        {
+            Symbol symbol = currentScope.getSymbolOrThrow(value.toString(), node);
+
+            if (symbol.getType().getType() == SymbolType.Type.Boolean) {
+                stackPointerIncrement();
+                Emit("LD " + value, true);
+                Emit("SET " + stackPointer() + ".00", true);
+                Emit("LDNOT " + value, true);
+                Emit("RSET " + stackPointer() + ".00", true);
+            }
+
+            else
+                push(value);
+
+            int i = 3;
+        }
+
         public String pop()
         {
             String stPtr = stackPointer();
@@ -736,6 +760,12 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             if (stackPointer > 510)
                 throw new OutOfMemoryError();
             stackPointer += stackFieldSize;
+        }
+
+        // increments stack pointer x times
+        private void stackPointerIncrement(int x) {
+            for (int i = 0; i < x; i++)
+                stackPointerIncrement();
         }
 
         // decrements stack pointer with stack size

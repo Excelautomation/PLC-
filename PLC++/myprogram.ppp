@@ -5,9 +5,17 @@ void init()
 
 void run()
 {
+
     int i = 0;
 
-    Q#100.00 = true;
-    Q#100.01 = false;
-    Q#100.02 = true;
+    bool t = true;
+    bool f = false;
+
+    Q#100.00 = t || f;
+    Q#100.01 = f || f;
+    Q#100.02 = t || t;
+    Q#100.03 = t && f;
+    Q#100.04 = t && t;
+    Q#100.05 = t;
+    Q#100.06 = f && f;
 }
