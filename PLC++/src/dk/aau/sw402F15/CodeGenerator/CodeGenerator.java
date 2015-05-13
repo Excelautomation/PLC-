@@ -531,6 +531,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
+        Emit("LD P_First_Cycle", true);
         Emit("MOVL(498) #1 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
         Emit("SET " + _stack.stackPointer() + ".00", true);
@@ -540,6 +541,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAFalseExpr(AFalseExpr node) {
         super.outAFalseExpr(node);
 
+        Emit("LD P_First_Cycle", true);
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
         Emit("RSET " + _stack.stackPointer() + ".00", true);

@@ -9,5 +9,5 @@ void run()
 
     Q#100.00 = true;
     Q#100.01 = false;
-    Q#100.02 = true || false;
+    Q#100.02 = true;
 }
