@@ -681,21 +681,21 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
                 stackPointerIncrement();
 
                 if (value.getClass() == Integer.class)
-                    Emit("MOV(021) &" + value + " " + stackPointer(), true);
+                    Emit("MOVL(498) &" + value + " " + stackPointer(), true);
 
                 else if (value.getClass() == Float.class || value.getClass() == Double.class)
                     Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer() + "", true);
 
                 else if (value.getClass() == String.class)
-                    Emit("MOV(021) " + value + " " + stackPointer(), true);
+                    Emit("MOVL(498) " + value + " " + stackPointer(), true);
 
                 else if (value.getClass() == Boolean.class){
 
                     if ((Boolean)value)
-                        Emit("MOV(021) &1 " + stackPointer(), true);
+                        Emit("MOVL(498) #1 " + stackPointer(), true);
 
-                    else if ((Boolean)value)
-                        Emit("MOV(021) &1 " + stackPointer(), true);
+                    else if (!(Boolean)value)
+                        Emit("MOVL(498) #0 " + stackPointer(), true);
 
                 } else
                     throw new NotImplementedException();

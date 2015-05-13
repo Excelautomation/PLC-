@@ -5,5 +5,8 @@ void init()
 
 void run()
 {
-    float f = 3.4;
+    int i = 3;
+    int j = 7;
+
+    int k = i + j;
 }
