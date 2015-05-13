@@ -367,20 +367,21 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     private void declareBool(String name){
         // get next free address in symbolList
         _stack.stackPointerIncrement();
-        String address = _stack.stackPointer() + ".00";
-
+        String address = _stack.stackPointer();
+        String boolAddress = address + ".00";
         // Declare
         Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
     }
 
     private void assignBool(String name, String value){
+        String boolAddress = value + ".00";
         // assign
         Emit("LD P_On",false);
         Emit("OUT TR0",false);
-        Emit("AND " + value,false);
+        Emit("AND " + boolAddress,false);
         Emit("SET " + name,false);
         Emit("LD TR0",false);
-        Emit("ANDNOT " + value,false);
+        Emit("ANDNOT " + boolAddress,false);
         Emit("RSET " + name,false);
     }
 
@@ -388,17 +389,18 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         // get next free address in symbolList
         _stack.stackPointerIncrement();
         String address = _stack.stackPointer();
+        String boolAddress = address + ".00";
 
         // Declare
-        Emit(name + "\tBOOL\t" + address + "\t\t0\t", false);
+        Emit(name + "\tBOOL\t" + boolAddress + "\t\t0\t", false);
 
         // assign
         Emit("LD P_On",false);
         Emit("OUT TR0",false);
-        Emit("AND " + value,false);
+        Emit("AND " + boolAddress,false);
         Emit("SET " + name,false);
         Emit("LD TR0",false);
-        Emit("ANDNOT " + value,false);
+        Emit("ANDNOT " + boolAddress,false);
         Emit("RSET " + name,false);
     }
 
