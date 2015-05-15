@@ -92,6 +92,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
+        _stack.pop();
 
         if (!(node.getLeft() instanceof APortOutputExpr)) {
             Emit("MOVL(498) " + _stack.pop() + " " + node.getLeft(), true);
@@ -571,6 +572,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             node.getCondition().apply(this);
             Emit("CJP(510) #" + ifLabel, true);
+            Emit("LD " + _stack.stackPointer() + ".00", true);
             node.getRight().apply(this);
             Emit("JMP(004) #" + elseLabel, true);
             Emit("JME(005) #" + ifLabel, true);
@@ -586,6 +588,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             node.getLeft().apply(this);
             Emit("JME(005) #" + label, true);
         }
+
+        Emit("LD P_First_Cycle", true);
     }
 
     @Override

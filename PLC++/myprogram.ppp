@@ -5,17 +5,11 @@ void init()
 
 void run()
 {
-
     int i = 0;
+    int j = 5;
 
-    bool t = true;
-    bool f = false;
-
-    Q#100.00 = t || f;
-    Q#100.01 = f || f;
-    Q#100.02 = t || t;
-    Q#100.03 = t && f;
-    Q#100.04 = t && t;
-    Q#100.05 = t;
-    Q#100.06 = f && f;
+    if (j > 10)
+        j = 50;
+    else
+        j = 100;
 }
