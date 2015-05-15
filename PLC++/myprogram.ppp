@@ -7,5 +7,5 @@ void init()
 
 void run()
 {
-    i = 16;
+    bool b = I#0.00;
 }

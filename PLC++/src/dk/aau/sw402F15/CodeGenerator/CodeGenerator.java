@@ -88,26 +88,29 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         _stack.pop();
 
-        if (!(node.getLeft() instanceof APortOutputExpr)) {
-            Emit("MOVL(498) " + _stack.pop() + " " + node.getLeft(), true);
+        if ((node.getLeft() instanceof APortOutputExpr)) {
 
+        } else if (node.getLeft() instanceof APortInputExpr) {
+           // TODO Hmm...
         } else if (node.getRight().getClass() == ACompareAndExpr.class ||
-                node.getRight().getClass() == ACompareOrExpr.class ||
-                node.getRight().getClass() == ACompareEqualExpr.class ||
-                node.getRight().getClass() == ACompareNotEqualExpr.class ||
-                node.getRight().getClass() == ACompareGreaterExpr.class ||
-                node.getRight().getClass() == ACompareGreaterOrEqualExpr.class ||
-                node.getRight().getClass() == ACompareLessExpr.class ||
-                node.getRight().getClass() == ACompareLessOrEqualExpr.class
-                ){
-
-            if (node.getLeft() instanceof AIdentifierExpr){
-                AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
+            node.getRight().getClass() == ACompareOrExpr.class ||
+            node.getRight().getClass() == ACompareEqualExpr.class ||
+            node.getRight().getClass() == ACompareNotEqualExpr.class ||
+            node.getRight().getClass() == ACompareGreaterExpr.class ||
+            node.getRight().getClass() == ACompareGreaterOrEqualExpr.class ||
+            node.getRight().getClass() == ACompareLessExpr.class ||
+            node.getRight().getClass() == ACompareLessOrEqualExpr.class)
+        {
+        if (node.getLeft() instanceof AIdentifierExpr){
+            AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
 
                 assignBool(expr.getName().getText(), _stack.pop());
             }
         } else if(node.getLeft().getClass() ==  AArrayExpr.class){
             Emit("MOVL(498) " + _stack.pop() + " @" + getNextDAddress(false), true);
+        }
+        else {
+            Emit("MOVL(498) " + _stack.pop() + " " + node.getLeft(), true);
         }
     }
 
@@ -343,7 +346,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             getNextDAddress(true);
         }
         String name = symbol.getName();
-        Emit(name + "\tINT\t D"+ address + "\t\t0\t", false);
+        Emit(name + "\tINT\t D" + address + "\t\t0\t", false);
         Emit("MOVL(498) &" + (address + 2) + " " + name, true);
     }
 
@@ -516,11 +519,39 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void outAPortInputExpr(APortInputExpr node){
-        //throw new NotImplementedException();
+
+        if (node.parent() instanceof ADeclaration)
+        {
+            ADeclaration parentNode = (ADeclaration)node.parent();
+
+            Emit("LD " + node.getExpr().toString(), true);
+            Emit("SET " + parentNode.getName().getText().toString(), true);
+            Emit("SET " + _stack.stackPointer() + ".00", true);
+
+            Emit("LDNOT " + node.getExpr().toString(), true);
+            Emit("RSET " + parentNode.getName().getText().toString(), true);
+            Emit("RSET " + _stack.stackPointer() + ".00", true);
+        }
+        else if (node.parent() instanceof AAssignmentExpr)
+        {
+            AAssignmentExpr parentNode = (AAssignmentExpr)node.parent();
+
+            Emit("LD " + node.getExpr().toString(), true);
+            Emit("SET " + parentNode.getLeft().toString(), true);
+            Emit("SET " + _stack.stackPointer() + ".00", true);
+
+            Emit("LDNOT " + node.getExpr().toString(), true);
+            Emit("RSET " + parentNode.getLeft().toString(), true);
+            Emit("RSET " + _stack.stackPointer() + ".00", true);
+        }
+        else
+            throw new RuntimeException();
+
+
     }
 
     @Override
-    public void outAPortOutputExpr(APortOutputExpr node){
+    public void outAPortOutputExpr(APortOutputExpr node) {
         super.outAPortOutputExpr(node);
 
         Emit("LD " + _stack.stackPointer() + ".00", true);
@@ -625,7 +656,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outADecimalExpr(ADecimalExpr node) {
         super.outADecimalExpr(node);
-        if (!(node.parent() instanceof APortOutputExpr))
+        if (!(node.parent() instanceof APortOutputExpr)) { }
+        else if (!(node.parent() instanceof APortInputExpr)) { }
+        else
             _stack.push(Float.parseFloat(node.getDecimalLiteral().getText()));
     }
 
