@@ -576,6 +576,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             node.getRight().apply(this);
             Emit("JMP(004) #" + elseLabel, true);
             Emit("JME(005) #" + ifLabel, true);
+            Emit("LD P_First_Cycle", true);
             node.getLeft().apply(this);
             Emit("JME(005) #" + elseLabel, true);
         }
@@ -587,9 +588,8 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("CJPN(511) #" + label, true);
             node.getLeft().apply(this);
             Emit("JME(005) #" + label, true);
+            Emit("LD P_First_Cycle", true);
         }
-
-        Emit("LD P_First_Cycle", true);
     }
 
     @Override
