@@ -1,15 +1,11 @@
+int i = 7;
+
 void init()
 {
-
+    int j = 10;
 }
 
 void run()
 {
-    int i = 0;
-    int j = 5;
-
-    if (j > 10)
-        j = 50;
-    else
-        j = 100;
+    i = 16;
 }

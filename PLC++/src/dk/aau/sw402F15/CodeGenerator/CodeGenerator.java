@@ -53,12 +53,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             // reset all addresses
             Emit("SSET(630) " + getNextDAddress(true) + " &32767", true);
-            Emit("SSET(630) 0 &1535", true);
-            Emit("SBS(091) 0", true);
-
-            // here we call the run Method
-            Emit("LD P_On", true);
-            Emit("SBS(091) 1", true);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -467,6 +461,15 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionRootDeclaration(AFunctionRootDeclaration node){
         super.inAFunctionRootDeclaration(node);
+
+        String lulz = node.getName().getText();
+
+        if(node.getName().getText().contentEquals("init")) // If we've passed declaration of global variables
+        {
+            // Calling init and run
+            Emit("SBS(091) 0", true);
+            Emit("SBS(091) 1", true);
+        }
 
         Emit("SBN(092) " + functions.indexOf(node.getName().getText()), true);
 
