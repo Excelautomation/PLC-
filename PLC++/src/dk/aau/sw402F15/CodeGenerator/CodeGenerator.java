@@ -86,12 +86,19 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAAssignmentExpr(AAssignmentExpr node) {
         super.outAAssignmentExpr(node);
 
-        _stack.pop();
+        String arg1 = _stack.pop();
+
+        if (node.getRight() instanceof AFunctionCallExpr)
+        {
+            String functionName = ((AFunctionCallExpr)node.getRight()).getName().toString().replaceAll("\\s+","");
+            Emit("MOVL(498) " + functionName + "_return " + node.getLeft().toString(), true);
+            return;
+        }
 
         if ((node.getLeft() instanceof APortOutputExpr)) {
 
         } else if (node.getLeft() instanceof APortInputExpr) {
-           // TODO Hmm...
+
         } else if (node.getRight().getClass() == ACompareAndExpr.class ||
             node.getRight().getClass() == ACompareOrExpr.class ||
             node.getRight().getClass() == ACompareEqualExpr.class ||
@@ -103,7 +110,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         {
         if (node.getLeft() instanceof AIdentifierExpr){
             AIdentifierExpr expr = (AIdentifierExpr)node.getLeft();
-
                 assignBool(expr.getName().getText(), _stack.pop());
             }
         } else if(node.getLeft().getClass() ==  AArrayExpr.class){
@@ -129,20 +135,10 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void caseADeclaration(ADeclaration node){
-        super.caseADeclaration(node);
-    }
-
-    @Override
     public void outABreakStatement(ABreakStatement node){
         super.outABreakStatement(node);
 
         Emit("BREAK(514)", true);
-    }
-
-    @Override
-    public void outACaseStatement(ACaseStatement node){
-        //throw new NotImplementedException();
     }
 
     @Override
@@ -165,7 +161,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("LD P_First_Cycle", true);
         String code = "ANDW(034) " + _stack.pop() + " " + _stack.pop() + " ";
-        // TODO Hack needed because it doesn't execute sequentially
         _stack.stackPointerIncrement(3);
         code = code + _stack.stackPointer();
         Emit(code, true);
@@ -177,7 +172,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("LD P_First_Cycle", true);
         String code = "ORW(035) " + _stack.pop() + " " + _stack.pop() + " ";
-        // TODO Hack needed because it doesn't execute sequentially
         _stack.stackPointerIncrement(3);
         code = code + _stack.stackPointer();
         Emit(code, true);
@@ -278,11 +272,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAContinueStatement(AContinueStatement node){
-        //throw new NotImplementedException();
-    }
-
-    @Override
     public void outADeclaration(ADeclaration node) {
         Symbol symbol = currentScope.getSymbolOrThrow(node.getName().getText(), node);
 
@@ -333,7 +322,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             throw new NotImplementedException();
 
         } else {
-            // throw new RuntimeException(); // TODO Need new Exception. Pretty unknown error though
+            throw new RuntimeException();
         }
     }
 
@@ -426,39 +415,17 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit("MOVL(498) " + value + " " + name, true);
     }
 
-    private void declareTimer(String name){
-        throw new NotImplementedException();
-        // get next free address in symbolList
-        //String address = getNextDAddress(true);
-        //Emit(node.getName().getText() + "\tTIMER\tD" + getNextDAddress(true) + "\t\t0\t", false);
-
-        // Declare
-        //Emit(name + "\tBOOL\t" + address + ".00\t\t0\t", false);
-        // Assign
-        //Emit("MOVL(498) &" + value + " " + address, true);
-    }
-
-    private void declareAndAssignTimer(String name, String value){
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void outADefaultStatement(ADefaultStatement node){
-        //throw new NotImplementedException();
-    }
-
     @Override
     public void inAFunctionCallExpr(AFunctionCallExpr node){
 
-        SymbolFunction function = (SymbolFunction) currentScope.getSymbolOrThrow(node.getName().getText(), node);
-        if (function.getReturnType().equals(SymbolType.Type.Void)) {
-            Emit("LD P_On", true);
-            Emit("SBS(091) " + functions.indexOf(node.getName().getText()), true);
-        } else {
-            Emit("MCRO(099) " + functions.indexOf(node.getName().getText()) + " " + getNextDAddress(true) + " " + _stack.pop(), true);
+        Emit("LD P_On", true);
+
+        for(PExpr expr : node.getArgs())
+        {
+            _stack.push(expr.toString());
         }
 
-        //Emit("SBS(091) " + getFunctionNumber(true), true);
+        Emit("SBS(091) " + functions.indexOf(node.getName().getText()), true);
     }
 
     @Override
@@ -471,33 +438,38 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         {
             // Calling init and run
             Emit("SBS(091) 0", true);
+            Emit("LD P_On", true);
             Emit("SBS(091) 1", true);
         }
 
         Emit("SBN(092) " + functions.indexOf(node.getName().getText()), true);
 
         if (!node.getStatements().isEmpty())
-            Emit("LD P_First_Cycle", true);
+            Emit("LD P_On", true);
 
-        //returnlabel = getNextJump();
+        for (PDeclaration decl : node.getParams())
+            Emit("MOVL(498) " + _stack.pop() + " " + decl.toString(), true);
     }
 
     @Override
     public void outAFunctionRootDeclaration(AFunctionRootDeclaration node) {
         super.outAFunctionRootDeclaration(node);
-        //Emit("JME(005) #" + returnlabel, true);
+
+        Emit(node.getName().toString().replaceAll("\\s+", "") + "_return\tBYTE\t" + getNextDAddress(true) + "\t\t0\t", false);
+
         Emit("RET(093)", true);
-        //Emit("END(001)", true);
     }
 
     @Override
-    public void outAIdentifierExpr(AIdentifierExpr node){
+    public void outAReturnStatement(AReturnStatement node) {
+        super.outAReturnStatement(node);
+
+        Emit("MOVL(498) " + _stack.stackPointer() + " " + ((AFunctionRootDeclaration) node.parent()).getName().toString().replaceAll("\\s+","") + "_return", true);
+    }
+
+    @Override
+    public void outAIdentifierExpr(AIdentifierExpr node) {
         _stack.push(node.getName().getText(), node);
-    }
-
-    @Override
-    public void outAMemberExpr(AMemberExpr node){
-        //throw new NotImplementedException();
     }
 
     @Override
@@ -505,16 +477,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outANegationExpr(node);
 
         Emit("NOT " + getNextDAddress(false), true);
-    }
-
-    @Override
-    public void outAPortAnalogInputExpr(APortAnalogInputExpr node){
-        //throw new NotImplementedException();
-    }
-
-    @Override
-    public void outAPortAnalogOutputExpr(APortAnalogOutputExpr node){
-        //throw new NotImplementedException();
     }
 
     @Override
@@ -559,18 +521,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     }
 
     @Override
-    public void outAReturnStatement(AReturnStatement node){
-        super.outAReturnStatement(node);
-        //Emit("JMP(004) #" + returnlabel, true);
-        //Emit("RET(093)", true);
-    }
-
-    @Override
-    public void outASwitchStatement(ASwitchStatement node){
-        //throw new NotImplementedException();
-    }
-
-    @Override
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
@@ -588,11 +538,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
         Emit("RSET " + _stack.stackPointer() + ".00", true);
-    }
-
-    @Override
-    public void outATypeCastExpr(ATypeCastExpr node){
-        //throw new NotImplementedException();
     }
 
     @Override
@@ -624,11 +569,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("JME(005) #" + label, true);
             Emit("LD P_First_Cycle", true);
         }
-    }
-
-    @Override
-    public void caseASwitchStatement(ASwitchStatement node){
-        //throw new NotImplementedException();
     }
 
     @Override
@@ -729,6 +669,60 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         }
     }
 
+    @Override
+    public void outACaseStatement(ACaseStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAContinueStatement(AContinueStatement node){
+        throw new NotImplementedException();
+    }
+
+
+    private void declareTimer(String name){
+        throw new NotImplementedException();
+    }
+
+    private void declareAndAssignTimer(String name, String value){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outADefaultStatement(ADefaultStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortAnalogInputExpr(APortAnalogInputExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAPortAnalogOutputExpr(APortAnalogOutputExpr node){
+        throw new NotImplementedException();
+    }
+
+
+    @Override
+    public void outASwitchStatement(ASwitchStatement node){
+        //throw new NotImplementedException();
+    }
+
+    @Override
+    public void outATypeCastExpr(ATypeCastExpr node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void caseASwitchStatement(ASwitchStatement node){
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void outAMemberExpr(AMemberExpr node){
+        throw new NotImplementedException();
+    }
 
     public class Stack{
         private final int stackFieldSize = 2;           // defines the size of each object in the stack as nr of bytes.
@@ -777,8 +771,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             else
                 push(value);
-
-            int i = 3;
         }
 
         public String pop()
@@ -816,5 +808,12 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
                 throw new OutOfMemoryError();
             stackPointer -= stackFieldSize;
         }
+
+        // decrement stack pointer x times
+        private void stackPointerDecrement(int x) {
+            for (int i = 0; i < x; i++)
+                stackPointerDecrement();
+        }
+
     }
 }

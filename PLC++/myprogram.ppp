@@ -1,11 +1,18 @@
-int i = 7;
-
 void init()
 {
-    int j = 10;
+
 }
 
 void run()
 {
-    bool b = I#0.00;
+    int a = 5;
+    a = func(8, 2);
+
+}
+
+int func (int b, int c)
+{
+    int j = b + c;
+
+    return j;
 }
