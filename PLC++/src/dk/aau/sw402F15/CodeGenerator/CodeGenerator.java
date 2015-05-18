@@ -418,8 +418,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void inAFunctionCallExpr(AFunctionCallExpr node){
 
-        Emit("LD P_On", true);
-
         for(PExpr expr : node.getArgs())
         {
             _stack.push(expr.toString());
@@ -524,7 +522,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outATrueExpr(ATrueExpr node){
         super.outATrueExpr(node);
 
-        Emit("LD P_First_Cycle", true);
         Emit("MOVL(498) #1 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
         Emit("SET " + _stack.stackPointer() + ".00", true);
@@ -534,7 +531,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAFalseExpr(AFalseExpr node) {
         super.outAFalseExpr(node);
 
-        Emit("LD P_First_Cycle", true);
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
         _stack.stackPointerIncrement();
         Emit("RSET " + _stack.stackPointer() + ".00", true);
@@ -567,7 +563,6 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
             Emit("CJPN(511) #" + label, true);
             node.getLeft().apply(this);
             Emit("JME(005) #" + label, true);
-            Emit("LD P_First_Cycle", true);
         }
     }
 
@@ -625,7 +620,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (node.getRight() instanceof ADecimalExpr)
             Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
         else
-            Emit("/(430) " + _stack.pop() + " " + _stack.pop() + " " + _stack.stackPointer(), true);
+            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
     }
 
     @Override
@@ -638,7 +633,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (node.getRight() instanceof ADecimalExpr)
             Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
         else
-            Emit("*(420) " + _stack.pop() + " " + _stack.pop() + " " + _stack.stackPointer(), true);
+            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
     }
 
     @Override
