@@ -1,16 +1,16 @@
 void init()
-{}
+ {}
 
-void run()
-{
-    clear();
+ void run()
+ {
+     clear();
 
-    bool sensor1 = I#0.0;
+     bool sensor1 = I#0.0;
 
-    Q#100.00 = sensor1; // Udgang 100.00 tændes hvis sensor1 er aktiv
-}
+     Q#100.00 = sensor1; // Udgang 100.00 tændes hvis sensor1 er aktiv
+ }
 
-void clear()
-{
-    Q#100.00 = false;
-}
+ void clear()
+ {
+     Q#100.00 = false;
+ }
