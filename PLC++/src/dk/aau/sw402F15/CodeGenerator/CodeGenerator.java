@@ -633,7 +633,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAIntegerExpr(AIntegerExpr node) {
         super.outAIntegerExpr(node);
-        _stack.push(Integer.parseInt(node.getIntegerLiteral().getText())); // TODO Ouch, a hack...
+        _stack.push(Integer.parseInt(node.getIntegerLiteral().getText()));
     }
 
     @Override
