@@ -5,6 +5,7 @@ import dk.aau.sw402F15.parser.node.AFunctionRootDeclaration;
 import dk.aau.sw402F15.parser.node.AProgram;
 import dk.aau.sw402F15.parser.node.Node;
 import dk.aau.sw402F15.tests.ParserTest;
+import junit.framework.Assert;
 import org.junit.Test;
 
 /**
@@ -29,6 +30,9 @@ public class DanglingElse extends ParserTest {
 
         // Get if-else statement
         ABranchStatement ifElseStatement = (ABranchStatement) ifStatement.getLeft();
+
+        Assert.assertEquals(true, ifStatement.getRight() == null);
+        Assert.assertEquals(false, ifElseStatement.getRight() == null);
     }
 
     private AFunctionRootDeclaration getFunction(Node node) {

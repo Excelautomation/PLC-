@@ -22,6 +22,7 @@ public class ForIteration extends ScannerTest {
     }
 
     @Test(expected = ParserException.class)
+    // Check that loops can't exist outside a function
     public void forIterationInRoot() throws ParserException, IOException, LexerException {
         checkCode("for (;;) { }");
     }
