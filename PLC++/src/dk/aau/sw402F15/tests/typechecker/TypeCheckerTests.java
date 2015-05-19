@@ -133,7 +133,7 @@ public class TypeCheckerTests {
 
     @Test(expected = ReturnExprInVoidException.class)
     public void checkReturnInVoidFunction() {
-        checkCode("void func(){return 2;}");
+        checkCode("void func(){ return 2; }");
     }
 
     @Test

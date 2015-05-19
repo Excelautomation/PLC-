@@ -1,13 +1,14 @@
 void init()
- {}
+{}
 
 void run()
 {
-    bool a;
+    int a = 5;
+    a = sq(a);
+}
 
-    if (true)
-       if (true) 
-           a = false; 
-       else 
-           a = true; 
+int sq (int number)
+{
+    int _sq = number * number;
+    return _sq;
 }
