@@ -10,7 +10,7 @@ import dk.aau.sw402F15.parser.node.AStructRootDeclaration;
  */
 public class ScopeDepthFirstAdapter extends DepthFirstAdapter {
     protected final Scope rootScope;
-    protected Scope currentScope;
+    public Scope currentScope;
 
     public ScopeDepthFirstAdapter(Scope rootScope, Scope currentScope) {
         this.rootScope = rootScope;
