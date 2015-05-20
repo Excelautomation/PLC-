@@ -582,9 +582,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("+F(454) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("+F(454) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
         else
-            Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
     }
 
     @Override
@@ -595,9 +595,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
         else
-            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
     }
 
     @Override
@@ -608,9 +608,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
         else
-            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
     }
 
     @Override
@@ -621,9 +621,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
+            Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
         else
-            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.peek(), true);
+            Emit("-(410) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
     }
 
     private int getNextJump(){
