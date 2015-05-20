@@ -25,12 +25,7 @@ public class Function extends ScopeCheckerTest {
 
     @Test
     public void canCallFunctionBelow() {
-        checkCode("int func() {" +
-                "int i = func2();" +
-                "}" +
-                "" +
-                "int func2() {" +
-                "int i = func();" +
-                "}");
+        checkCode("int func() { int i = func2(); }" +
+                  "int func2() { int i = func(); }");
     }
 }

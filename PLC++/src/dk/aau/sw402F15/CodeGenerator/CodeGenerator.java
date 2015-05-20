@@ -187,22 +187,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("AND=(300)" + " " + arg2 + " " + arg1, true);
-        Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-
-        if (node.parent().getClass() == AWhileStatement.class)
-        {
-            Emit("AND=(300)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.peek() + ".00", true);
-            Emit("AND=(300)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.peek() + ".00", true);
-        }
-
-        else
-        {
-            Emit("AND=(300)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-        }
+        Emit("RSET " + _stack.peek() + ".00", true);
+        Emit("AND=(300)" + " " + arg1 + " " + arg2, true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -212,19 +199,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        if (node.parent().getClass() == AWhileStatement.class)
-        {
-            Emit("AND>(320)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.peek() + ".00", true);
-            Emit("AND>(320)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.peek() + ".00", true);
-        }
-
-        else
-        {
-            Emit("AND>(320)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-        }
+        Emit("RSET " + _stack.peek() + ".00", true);
+        Emit("AND>(320)" + " " + arg1 + " " + arg2, true);
+        Emit("SET " + _stack.stackPointer() + ".00", true);
     }
 
     @Override
@@ -234,19 +211,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        if (node.parent().getClass() == AWhileStatement.class)
-        {
-            Emit("AND>=(325)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.peek() + ".00", true);
-            Emit("AND>=(325)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.peek() + ".00", true);
-        }
-
-        else
-        {
-            Emit("AND>=(325)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-        }
+        Emit("RSET " + _stack.peek() + ".00", true);
+        Emit("AND>=(325)" + " " + arg1 + " " + arg2, true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -256,19 +223,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        if (node.parent().getClass() == AWhileStatement.class)
-        {
-            Emit("AND<(310)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.peek() + ".00", true);
-            Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.peek() + ".00", true);
-        }
-
-        else
-        {
-            Emit("AND<(310)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-        }
+        Emit("RSET " + _stack.peek() + ".00", true);
+        Emit("AND<(310)" + " " + arg1 + " " + arg2, true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -278,19 +235,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        if (node.parent().getClass() == AWhileStatement.class)
-        {
-            Emit("AND<=(315)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.peek() + ".00", true);
-            Emit("AND<=(315)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.peek() + ".00", true);
-        }
-
-        else
-        {
-            Emit("AND<=(315)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-        }
+        Emit("RSET " + _stack.peek() + ".00", true);
+        Emit("AND<=(315)" + " " + arg1 + " " + arg2, true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -300,19 +247,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        if (node.parent().getClass() == AWhileStatement.class)
-        {
-            Emit("AND<>(305)" + " " + arg1 + " " + arg2, true);
-            Emit("SET " + _stack.peek() + ".00", true);
-            Emit("AND<>(305)" + " " + arg2 + " " + arg1, true);
-            Emit("RSET " + _stack.peek() + ".00", true);
-        }
-
-        else
-        {
-            Emit("AND<>(305)" + " " + arg2 + " " + arg1, true);
-            Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
-        }
+        Emit("RSET " + _stack.peek() + ".00", true);
+        Emit("AND<>(305)" + " " + arg1 + " " + arg2, true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -565,7 +502,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outATrueExpr(node);
 
         Emit("MOVL(498) #1 " + getNextDAddress(true), true);
-        Emit("SET " + _stack.getPointerAndIncrement() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -573,7 +510,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAFalseExpr(node);
 
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
-        Emit("RSET " + _stack.getPointerAndIncrement() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -644,9 +581,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("+F(454) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("+F(454) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
     }
 
     @Override
@@ -657,9 +594,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
     }
 
     @Override
@@ -670,9 +607,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
     }
 
     @Override
@@ -683,9 +620,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);
+            Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.getPointerAndIncrement(), true);
+            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.stackPointer(), true);
     }
 
     private int getNextJump(){

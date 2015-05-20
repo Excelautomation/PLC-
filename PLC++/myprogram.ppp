@@ -1,13 +1,9 @@
 void init()
- {}
+{}
 
 void run()
 {
-    bool a;
+    int i = 5;
 
-    if (true)
-       if (true) 
-           a = false; 
-       else 
-           a = true; 
+    bool b = i > 4;
 }
