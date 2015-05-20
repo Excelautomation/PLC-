@@ -312,6 +312,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         AArrayDefinition array = (AArrayDefinition) node.getArray();
         int size = Integer.parseInt(array.getNumber().getText());
         int address = nextDAddress;
+        getNextDAddress(true);
         for (int i = 0; i < size; i++){
             getNextDAddress(true);
         }
