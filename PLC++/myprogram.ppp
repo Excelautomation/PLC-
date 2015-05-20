@@ -3,12 +3,7 @@ void init()
 
 void run()
 {
-    int a = 5;
-    a = sq(a);
-}
+    int i = 5;
 
-int sq (int number)
-{
-    int _sq = number * number;
-    return _sq;
+    bool b = i > 4;
 }
