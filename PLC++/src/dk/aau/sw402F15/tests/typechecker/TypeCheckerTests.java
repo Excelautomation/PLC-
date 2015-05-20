@@ -161,6 +161,11 @@ public class TypeCheckerTests {
         checkCode("int func(int k, int p){ func(2, 2); return k + p; } ");
     }
 
+    @Test(expected = IncompatibleReturnTypeException.class)
+    public void checkWrongReturnValue() {
+        checkCode("int func() { return 5.5; }");
+    }
+
     @Test(expected = RedefinitionOfConstException.class)
     public void checkAssignmentOfConst() {
         checkCode("const int i = 7; int func() { i = 2; return 1; } ");
