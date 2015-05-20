@@ -16,7 +16,7 @@ import java.util.EmptyStackException;
 public class CodeGenerator extends ScopeDepthFirstAdapter {
     private int jumpLabel = 0;
     private int nextDAddress = -2;
-    private Stack _stack = new Stack();
+    private Stack _stack = new Stack(this);
     private ArrayList<String> functions;
 
     PrintWriter instructionWriter;
@@ -113,7 +113,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
                 assignBool(expr.getName().getText(), _stack.pop());
             }
         } else if(node.getLeft().getClass() ==  AArrayExpr.class){
-            Emit("MOVL(498) " + _stack.pop() + " @" + getNextDAddress(false), true);
+            Emit("MOVL(498) " + arg1 + " @" + getNextDAddress(false), true);
         }
         else {
             Emit("MOVL(498) " + _stack.pop() + " " + node.getLeft(), true);
@@ -122,15 +122,20 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     @Override
     public void caseAArrayExpr(AArrayExpr node){
-        SymbolArray symbol = (SymbolArray) currentScope.getSymbolOrThrow(node.getName().getText(), node.getName());
+        String arg1, arg2;
+
         _stack.push(node.getName().getText());
         node.getExpr().apply(this);
-        Emit("*(420) " + _stack.pop() + " &2 " + _stack.stackPointer(), true);
-        Emit("+(400) " + _stack.pop() + " " + _stack.pop() + " " + _stack.stackPointer(), true);  // offset + start = location
-        Emit("MOVL(498) " + _stack.pop() + " " + getNextDAddress(false), true);
+        arg1 = _stack.pop();
+        Emit("*(420) " + arg1 + " &" + _stack.FieldSize + " " + _stack.getPointerAndIncrement(), true);
+        arg1 = _stack.pop();
+        arg2 = _stack.pop();
+        Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.getPointerAndIncrement(), true);  // offset + start = location
+        arg1 = _stack.pop();
+        Emit("MOVL(498) " + arg1 + " " + getNextDAddress(false), true);
         Node parent = node.parent();
         if (parent.getClass() != AAssignmentExpr.class || ((AAssignmentExpr)parent).getLeft() != node) {
-            Emit("MOVL(498) @" + getNextDAddress(false) + " " + _stack.stackPointer(), true);
+            Emit("MOVL(498) @" + getNextDAddress(false) + " " + _stack.getPointerAndIncrement(), true);
         }
     }
 
@@ -161,8 +166,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("LD P_First_Cycle", true);
         String code = "ANDW(034) " + _stack.pop() + " " + _stack.pop() + " ";
-        _stack.stackPointerIncrement(3);
-        code = code + _stack.stackPointer();
+        code = code + _stack.getPointerAndIncrement();
         Emit(code, true);
     }
 
@@ -172,8 +176,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("LD P_First_Cycle", true);
         String code = "ORW(035) " + _stack.pop() + " " + _stack.pop() + " ";
-        _stack.stackPointerIncrement(3);
-        code = code + _stack.stackPointer();
+        code = code + _stack.getPointerAndIncrement();
         Emit(code, true);
     }
 
@@ -184,9 +187,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND=(300)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -196,9 +199,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND>(320)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -208,9 +211,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND>=(325)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -220,9 +223,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND<(310)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -232,9 +235,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND<=(315)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -244,9 +247,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg1 = _stack.pop();
         String arg2 = _stack.pop();
 
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND<>(305)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -337,8 +340,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     private void declareBool(String name){
         // get next free address in symbolList
-        _stack.stackPointerIncrement();
-        String address = _stack.stackPointer();
+        String address = _stack.getPointerAndIncrement();
         String boolAddress = address + ".00";
         // Declare
         Emit(name + "\tBOOL\t" + address + ".00" + "\t\t0\t", false);
@@ -358,8 +360,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
     private void declareAndAssignBool(String name, String value){
         // get next free address in symbolList
-        _stack.stackPointerIncrement();
-        String address = _stack.stackPointer();
+        String address = _stack.getPointerAndIncrement();
         String boolAddress = address + ".00";
 
         // Declare
@@ -440,7 +441,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAReturnStatement(AReturnStatement node) {
         super.outAReturnStatement(node);
 
-        Emit("MOVL(498) " + _stack.stackPointer() + " " + ((AFunctionRootDeclaration) node.parent()).getName().toString().replaceAll("\\s+","") + "_return", true);
+        Emit("MOVL(498) " + _stack.peek() + " " + ((AFunctionRootDeclaration) node.parent()).getName().toString().replaceAll("\\s+","") + "_return", true);
     }
 
     @Override
@@ -464,11 +465,11 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             Emit("LD " + node.getExpr().toString(), true);
             Emit("SET " + parentNode.getName().getText().toString(), true);
-            Emit("SET " + _stack.stackPointer() + ".00", true);
+            Emit("SET " + _stack.peek() + ".00", true);
 
             Emit("LDNOT " + node.getExpr().toString(), true);
             Emit("RSET " + parentNode.getName().getText().toString(), true);
-            Emit("RSET " + _stack.stackPointer() + ".00", true);
+            Emit("RSET " + _stack.peek() + ".00", true);
         }
         else if (node.parent() instanceof AAssignmentExpr)
         {
@@ -476,11 +477,11 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             Emit("LD " + node.getExpr().toString(), true);
             Emit("SET " + parentNode.getLeft().toString(), true);
-            Emit("SET " + _stack.stackPointer() + ".00", true);
+            Emit("SET " + _stack.peek() + ".00", true);
 
             Emit("LDNOT " + node.getExpr().toString(), true);
             Emit("RSET " + parentNode.getLeft().toString(), true);
-            Emit("RSET " + _stack.stackPointer() + ".00", true);
+            Emit("RSET " + _stack.peek() + ".00", true);
         }
         else
             throw new RuntimeException();
@@ -492,17 +493,16 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     public void outAPortOutputExpr(APortOutputExpr node) {
         super.outAPortOutputExpr(node);
 
-        Emit("LD " + _stack.stackPointer() + ".00", true);
+        Emit("LD " + _stack.peek() + ".00", true);
         Emit("OUT " + node.getExpr(), true);
     }
 
     @Override
-    public void outATrueExpr(ATrueExpr node){
+    public void outATrueExpr(ATrueExpr node) {
         super.outATrueExpr(node);
 
         Emit("MOVL(498) #1 " + getNextDAddress(true), true);
-        _stack.stackPointerIncrement();
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -510,8 +510,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         super.outAFalseExpr(node);
 
         Emit("MOVL(498) #0 " + getNextDAddress(true), true);
-        _stack.stackPointerIncrement();
-        Emit("RSET " + _stack.stackPointer() + ".00", true);
+        Emit("RSET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -525,7 +524,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
             node.getCondition().apply(this);
             Emit("CJP(510) #" + ifLabel, true);
-            Emit("LD " + _stack.stackPointer() + ".00", true);
+            Emit("LD " + _stack.peek() + ".00", true);
             node.getRight().apply(this);
             Emit("JMP(004) #" + elseLabel, true);
             Emit("JME(005) #" + ifLabel, true);
@@ -550,8 +549,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         int loopLabel = getNextJump();
 
         //node.getCondition().apply(this);
-        _stack.stackPointerIncrement();
-        Emit("LDNOT " + _stack.stackPointer() + ".00", true);
+        Emit("LDNOT " + _stack.getPointerAndIncrement() + ".00", true);
         Emit("JMP(004) #" + jumpLabel, true);
         node.getStatement().apply(this);
         node.getCondition().apply(this);
@@ -583,9 +581,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("+F(454) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("+F(454) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("+(400) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
     }
 
     @Override
@@ -596,9 +594,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("/F(457) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("/(430) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
     }
 
     @Override
@@ -609,9 +607,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("*F(456) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("*(420) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
     }
 
     @Override
@@ -622,9 +620,9 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         String arg2 = _stack.pop();
 
         if (node.getRight() instanceof ADecimalExpr)
-            Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.stackPointer(), true);
+            Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.stackPointer(), true);
+            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.peek(), true);
     }
 
     private int getNextJump(){
@@ -634,7 +632,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         return jumpLabel;
     }
 
-    protected void Emit(String s, boolean instruction){
+    public void Emit(String s, boolean instruction){
         if (instruction == true) { // Write to InstructionList, if instruction
             instructionWriter.println(s);
         } else { // Otherwise it's a symbol, then write to SymbolList
@@ -695,98 +693,5 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
     @Override
     public void outAMemberExpr(AMemberExpr node){
         throw new NotImplementedException();
-    }
-
-    public class Stack{
-        private final int stackFieldSize = 2;           // defines the size of each object in the stack as nr of bytes.
-        private int stackPointerStart = 400;            // start address of the stack area in H memory
-        private int stackPointer = stackPointerStart;   // stackPointer
-
-        public < T > void push(T value)
-        {
-            if(stackPointer <= 510){
-                stackPointerIncrement();
-
-                if (value.getClass() == Integer.class)
-                    Emit("MOVL(498) &" + value + " " + stackPointer(), true);
-
-                else if (value.getClass() == Float.class || value.getClass() == Double.class)
-                    Emit("+F(454) +0,0 +" + value.toString().replace(".", ",") + " " + stackPointer() + "", true);
-
-                else if (value.getClass() == String.class)
-                    Emit("MOVL(498) " + value + " " + stackPointer(), true);
-
-                else if (value.getClass() == Boolean.class){
-
-                    if ((Boolean)value)
-                        Emit("SET " + stackPointer() + ".00", true);
-
-                    else if (!(Boolean)value)
-                        Emit("RSET " + stackPointer() + ".00", true);
-
-                } else
-                    throw new NotImplementedException();
-            } else
-                throw new OutOfMemoryError();
-        }
-
-        public < T > void push(T value, Node node)
-        {
-            Symbol symbol = currentScope.getSymbolOrThrow(value.toString(), node);
-
-            if (symbol.getType().getType() == SymbolType.Type.Boolean) {
-                stackPointerIncrement();
-                Emit("LD " + value, true);
-                Emit("SET " + stackPointer() + ".00", true);
-                Emit("LDNOT " + value, true);
-                Emit("RSET " + stackPointer() + ".00", true);
-            }
-
-            else
-                push(value);
-        }
-
-        public String pop()
-        {
-            String stPtr = stackPointer();
-            stackPointerDecrement();
-            return stPtr;
-        }
-
-        public String peek(){
-            return stackPointer();
-        }
-
-        // returns the address of the memory the stack points to.
-        private String stackPointer(){
-            return "W" + stackPointer;
-        }
-
-        // increments stack pointer with stack size
-        private void stackPointerIncrement() {
-            if (stackPointer > 510)
-                throw new OutOfMemoryError();
-            stackPointer += stackFieldSize;
-        }
-
-        // increments stack pointer x times
-        private void stackPointerIncrement(int x) {
-            for (int i = 0; i < x; i++)
-                stackPointerIncrement();
-        }
-
-        // decrements stack pointer with stack size
-        private void stackPointerDecrement() {
-            if (stackPointer < 400)
-                throw new OutOfMemoryError();
-            stackPointer -= stackFieldSize;
-        }
-
-        // decrement stack pointer x times
-        private void stackPointerDecrement(int x) {
-            for (int i = 0; i < x; i++)
-                stackPointerDecrement();
-        }
-
     }
 }
