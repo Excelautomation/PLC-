@@ -201,7 +201,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
 
         Emit("RSET " + _stack.peek() + ".00", true);
         Emit("AND>(320)" + " " + arg1 + " " + arg2, true);
-        Emit("SET " + _stack.stackPointer() + ".00", true);
+        Emit("SET " + _stack.peek() + ".00", true);
     }
 
     @Override
@@ -622,7 +622,7 @@ public class CodeGenerator extends ScopeDepthFirstAdapter {
         if (node.getRight() instanceof ADecimalExpr)
             Emit("-F(455) " + arg1 + " " + arg2 + " " + _stack.peek(), true);
         else
-            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.stackPointer(), true);
+            Emit("-(410) " + _stack.pop() + " " + _stack.pop() + " " + _stack.peek(), true);
     }
 
     private int getNextJump(){
