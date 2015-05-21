@@ -83,14 +83,14 @@ Rækkefølgen på mapperne nedenunder er rækkefølgen de forskellige dele blive
 - **Rewriter**
 	- Indeholder funktionalitet der omskriver træet for at generalisere de elementer der kan generaliseres. Eksempel kan compound assignments omskrive til normale assignments og dermed slippes for meget dubleret kode efterfølgende
 - **Preprocessor**
-	- Registrerer alle funktioner og structs og ligger dem ind i symboltabellen for at understøtte dynamisk scope (benytter klasser fra SymbolProcessor, som indlæser funktioner, deklarationer (kun globale deklarationer) og structs)
+	- Registrerer alle funktioner og structs og ligger dem ind i symboltabellen for at understøtte dynamisk scope (benytter klasser fra *SymbolProcessor*, som indlæser funktioner, deklarationer (kun globale deklarationer) og structs)
 - **FunctionChecker**
 	- Tjekker om kildekoden indeholder en init og run metode og disse har ingen parametre og har ingen returtype
 - **ScopeChecker**
-	- Håndterer scopecheck. ScopeChecker indlæser også deklarationer i funktioner og benytter en klasse fra SymbolProcessor som Preprocessor også bruger. Deklarationer i funktioner har statisk scope og skal dermed være deklareret før de bliver brugt.
+	- Håndterer scopecheck. ScopeChecker indlæser også deklarationer i funktioner og benytter en klasse fra *SymbolProcessor* som *Preprocessor* også bruger. Deklarationer i funktioner har statisk scope og skal dermed være deklareret før de bliver brugt.
 - **TypeChecker**
 	- Håndterer typecheck
 - **CodeGenerator**
 	- Indeholder alt code generation
 
-Derudover indeholder projektet også en mappe med Symboltable (Symboltabellen) som alle dele undtagen Parseren benytter.
+Derudover indeholder projektet også en mappe med *Symboltable* (Symboltabellen) som alle dele undtagen *Parseren* benytter.
