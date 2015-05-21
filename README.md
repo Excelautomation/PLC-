@@ -1,6 +1,8 @@
 # PLC++
 Compiler til sproget PLC++, som er et imperativt sprog til Omron PLC'er.
 
+Følgende readme fil er lavet i Githubs markdown format.
+
 [Se projektet på Github](https://github.com/sahb1239/PLC-)
 
 ## Compiler PLC++
