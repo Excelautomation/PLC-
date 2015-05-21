@@ -96,3 +96,18 @@ Rækkefølgen på mapperne nedenunder er rækkefølgen de forskellige dele blive
 	- Indeholder alle unit tests
 
 Derudover indeholder projektet også en mappe med **Symboltable** (Symboltabellen) som alle dele undtagen **Parseren** benytter.
+
+## Eksempler
+I mappen Examples ligger der desuden 3 eksempler som kan kompileres vha. PLC++ compileren.
+
+- **fixedFee.ppp**
+	- Indeholder et program der tager en pris og ligger et gebyr ovenpå. Under kørslen af funktionen til beregningen af prisen tændes en lampe på port Q#100.00.
+- **simpleSensor.ppp**
+	- Simpelt program der tænder for port Q#100.0 hvis input port I#0.0 er aktiv.
+- **square.ppp**
+	- Ganger det samme tal med sig selv i en funktion
+	
+## Projektet Port
+Mappen Port indeholder en simpel compiler der tager port delen fra PLC++. Gramatikken er defineret til SableCC (Dog uden AST).
+
+Projektet indeholder en scanner lavet i hånden. Dele af lexeren (scanneren) er inkluderet i rapporten.
