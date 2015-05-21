@@ -25,13 +25,18 @@ Herefter åbnes projektet og kompileres i et IDE såsom IntelliJ Community Editi
 For at eksekvere et PLC++ kræver det nogle manuelle steps da det ikke var muligt at generere projektfiler direkte.
 
 Kompiler et program
+
 Opret nyt projekt i Cx Programmer
+
 Vælg *Projektnavn -> PLC navn -> Programs -> ProgramNavn -> Symbols* i projektoversigten
+
 Åben filen SymbolList.txt og kopir alt indhold vha. ctrl + c og ind i Cx Programmer vha. ctrl + v. En dialogboks ved navn Pastle Symbol skulle komme frem - tryk OK til denne.
+
 Vælg nu *Projektnavn -> PLC navn -> Programs -> ProgramNavn -> Section navn (som standard Section1)*
+
 Vælg menuen View -> Mnemonics
+
 Kopir indholdet af filen InstructionList.txt ind i Cx Programmer vha. ctrl + c og ctrl + v.
 
+
 Kør derefter programmet vha. Cx Programmer.
-
-
