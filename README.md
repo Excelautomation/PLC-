@@ -92,10 +92,14 @@ Rækkefølgen på mapperne nedenunder er rækkefølgen de forskellige dele blive
 	- Håndterer typecheck
 - **CodeGenerator**
 	- Indeholder alt code generation
+	
+Derudover indeholder projektet også
+- **Symboltable**
+	- Indeholder symboltabellen
+- **Exception**
+	- Indeholder alle compiler exceptions (alle exceptions nedarver CompilerException der ligger i den mappe)
 - **Tests**
 	- Indeholder alle unit tests
-
-Derudover indeholder projektet også en mappe med **Symboltable** (Symboltabellen) som alle dele undtagen **Parseren** benytter.
 
 ## Eksempler
 I mappen Examples ligger der desuden 3 eksempler som kan kompileres vha. PLC++ compileren.
