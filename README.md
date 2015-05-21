@@ -92,5 +92,7 @@ Rækkefølgen på mapperne nedenunder er rækkefølgen de forskellige dele blive
 	- Håndterer typecheck
 - **CodeGenerator**
 	- Indeholder alt code generation
+- **Tests**
+	- Indeholder alle unit tests
 
 Derudover indeholder projektet også en mappe med **Symboltable** (Symboltabellen) som alle dele undtagen **Parseren** benytter.
