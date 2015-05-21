@@ -78,12 +78,19 @@ Compileren er struktureret således at hver del af compileren ligger i hver sin 
 Compiler indeholder funktionaliteten til at kalde alle andre dele af programmet.
 
 Rækkefølgen på mapperne nedenunder er rækkefølgen de forskellige dele bliver eksekveret i compileren.
-- Parser indeholder alt det autogenererede kode fra SableCC. SableCC generer her både en Lexer, Parser samt træ gennemløbsklasserne.
-- Rewriter indeholder funktionalitet der omskriver træet for at generalisere de elementer der kan generaliseres. Eksempel kan compound assignments omskrive til normale assignments og dermed slippes for meget dubleret kode efterfølgende
-- Preprocessor registrerer alle funktioner og structs og ligger dem ind i symboltabellen for at understøtte dynamisk scope (benytter klasser fra SymbolProcessor, som indlæser funktioner, deklarationer (kun globale deklarationer) og structs)
-- FunctionChecker tjekker om kildekoden indeholder en init og run metode og disse har ingen parametre og har ingen returtype
-- ScopeChecker håndterer typecheck. ScopeChecker indlæser også deklarationer i funktioner og benytter en klasse fra SymbolProcessor som Preprocessor også bruger. Deklarationer i funktioner har statisk scope og skal dermed være deklareret før de bliver brugt.
-- TypeChecker håndterer typecheck
-- CodeGenerator indeholder alt code generation
+- Parser
+	- Indeholder alt det autogenererede kode fra SableCC. SableCC generer her både en Lexer, Parser samt træ gennemløbsklasserne.
+- Rewriter
+	- Indeholder funktionalitet der omskriver træet for at generalisere de elementer der kan generaliseres. Eksempel kan compound assignments omskrive til normale assignments og dermed slippes for meget dubleret kode efterfølgende
+- Preprocessor
+	- Registrerer alle funktioner og structs og ligger dem ind i symboltabellen for at understøtte dynamisk scope (benytter klasser fra SymbolProcessor, som indlæser funktioner, deklarationer (kun globale deklarationer) og structs)
+- FunctionChecker
+	- Tjekker om kildekoden indeholder en init og run metode og disse har ingen parametre og har ingen returtype
+- ScopeChecker 
+	- Håndterer scopecheck. ScopeChecker indlæser også deklarationer i funktioner og benytter en klasse fra SymbolProcessor som Preprocessor også bruger. Deklarationer i funktioner har statisk scope og skal dermed være deklareret før de bliver brugt.
+- TypeChecker
+	- Håndterer typecheck
+- CodeGenerator 
+	- Indeholder alt code generation
 
 Derudover indeholder projektet også en mappe med Symboltable (Symboltabellen) som alle dele undtagen Parseren benytter.
