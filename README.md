@@ -2,7 +2,7 @@
 Compiler til sproget PLC++, som er et imperativt sprog til Omron PLC'er.
 
 ## Kompiler PLC++
-For at compilere skal SableCC 3.7 hentes og udpakkes i projektmappen. Herefter scripted GenerateParser.bat (På Windows) eller GenerateParser.sh (På Unix baserede OS).
+For at compilere skal SableCC 3.7 hentes og udpakkes i projektmappen. Herefter køres scriptet GenerateParser.bat (På Windows) eller GenerateParser.sh (På Unix baserede OS).
 Herefter åbnes projektet i en IDE.
 
 Bemærk: Java skal være registreret i path
