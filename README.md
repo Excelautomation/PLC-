@@ -47,13 +47,21 @@ Kør derefter programmet vha. Cx Programmer.
 Udfør først handlingerne beskrevet under overskriften **Compiler PLC++**
 
 Åben IntelliJ
+
 Vælg menuen File -> Open...
+
 Find mappen med projektet og vælg mappen PLC++ og tryk OK
+
 Vælg menuen Run -> Edit configurations...
+
 Tryk på + i venstre hjørne
+
 Vælg Application
+
 Skriv dk.aau.sw402F15.Main i Main class
+
 Skriv kommando argumenter i program arguments
+
 Tryk ok og compiler nu PLC++
 
 ## Kørsel af tests
