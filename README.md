@@ -53,3 +53,8 @@ Vælg Application
 Skriv dk.aau.sw402F15.Main i Main class
 Skriv kommando argumenter i program arguments
 Tryk ok og compiler nu PLC++
+
+## Kørsel af tests
+Vælg run configuration under IntelliJ til Run Tests og kør derefter programmet
+
+100+ tests skulle dermed blive kørt.
