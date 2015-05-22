@@ -28,11 +28,11 @@ For at eksekvere et PLC++ kræver det nogle manuelle steps da det ikke var mulig
 
 Compiler et program
 
-Opret nyt projekt i Cx Programmer
+Opret nyt projekt i Cx Programmer: Vælg CP1H, tryk på settings, vælg "X" under CPU Type.
 
 Vælg *Projektnavn -> PLC navn -> Programs -> ProgramNavn -> Symbols* i projektoversigten
 
-Åben filen SymbolList.txt og kopir alt indhold vha. ctrl + c og ind i Cx Programmer vha. ctrl + v. En dialogboks ved navn Pastle Symbol skulle komme frem - tryk OK til denne.
+Åben filen SymbolList.txt og kopier alt indhold vha. ctrl + c og ind i Cx Programmer vha. ctrl + v. En dialogboks ved navn Pastle Symbol skulle komme frem - tryk OK til denne.
 
 Vælg nu *Projektnavn -> PLC navn -> Programs -> ProgramNavn -> Section navn (som standard Section1)*
 

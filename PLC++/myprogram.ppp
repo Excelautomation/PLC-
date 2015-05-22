@@ -3,7 +3,9 @@ void init()
 
 void run()
 {
-    int i = 5;
+    int A[3];
 
-    bool b = i > 4;
+    A[0] = 5;
+
+    int i = A[0] + 13;
 }
