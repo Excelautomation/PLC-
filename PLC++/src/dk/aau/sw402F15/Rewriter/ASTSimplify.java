@@ -21,7 +21,8 @@ public class ASTSimplify extends DepthFirstAdapter {
             statements.add(new AExprStatement(expr));
 
         for (PExpr expr : node.getInitilizer())
-            statements.add(new AExprStatement(expr));
+            statementList.add(0, new AExprStatement(expr));
+
         statementList.add(new AWhileStatement(node.getCondition() == null ? new ATrueExpr() : node.getCondition(), new AScopeStatement(statements)));
 
         Node newNode = new AScopeStatement(statementList);

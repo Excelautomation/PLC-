@@ -3,9 +3,7 @@ void init()
 
 void run()
 {
-    int A[3];
+    int i;
 
-    A[0] = 5;
-
-    int i = A[0] + 13;
+    for(i = 0; i < 50; i++) {}
 }
