@@ -5,5 +5,7 @@ void run()
 {
     int i;
 
-    for(i = 0; i < 50; i++) {}
+    if (true) { i = 1; }
+    else { i = 0; }
+
 }
